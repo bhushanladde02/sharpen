@@ -9,7 +9,7 @@ autosectionlabel_prefix_document = True
 todo_include_todos = True
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "samples"]
+exclude_patterns = ["_build", ".venv", "Thumbs.db", ".DS_Store", "samples"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]

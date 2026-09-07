@@ -73,5 +73,6 @@ Documentation
 
 .. code-block:: bash
 
-   cd docs && pip install -r requirements.txt && make html
-   open _build/html/index.html
+   ./docs/view.sh                     # build if needed and open in the browser
+   ./docs/view.sh --clean             # full rebuild
+   cd docs && make html               # manual alternative (needs pip install -r requirements.txt)

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Navigation, shared by sidebar and mobile bar -->
+<nav class="nav" th:fragment="navlinks" th:with="path=${path ?: ''}">
+  <th:block th:if="${me == null}">
+    <a th:href="@{/login}">Sign in</a>
+    <a th:href="@{/register}">Create account</a>
+  </th:block>
+  <th:block th:if="${me != null and !me.company}">
+    <a th:href="@{/dashboard}" th:classappend="${path == '/dashboard'} ? 'active'">Dashboard</a>
+    <a th:href="@{/sessions/new}" th:classappend="${path == '/sessions/new'} ? 'active'">Log a session</a>
+    <a th:href="@{/sessions}" th:classappend="${path == '/sessions'} ? 'active'">Sessions
+      <span class="chip warn" th:if="${unratedCount > 0}" th:text="${unratedCount}">3</span></a>
+    <a th:href="@{/import}" th:classappend="${path == '/import'} ? 'active'">Import</a>
+    <a th:href="@{/reports}" th:classappend="${#strings.startsWith(path, '/reports')} ? 'active'">Monthly reports</a>
+    <a th:href="@{/p/{h}(h=${me.handle})}" th:classappend="${#strings.startsWith(path, '/p/')} ? 'active'">My AI profile</a>
+    <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
+  </th:block>
+  <th:block th:if="${me != null and me.company}">
+    <a th:href="@{/candidates}" th:classappend="${path == '/candidates'} ? 'active'">Candidates</a>
+    <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
+  </th:block>
+</nav>
+</body>
+</html>

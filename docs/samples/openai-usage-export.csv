@@ -1,0 +1,4 @@
+date,model,n_requests,n_context_tokens_total,n_generated_tokens_total
+2026-09-01,gpt-4o,14,18230,4110
+2026-09-02,gpt-4o-mini,31,22010,6980
+2026-09-03,gpt-4o,9,9800,2210

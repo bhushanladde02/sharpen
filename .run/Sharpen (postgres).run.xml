@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Sharpen (postgres)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="sharpen-portal" />
+    <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.sharpen.SharpenApplication" />
+    <option name="ACTIVE_PROFILES" value="postgres" />
+    <envs>
+      <env name="SHARPEN_DB_URL" value="jdbc:postgresql://localhost:5432/sharpen" />
+      <env name="SHARPEN_DB_USER" value="sharpen" />
+      <env name="SHARPEN_DB_PASSWORD" value="sharpen" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

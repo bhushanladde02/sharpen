@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Sessions — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><h1>Sessions</h1><p th:text="${page.totalElements} + ' logged'">120 logged</p></div>
+    <div class="row actions">
+      <a class="btn" th:href="@{/import}">Import</a>
+      <a class="btn primary" th:href="@{/sessions/new}">Log a session</a>
+    </div>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(unrated)}" class="notice row between" style="margin-bottom:1rem">
+    <span th:text="${unratedCount} + ' unrated session' + (${unratedCount} == 1 ? '' : 's') + ' — rating takes 15 seconds each and is what makes the score yours.'">Unrated</span>
+    <a class="btn small" th:href="@{/sessions/{id}/edit(id=${unrated[0].id})}">Rate next</a>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table class="stackable">
+        <thead><tr><th>Date</th><th>Context</th><th>Tool</th><th>Task</th><th class="num">Min</th><th class="num">Prompts</th><th class="num">Human %</th><th>Checked</th><th>Learned</th><th class="num">Outcome</th><th>Source</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="s : ${page.content}" th:classappend="${!s.selfAssessed} ? 'unrated'">
+          <td class="num" data-label="Date" th:text="${s.occurredOn}">2026-09-01</td>
+          <td data-label="Context"><span class="chip" th:classappend="${s.context.name() == 'PERSONAL'} ? 'personal' : 'pro'" th:text="${s.context.label}">Professional</span></td>
+          <td data-label="Tool" th:text="${s.tool}">Claude</td>
+          <td data-label="Task" th:text="${s.taskCategory.label}">Coding</td>
+          <td class="num" data-label="Minutes" th:text="${s.durationMinutes}">45</td>
+          <td class="num" data-label="Prompts" th:text="${s.promptCount}">6</td>
+          <td class="num" data-label="Human %" th:text="${s.selfAssessed} ? ${s.humanContributionPct} : '—'">60</td>
+          <td data-label="Checked" th:text="${s.selfAssessed} ? (${s.verifiedOutput} ? 'Yes' : 'No') : '—'">Yes</td>
+          <td data-label="Learned" th:text="${s.selfAssessed} ? (${s.learnedSomething} ? 'Yes' : 'No') : '—'">No</td>
+          <td class="num" data-label="Outcome" th:text="${s.selfAssessed} ? ${s.outcome} + '/5' : '—'">4/5</td>
+          <td class="muted" data-label="Source" th:text="${s.source.label}">Logged by you</td>
+          <td data-label="Action"><a th:href="@{/sessions/{id}/edit(id=${s.id})}" th:text="${s.selfAssessed} ? 'Edit' : 'Rate'">Edit</a></td>
+        </tr>
+        <tr th:if="${page.totalElements == 0}"><td colspan="12" class="empty" data-label="">Nothing logged yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row between" style="margin-top:.75rem" th:if="${page.totalPages > 1}">
+      <a class="btn small" th:if="${page.hasPrevious()}" th:href="@{/sessions(page=${page.number - 1})}">Newer</a><span th:unless="${page.hasPrevious()}"></span>
+      <small class="muted" th:text="'Page ' + ${page.number + 1} + ' of ' + ${page.totalPages}">Page 1 of 4</small>
+      <a class="btn small" th:if="${page.hasNext()}" th:href="@{/sessions(page=${page.number + 1})}">Older</a><span th:unless="${page.hasNext()}"></span>
+    </div>
+  </div>
+</main>
+</body>
+</html>

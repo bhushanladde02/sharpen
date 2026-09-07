@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Score ring + five dimension bars. `s` is an AiScore. -->
+<div th:fragment="scorePanel(s)" class="score">
+  <div class="ring">
+    <svg viewBox="0 0 120 120" width="136" height="136" aria-hidden="true">
+      <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="10"/>
+      <circle class="bar" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+              stroke-dasharray="326.7" th:attr="stroke-dashoffset=${s.ringOffset()}"/>
+    </svg>
+    <div class="center">
+      <div class="big num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</div>
+      <div class="of">of 1000</div>
+    </div>
+  </div>
+  <div>
+    <div class="row" style="margin-bottom:.6rem">
+      <span class="band" th:classappend="${s.confidence.name() == 'LOW'} ? 'low'" th:text="${s.band()}">Strong</span>
+      <small class="muted" th:if="${s.hasScore()}" th:text="${s.assessedCount} + ' rated session' + (${s.assessedCount} == 1 ? '' : 's')">42 rated sessions</small>
+    </div>
+    <div class="dims">
+      <div class="dim" th:each="d : ${ {
+            {'Independence', s.independence}, {'Effectiveness', s.effectiveness}, {'Verification', s.verification},
+            {'Growth', s.growth}, {'Breadth', s.breadth} } }">
+        <span class="label" th:text="${d[0]}">Independence</span>
+        <div class="track"><div class="fill" th:style="'width:' + ${d[1]} + '%'"></div></div>
+        <span class="v num" th:text="${d[1]}">72</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Flags from an AiScore -->
+<div th:fragment="flags(s)" class="flags">
+  <div class="flag" th:each="f : ${s.flags}" th:classappend="${f.kind}" th:text="${f.message}">Message</div>
+</div>
+
+<!-- 6-month score line. `trend` is List<MonthSummary>, `path` the precomputed SVG path. -->
+<div th:fragment="trendChart(trend, path)">
+  <svg class="chart" viewBox="0 0 320 96" role="img" aria-label="AI score by month">
+    <line class="grid-line" x1="24" y1="4" x2="296" y2="4"/>
+    <line class="grid-line" x1="24" y1="40" x2="296" y2="40"/>
+    <line class="grid-line" x1="24" y1="76" x2="296" y2="76"/>
+    <text x="300" y="7">1000</text><text x="300" y="43">500</text><text x="300" y="79">0</text>
+    <path class="line" th:attr="d=${path}"/>
+    <th:block th:each="m, it : ${trend}" th:with="x=${24 + it.index * (272.0 / (trend.size() - 1))}">
+      <circle th:if="${m.score.hasScore()}" th:attr="cx=${x}, cy=${4 + 72 * (1 - m.score.composite / 1000.0)}" r="3" fill="var(--accent)"/>
+      <text th:attr="x=${x}" y="92" text-anchor="middle" th:text="${#strings.substring(m.label(), 0, 3)}">Jan</text>
+    </th:block>
+  </svg>
+</div>
+
+<!-- Weekly minutes stacked bars for one MonthSummary -->
+<div th:fragment="weekBars(m)" th:with="max=${m.maxWeekMinutes()}">
+  <div class="bars" th:style="'grid-template-columns: repeat(' + ${m.weeks.size()} + ', 1fr)'">
+    <div class="col" th:each="w : ${m.weeks}" th:title="${w.label} + ': ' + ${w.professionalMinutes} + ' min work, ' + ${w.personalMinutes} + ' min personal'">
+      <div class="seg personal" th:style="'height:' + ${max == 0 ? 0 : 100.0 * w.personalMinutes / max} + '%'"></div>
+      <div class="seg pro" th:style="'height:' + ${max == 0 ? 0 : 100.0 * w.professionalMinutes / max} + '%'"></div>
+    </div>
+  </div>
+  <div class="bars-labels" th:style="'grid-template-columns: repeat(' + ${m.weeks.size()} + ', 1fr)'">
+    <span th:each="w : ${m.weeks}" th:text="${w.label}">1–7</span>
+  </div>
+  <div class="legend"><span><i class="pro"></i>Professional</span><span><i class="personal"></i>Personal</span></div>
+</div>
+
+<!-- Share list (tools or categories) -->
+<div th:fragment="shares(list)" class="shares">
+  <div class="share" th:each="x : ${list}">
+    <div><span th:text="${x.name}">Claude</span>
+      <div class="track"><div class="fill" th:style="'width:' + ${x.pct} + '%'"></div></div></div>
+    <span class="pct num" th:text="${x.pct} + '%'">40%</span>
+  </div>
+  <div class="empty" th:if="${#lists.isEmpty(list)}" style="padding:.5rem">Nothing yet</div>
+</div>
+
+</body>
+</html>

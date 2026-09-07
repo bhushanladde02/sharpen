@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Sharpen — your AI profile</title></head>
+<body>
+<main class="landing">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">The AI profile</p>
+      <h1>Use AI a lot.<br>Stay the one <em>who thinks</em>.</h1>
+      <p class="lede">Sharpen tracks how you work with AI — at work and at home — and turns it into a score that
+        rewards independence, verification and learning, never volume. A monthly report keeps you honest.
+        A public profile shows employers how you actually work.</p>
+      <div class="row cta actions">
+        <a class="btn primary" th:href="@{/register}">Create your profile</a>
+        <a class="btn" th:href="@{/p/priya-natarajan}">See an example</a>
+      </div>
+      <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
+    </div>
+    <div class="hero-card" aria-label="Example AI score">
+      <p class="eyebrow">Example · rolling 90 days</p>
+      <div th:replace="~{fragments :: scorePanel(${sample})}"></div>
+      <div class="foot">
+        <span class="chip good">Verifies output</span>
+        <span class="chip pro">71% professional</span>
+        <span class="chip">39 rated sessions</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Three steps, fifteen seconds each</h2>
+      <p>Logging is the only thing we ask of you. Everything else — the score, the report, the profile — is built from it.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Log a session</h3><p>Date, tool, task, minutes — then four honest questions: how much was yours, did you check it, did you learn, was it useful. The browser extension and usage exports fill in the volume for you.</p></div>
+      <div class="step"><h3>Read your month</h3><p>On the 1st you get a report: where the time went, how much of the thinking stayed human, and three concrete things to try next month. On screen and as a PDF.</p></div>
+      <div class="step"><h3>Share the signal</h3><p>Your public AI profile carries the score, the trend and the tools you use — nothing else. Companies compare candidates on how they work, not how much they prompt.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Five things the score measures. Hours are not one of them.</h2>
+      <p>Only sessions you rated count, weighted by minutes. Logging twice as much with the same habits gives exactly the same score.</p>
+    </div>
+    <div class="dimstrip">
+      <div class="d"><b>30%</b><span>Independence</span><small>How much of the finished work was yours</small></div>
+      <div class="d"><b>20%</b><span>Effectiveness</span><small>Useful results per prompt spent</small></div>
+      <div class="d"><b>20%</b><span>Verification</span><small>Output checked against a source or a test</small></div>
+      <div class="d"><b>20%</b><span>Growth</span><small>You can now do something you couldn't</small></div>
+      <div class="d"><b>10%</b><span>Breadth</span><small>Spread across task types and tools</small></div>
+    </div>
+  </section>
+
+  <section class="quiet">
+    <div class="grid two" style="align-items:center">
+      <div>
+        <p class="eyebrow">For companies</p>
+        <h2 style="font-family:var(--display);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.5rem">Hire people who can work on their own</h2>
+        <p class="muted">Browse public profiles, sort by independence or verification, and see the reliance-risk flag before the first interview. Fewer tokens burned on people who can't judge what the model returns.</p>
+        <a class="btn" th:href="@{/register}">Create a company account</a>
+      </div>
+      <div class="card">
+        <div class="cand">
+          <div class="mini"><span class="num">795</span><small>Expert</small></div>
+          <div>
+            <b>Lena Okafor</b>
+            <div class="muted" style="font-size:.86rem">Data scientist; AI as a sparring partner</div>
+            <div class="cand-dims" style="margin-top:.4rem"><span>Indep. <b>78</b></span><span>Verif. <b>99</b></span><span>Growth <b>52</b></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Sharpen · the AI profile</span>
+    <span><a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></span>
+  </footer>
+</main>
+</body>
+</html>

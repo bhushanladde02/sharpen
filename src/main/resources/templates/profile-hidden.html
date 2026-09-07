@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Profile not available — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <h1>No public profile here</h1>
+    <p class="muted" style="margin-top:.5rem"><code th:text="'/p/' + ${handle}">/p/handle</code> is private or does not exist. The owner can make it public under Settings.</p>
+    <a class="btn" th:href="@{/}">Home</a>
+  </div>
+</main>
+</body>
+</html>

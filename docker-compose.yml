@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sharpen
+      POSTGRES_USER: sharpen
+      POSTGRES_PASSWORD: sharpen
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./src/main/resources/db/schema-postgres.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sharpen"]
+      interval: 5s
+      retries: 10
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SHARPEN_DB_URL: jdbc:postgresql://db:5432/sharpen
+      SHARPEN_DB_USER: sharpen
+      SHARPEN_DB_PASSWORD: sharpen
+      SHARPEN_DEMO_DATA: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pgdata:

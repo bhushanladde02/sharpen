@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title th:text="${person.displayName} + ' — AI profile — Sharpen'">AI profile — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">AI profile</p>
+      <h1 th:text="${person.displayName}">Name</h1>
+      <p th:text="${person.headline}">Headline</p>
+      <div class="row" style="margin-top:.5rem;font-size:.85rem;color:var(--ink-2)">
+        <span th:if="${person.jobTitle}" th:text="${person.jobTitle}">Title</span>
+        <span th:if="${person.industry}" th:text="'· ' + ${person.industry}">· Industry</span>
+        <span th:if="${person.yearsExperience}" th:text="'· ' + ${person.yearsExperience} + ' yrs'">· 9 yrs</span>
+        <span th:if="${person.location}" th:text="'· ' + ${person.location}">· City</span>
+      </div>
+    </div>
+    <div class="row actions no-print">
+      <span class="chip" th:if="${owner and !person.publicProfile}">Private — only you can see this</span>
+      <a class="btn" th:if="${owner}" th:href="@{/settings}">Edit profile</a>
+      <a class="btn" th:if="${owner}" th:href="@{/reports}">Reports</a>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="grid two">
+      <div class="card lift">
+        <h2>AI score · last 90 days</h2>
+        <div th:replace="~{fragments :: scorePanel(${score})}"></div>
+        <p class="muted" style="margin-top:.9rem;font-size:.8rem">Independence, effectiveness, verification, growth, breadth — from the person's own session ratings, weighted by minutes. Hours never raise the score.</p>
+      </div>
+      <div class="card">
+        <h2>Score by month</h2>
+        <div th:replace="~{fragments :: trendChart(${trend}, ${trendPath})}"></div>
+        <div class="grid three" style="margin-top:1rem">
+          <div class="stat"><span class="label">Sessions logged</span><span class="value num" th:text="${sessionCount}">180</span><span class="sub" th:if="${since}" th:text="'since ' + ${#temporals.format(since, 'MMM yyyy')}">since Jun 2026</span></div>
+          <div class="stat"><span class="label">Monthly reports</span><span class="value num" th:text="${reportCount}">3</span><span class="sub">generated</span></div>
+          <div class="stat"><span class="label">Work / personal</span><span class="value num" th:text="${trend[trend.size()-1].professionalPct()} + '/' + ${trend[trend.size()-1].personalPct()}">70/30</span><span class="sub">this month</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Tools</h2>
+        <div class="row"><span class="chip" th:each="t : ${tools}" th:text="${t}">Claude</span><span class="muted" th:if="${#lists.isEmpty(tools)}">Not listed</span></div>
+      </div>
+      <div class="card">
+        <h2>How to read this</h2>
+        <div th:replace="~{fragments :: flags(${score})}"></div>
+        <p class="muted" th:if="${#lists.isEmpty(score.flags)}">No flags. The score is based on enough rated sessions to be reliable.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Month by month</h2>
+      <div class="table-wrap">
+        <table class="stackable">
+          <thead><tr><th>Month</th><th class="num">Score</th><th class="num">Indep.</th><th class="num">Effect.</th><th class="num">Verif.</th><th class="num">Growth</th><th class="num">Breadth</th><th class="num">Sessions</th><th class="num">Hours</th><th>Work / personal</th></tr></thead>
+          <tbody>
+          <tr th:each="m : ${trend}">
+            <td data-label="Month" th:text="${m.label()}">Aug 2026</td>
+            <td class="num" data-label="Score" th:text="${m.score.hasScore()} ? ${m.score.composite} : '—'">720</td>
+            <td class="num" data-label="Independence" th:text="${m.score.hasScore()} ? ${m.score.independence} : '—'">70</td>
+            <td class="num" data-label="Effectiveness" th:text="${m.score.hasScore()} ? ${m.score.effectiveness} : '—'">70</td>
+            <td class="num" data-label="Verification" th:text="${m.score.hasScore()} ? ${m.score.verification} : '—'">70</td>
+            <td class="num" data-label="Growth" th:text="${m.score.hasScore()} ? ${m.score.growth} : '—'">70</td>
+            <td class="num" data-label="Breadth" th:text="${m.score.hasScore()} ? ${m.score.breadth} : '—'">70</td>
+            <td class="num" data-label="Sessions" th:text="${m.sessions}">40</td>
+            <td class="num" data-label="Hours" th:text="${m.hours()}">18.5</td>
+            <td data-label="Work / personal"><div class="split" style="width:120px"><div class="pro" th:style="'width:' + ${m.professionalPct()} + '%'"></div><div class="personal" th:style="'width:' + ${m.personalPct()} + '%'"></div></div></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

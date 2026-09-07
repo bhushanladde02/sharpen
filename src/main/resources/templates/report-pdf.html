@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Strict XHTML for openhtmltopdf: no flex/grid/custom properties, every tag closed. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="'Sharpen report ' + ${r.yearMonth}">Sharpen report</title>
+  <style type="text/css">
+    @page { size: A4; margin: 18mm 16mm; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10.5pt; color: #141a22; line-height: 1.45; }
+    h1 { font-size: 22pt; margin: 0 0 2pt; }
+    h2 { font-size: 12pt; margin: 14pt 0 6pt; padding-bottom: 3pt; border-bottom: 1px solid #d7dde5; }
+    p { margin: 0 0 6pt; }
+    .eyebrow { font-size: 8pt; letter-spacing: 1px; text-transform: uppercase; color: #7b8794; font-weight: bold; }
+    .muted { color: #4d5967; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { padding: 4pt 6pt; vertical-align: top; text-align: left; }
+    th { font-size: 8pt; text-transform: uppercase; color: #7b8794; border-bottom: 1px solid #d7dde5; }
+    .stats td { width: 25%; border: 1px solid #d7dde5; }
+    .big { font-size: 20pt; font-weight: bold; }
+    .label { font-size: 8pt; color: #4d5967; font-weight: bold; }
+    .score { font-size: 34pt; font-weight: bold; color: #2a5bd7; }
+    .bar { background: #e9edf2; height: 7pt; width: 100%; }
+    .fill { background: #2a5bd7; height: 7pt; }
+    .fill-pro { background: #2a78d6; height: 7pt; }
+    .fill-personal { background: #eb6834; height: 7pt; }
+    .dims td { padding: 2pt 6pt; }
+    .band { display: inline-block; padding: 1pt 6pt; border: 1px solid #2a5bd7; color: #2a5bd7; font-size: 8pt; font-weight: bold; }
+    .flag { margin: 0 0 5pt; padding-left: 8pt; border-left: 3px solid #7b8794; }
+    .flag.strength, .flag.up { border-color: #008300; }
+    .flag.risk, .flag.down { border-color: #d13b3a; }
+    .flag.verify, .flag.growth, .flag.assess { border-color: #b97800; }
+    .foot { font-size: 8pt; color: #7b8794; margin-top: 14pt; border-top: 1px solid #d7dde5; padding-top: 6pt; }
+    ol { margin: 0; padding-left: 14pt; }
+  </style>
+</head>
+<body th:with="m=${r.month}, s=${r.month.score}, d=${r.delta}, b=${r.brainActive}">
+  <div class="eyebrow">Sharpen · Monthly AI report</div>
+  <h1 th:text="${r.label}">August 2026</h1>
+  <p class="muted"><span th:text="${r.personName}">Name</span><span th:if="${r.headline != null}" th:text="' · ' + ${r.headline}"></span> · sharpen.io/p/<span th:text="${r.handle}">handle</span></p>
+
+  <table>
+    <tr>
+      <td style="width:34%; border:1px solid #d7dde5;">
+        <div class="label">AI SCORE (0–1000)</div>
+        <div class="score" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</div>
+        <div><span class="band" th:text="${s.band()}">Strong</span>
+          <span th:if="${d.score != null}" class="muted" th:text="' ' + (${d.score} >= 0 ? '+' : '') + ${d.score} + ' vs ' + ${r.previous.label()}"> +12</span></div>
+        <div class="muted" style="font-size:8pt; margin-top:4pt" th:text="${s.assessedCount} + ' rated of ' + ${m.sessions} + ' sessions'">rated</div>
+      </td>
+      <td style="width:66%; border:1px solid #d7dde5;">
+        <table class="dims">
+          <tr th:each="dim : ${ { {'Independence', s.independence}, {'Effectiveness', s.effectiveness}, {'Verification', s.verification}, {'Growth', s.growth}, {'Breadth', s.breadth} } }">
+            <td style="width:30%" th:text="${dim[0]}">Independence</td>
+            <td style="width:58%"><div class="bar"><div class="fill" th:style="'width:' + ${dim[1]} + '%'"></div></div></td>
+            <td style="width:12%; text-align:right; font-weight:bold" th:text="${dim[1]}">72</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <h2>The month in numbers</h2>
+  <table class="stats">
+    <tr>
+      <td><div class="label">Sessions</div><div class="big" th:text="${m.sessions}">40</div><div class="muted" th:if="${d.sessions != null}" th:text="(${d.sessions} >= 0 ? '+' : '') + ${d.sessions} + ' vs last month'">+3</div></td>
+      <td><div class="label">Hours with AI</div><div class="big" th:text="${m.hours()}">18.5</div><div class="muted" th:if="${d.minutes != null}" th:text="(${d.minutes} >= 0 ? '+' : '') + ${#numbers.formatDecimal(d.minutes / 60.0, 1, 1)} + ' h'">+2 h</div></td>
+      <td><div class="label">Prompts</div><div class="big" th:text="${m.prompts}">260</div><div class="muted" th:text="${m.tokens > 0} ? ${#numbers.formatInteger(m.tokens, 1, 'COMMA')} + ' tokens' : ''">tokens</div></td>
+      <td><div class="label">Active days</div><div class="big" th:text="${m.activeDays}">17</div></td>
+    </tr>
+  </table>
+  <table style="margin-top:6pt">
+    <tr>
+      <td style="width:50%"><div class="label" th:text="'Professional ' + ${m.professionalPct()} + '%'">Professional</div><div class="bar"><div class="fill-pro" th:style="'width:' + ${m.professionalPct()} + '%'"></div></div></td>
+      <td style="width:50%"><div class="label" th:text="'Personal ' + ${m.personalPct()} + '%'">Personal</div><div class="bar"><div class="fill-personal" th:style="'width:' + ${m.personalPct()} + '%'"></div></div></td>
+    </tr>
+  </table>
+
+  <h2>Brain-active check</h2>
+  <p th:text="${b.verdict}">Verdict</p>
+  <table class="stats">
+    <tr>
+      <td><div class="label">Human share of the work</div><div class="big" th:text="${b.humanContributionPct} + '%'">62%</div><div class="muted" th:text="${b.humanMinutes} + ' of ' + ${b.humanMinutes + b.modelMinutes} + ' minutes'">min</div></td>
+      <td><div class="label">Output checked</div><div class="big" th:text="${b.verifiedPct} + '%'">78%</div></td>
+      <td><div class="label">Learned something</div><div class="big" th:text="${b.learnedPct} + '%'">45%</div></td>
+      <td><div class="label">Rated sessions</div><div class="big" th:text="${m.assessedSessions} + '/' + ${m.sessions}">38/40</div></td>
+    </tr>
+  </table>
+
+  <table style="margin-top:8pt">
+    <tr>
+      <td style="width:50%; padding-left:0">
+        <h2>Tools</h2>
+        <table>
+          <tr th:each="t : ${m.tools}"><td style="width:50%" th:text="${t.name}">Claude</td><td style="width:35%"><div class="bar"><div class="fill" th:style="'width:' + ${t.pct} + '%'"></div></div></td><td style="text-align:right" th:text="${t.pct} + '%'">40%</td></tr>
+        </table>
+      </td>
+      <td style="width:50%; padding-right:0">
+        <h2>Task types</h2>
+        <table>
+          <tr th:each="c : ${m.categories}"><td style="width:50%" th:text="${c.name}">Coding</td><td style="width:35%"><div class="bar"><div class="fill" th:style="'width:' + ${c.pct} + '%'"></div></div></td><td style="text-align:right" th:text="${c.pct} + '%'">40%</td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <h2>What stood out</h2>
+  <div class="flag" th:each="i : ${r.insights}" th:classappend="${i.kind}"><b th:text="${i.title}">Title</b><br/><span th:text="${i.body}">Body</span></div>
+
+  <h2>Next month, try</h2>
+  <ol><li th:each="t : ${r.nextMonth}" th:text="${t}">Tip</li></ol>
+
+  <div class="foot">Scoring: independence 30%, effectiveness 20%, verification 20%, growth 20%, breadth 10%. Only sessions the person rated count, weighted by minutes; hours never raise the score. Generated <span th:text="${#strings.substring(r.generatedAt, 0, 10)}">2026-09-01</span>.</div>
+</body>
+</html>

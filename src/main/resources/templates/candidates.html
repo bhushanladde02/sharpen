@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Candidates — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><h1>Candidates</h1><p>Every public AI profile, ranked by how people work with AI — independence, verification, learning — not by how many hours they spend prompting.</p></div>
+  </div>
+
+  <form method="get" th:action="@{/candidates}" class="card row" style="margin-bottom:1rem">
+    <input type="text" name="q" th:value="${q}" placeholder="Search name, title, industry, tools, location" style="flex:1;min-width:220px">
+    <select name="sort" style="width:auto">
+      <option value="score" th:selected="${sort == 'score'}">Sort by AI score</option>
+      <option value="independence" th:selected="${sort == 'independence'}">Sort by independence</option>
+      <option value="verification" th:selected="${sort == 'verification'}">Sort by verification</option>
+      <option value="growth" th:selected="${sort == 'growth'}">Sort by growth</option>
+      <option value="name" th:selected="${sort == 'name'}">Sort by name</option>
+    </select>
+    <button class="btn primary" type="submit">Filter</button>
+  </form>
+
+  <div class="stack">
+    <div class="card cand" th:each="c : ${candidates}" th:with="s=${c.score}">
+      <div class="mini"><span class="num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</span><small th:text="${s.band()}">Strong</small></div>
+      <div>
+        <div class="row" style="gap:.5rem"><a th:href="@{/p/{h}(h=${c.person.handle})}" style="font-weight:800;font-size:1.05rem" th:text="${c.person.displayName}">Name</a>
+          <span class="chip warn" th:if="${s.confidence.name() == 'LOW'}">provisional</span>
+          <span class="chip bad" th:if="${s.relianceRisk}">reliance risk</span></div>
+        <div class="muted" style="font-size:.88rem" th:text="${c.person.headline}">Headline</div>
+        <div class="muted-3" style="font-size:.8rem">
+          <span th:text="${c.person.jobTitle}">Title</span><span th:if="${c.person.industry}" th:text="' · ' + ${c.person.industry}"></span><span th:if="${c.person.location}" th:text="' · ' + ${c.person.location}"></span><span th:if="${c.person.primaryTools}" th:text="' · ' + ${c.person.primaryTools}"></span>
+        </div>
+        <div class="cand-dims" style="margin-top:.4rem">
+          <span>Independence <b class="num" th:text="${s.independence}">70</b></span>
+          <span>Effectiveness <b class="num" th:text="${s.effectiveness}">70</b></span>
+          <span>Verification <b class="num" th:text="${s.verification}">70</b></span>
+          <span>Growth <b class="num" th:text="${s.growth}">70</b></span>
+          <span>Breadth <b class="num" th:text="${s.breadth}">70</b></span>
+          <span class="muted-3" th:text="${c.sessions} + ' sessions'">120 sessions</span>
+        </div>
+      </div>
+      <a class="btn small cta" th:href="@{/p/{h}(h=${c.person.handle})}">View profile</a>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(candidates)}">No public profiles match.</div>
+  </div>
+</main>
+</body>
+</html>

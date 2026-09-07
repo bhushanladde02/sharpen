@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title th:text="'Report ' + ${r.yearMonth} + ' — Sharpen'">Report — Sharpen</title></head>
+<body>
+<main th:with="m=${r.month}, s=${r.month.score}, d=${r.delta}">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow" th:text="${stored} ? 'Monthly report · generated' : 'Monthly report · live preview (not stored)'">Monthly report</p>
+      <h1 th:text="${r.label}">August 2026</h1>
+      <p th:text="${r.personName} + (${r.headline} != null ? ' · ' + ${r.headline} : '')">Name · headline</p>
+    </div>
+    <div class="row actions no-print">
+      <a class="btn" th:href="@{/reports}">All reports</a>
+      <form th:action="@{/reports/{ym}/generate(ym=${r.yearMonth})}" method="post"><button class="btn" type="submit" th:text="${stored} ? 'Regenerate' : 'Generate & store'">Generate</button></form>
+      <a class="btn primary" th:href="@{/reports/{ym}.pdf(ym=${r.yearMonth})}">Download PDF</a>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="grid two">
+      <div class="card lift">
+        <div class="row between"><h2>AI score</h2>
+          <span th:if="${d.score != null}" class="chip" th:classappend="${d.score >= 0} ? 'good' : 'bad'" th:text="(${d.score} >= 0 ? '+' : '') + ${d.score} + ' vs ' + ${r.previous.label()}">+12</span></div>
+        <div th:replace="~{fragments :: scorePanel(${s})}"></div>
+      </div>
+      <div class="card">
+        <h2>The month in numbers</h2>
+        <div class="grid four">
+          <div class="stat"><span class="label">Sessions</span><span class="value num" th:text="${m.sessions}">40</span>
+            <span class="sub" th:if="${d.sessions != null}" th:text="(${d.sessions} >= 0 ? '+' : '') + ${d.sessions} + ' vs last month'">+3</span></div>
+          <div class="stat"><span class="label">Hours with AI</span><span class="value num" th:text="${m.hours()}">18.5</span>
+            <span class="sub" th:if="${d.minutes != null}" th:text="(${d.minutes} >= 0 ? '+' : '') + ${#numbers.formatDecimal(d.minutes / 60.0, 1, 1)} + ' h'">+2.1 h</span></div>
+          <div class="stat"><span class="label">Prompts</span><span class="value num" th:text="${m.prompts}">260</span><span class="sub" th:text="${m.tokens > 0} ? ${#numbers.formatInteger(m.tokens, 1, 'COMMA')} + ' tokens' : ''">tokens</span></div>
+          <div class="stat"><span class="label">Active days</span><span class="value num" th:text="${m.activeDays}">17</span></div>
+        </div>
+        <div style="margin-top:1rem">
+          <div class="row between" style="font-size:.8rem"><span><b class="num" th:text="${m.professionalPct()} + '%'">70%</b> professional</span><span><b class="num" th:text="${m.personalPct()} + '%'">30%</b> personal</span></div>
+          <div class="split" style="margin-top:.3rem"><div class="pro" th:style="'width:' + ${m.professionalPct()} + '%'"></div><div class="personal" th:style="'width:' + ${m.personalPct()} + '%'"></div></div>
+        </div>
+        <div style="margin-top:1.25rem"><div th:replace="~{fragments :: weekBars(${m})}"></div></div>
+      </div>
+    </div>
+
+    <div class="card" th:with="b=${r.brainActive}">
+      <h2>Brain-active check</h2>
+      <p th:text="${b.verdict}">Verdict</p>
+      <div class="grid four">
+        <div class="stat"><span class="label">Human share of the work</span><span class="value num" th:text="${b.humanContributionPct} + '%'">62%</span><span class="sub" th:text="${b.humanMinutes} + ' of ' + ${b.humanMinutes + b.modelMinutes} + ' minutes'">min</span></div>
+        <div class="stat"><span class="label">Output checked</span><span class="value num" th:text="${b.verifiedPct} + '%'">78%</span><span class="sub">of rated sessions</span></div>
+        <div class="stat"><span class="label">Learned something</span><span class="value num" th:text="${b.learnedPct} + '%'">45%</span><span class="sub">of rated sessions</span></div>
+        <div class="stat"><span class="label">Rated</span><span class="value num" th:text="${m.assessedSessions} + '/' + ${m.sessions}">38/40</span><span class="sub">sessions count toward the score</span></div>
+      </div>
+    </div>
+
+    <div class="grid three">
+      <div class="card"><h2>Tools</h2><div th:replace="~{fragments :: shares(${m.tools})}"></div></div>
+      <div class="card"><h2>Task types</h2><div th:replace="~{fragments :: shares(${m.categories})}"></div></div>
+      <div class="card"><h2>Where sessions came from</h2>
+        <div class="shares"><div class="share" th:each="e : ${m.sources}"><span th:text="${e.key}">Logged by you</span><span class="pct num" th:text="${e.value}">30</span></div></div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>What stood out</h2>
+        <div class="flags">
+          <div class="flag" th:each="i : ${r.insights}" th:classappend="${i.kind}"><span><b th:text="${i.title}">Title</b><span th:text="${i.body}">Body</span></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Next month, try</h2>
+        <ol style="margin:0;padding-left:1.2rem;display:grid;gap:.5rem"><li th:each="t : ${r.nextMonth}" th:text="${t}">Tip</li></ol>
+        <p class="muted" style="margin-top:1rem;font-size:.8rem">Dimensions: independence 30%, effectiveness 20%, verification 20%, growth 20%, breadth 10%. Only rated sessions count, weighted by minutes. Hours never raise the score.</p>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

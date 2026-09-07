@@ -1,0 +1,21 @@
+# Production profile: run with --spring.profiles.active=postgres (or SPRING_PROFILES_ACTIVE=postgres).
+# Apply src/main/resources/db/schema-postgres.sql once before first start; Hibernate only validates.
+spring:
+  datasource:
+    url: ${SHARPEN_DB_URL:jdbc:postgresql://localhost:5432/sharpen}
+    username: ${SHARPEN_DB_USER:sharpen}
+    password: ${SHARPEN_DB_PASSWORD:sharpen}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  h2:
+    console:
+      enabled: false
+  thymeleaf:
+    cache: true
+
+sharpen:
+  demo-data: ${SHARPEN_DEMO_DATA:false}

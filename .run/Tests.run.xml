@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="All tests" type="JUnit" factoryName="JUnit">
+    <module name="sharpen-portal" />
+    <option name="PACKAGE_NAME" value="io.sharpen" />
+    <option name="TEST_OBJECT" value="package" />
+    <option name="TEST_SEARCH_SCOPE"><value defaultName="moduleWithDependencies" /></option>
+    <method v="2"><option name="Make" enabled="true" /></method>
+  </configuration>
+</component>

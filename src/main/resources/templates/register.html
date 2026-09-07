@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Create account — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card lift">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <h1>Create your account</h1>
+    <p class="muted" style="margin-top:.25rem">Individuals get a dashboard, monthly reports and a public AI profile. Companies get the candidate view.</p>
+    <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
+      <div>
+        <label for="displayName">Name (or company name)</label>
+        <input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
+        <div class="error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" th:field="*{email}" required autocomplete="username">
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+      </div>
+      <div>
+        <label for="password">Password (8+ characters)</label>
+        <input type="password" id="password" th:field="*{password}" required minlength="8" autocomplete="new-password">
+        <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+      </div>
+      <div>
+        <label for="accountType">Account type</label>
+        <select id="accountType" th:field="*{accountType}">
+          <option value="INDIVIDUAL">Individual — track my AI usage</option>
+          <option value="COMPANY">Company — review candidates</option>
+        </select>
+      </div>
+      <div class="row between">
+        <button class="btn primary block" type="submit">Create account</button>
+        <a th:href="@{/login}">I already have one</a>
+      </div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

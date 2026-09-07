@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Sign in — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card lift">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <h1>Sign in</h1>
+    <p class="muted" style="margin-top:.25rem">Demo accounts: <code>demo@sharpen.io</code> (individual) or <code>hiring@sharpen.io</code> (company), password <code>demo1234</code>.</p>
+    <div th:if="${param.error}" class="notice" style="margin-bottom:1rem">Email or password did not match.</div>
+    <div th:if="${param.registered}" class="flash">Account created. Sign in to continue.</div>
+    <div th:if="${param.logout}" class="flash">Signed out.</div>
+    <form th:action="@{/login}" method="post" class="stack">
+      <div><label for="username">Email</label><input type="email" id="username" name="username" required autofocus autocomplete="username"></div>
+      <div><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>
+      <div class="row between">
+        <button class="btn primary block" type="submit">Sign in</button>
+        <a th:href="@{/register}">Create an account</a>
+      </div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

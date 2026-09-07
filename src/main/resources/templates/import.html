@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Import — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><h1>Import usage</h1><p>Bring in sessions from the browser extension, a provider usage export, or a spreadsheet. Imported sessions show up as “needs rating” until you answer the four questions.</p></div>
+  </div>
+
+  <div class="grid two">
+    <div class="card stack">
+      <h2>Upload a file</h2>
+      <div th:if="${result}" th:classappend="${result.errors.isEmpty()} ? 'flash' : 'notice'">
+        <span th:text="'Imported ' + ${result.created} + ' new, updated ' + ${result.updated} + ', skipped ' + ${result.skipped} + '.'">Imported</span>
+        <ul th:if="${!result.errors.isEmpty()}" style="margin:.4rem 0 0;padding-left:1.2rem;font-weight:500">
+          <li th:each="e : ${result.errors}" th:text="${e}">error</li>
+        </ul>
+      </div>
+      <form th:action="@{/import}" method="post" enctype="multipart/form-data" class="stack">
+        <div><label for="file">CSV or JSON file</label><input type="file" id="file" name="file" accept=".csv,.json,text/csv,application/json" required></div>
+        <div><label for="context">Default context for rows that don't say</label>
+          <select id="context" name="context"><option th:each="c : ${contexts}" th:value="${c}" th:text="${c.label}">Professional</option></select></div>
+        <div><button class="btn primary" type="submit">Import</button></div>
+      </form>
+      <div th:if="${result != null and result.total() > 0}"><a class="btn" th:href="@{/sessions}">Rate the imported sessions</a></div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <h2>Browser extension</h2>
+        <p>The Sharpen extension (in <code>chrome-extension/</code> of the repo) times your visits to ChatGPT, Claude, Gemini, Copilot and Perplexity, counts prompts, and posts them here once a day with your API key. Nothing you type is captured — only time, prompt count and site.</p>
+        <p>Set it up: <a th:href="@{/settings}">copy your API key</a>, open the extension popup, paste the key and the portal URL.</p>
+      </div>
+      <div class="card">
+        <h2>Provider usage export</h2>
+        <p>Upload the CSV from your OpenAI or Anthropic usage dashboard as-is. Rows become one session per day per model with request and token counts; minutes are estimated at three per request until you rate them.</p>
+      </div>
+      <div class="card">
+        <h2>Spreadsheet (Sharpen CSV)</h2>
+        <p>Header row, one session per line. <code>verified</code> and <code>learned</code> are yes/no. <code>external_id</code> is optional; keep it stable to re-import without duplicates.</p>
+<pre>date,context,tool,task,minutes,prompts,human_pct,verified,learned,outcome,notes,external_id
+2026-09-02,professional,Claude,coding,45,6,60,yes,no,4,Refactored the ETL job,
+2026-09-03,personal,ChatGPT,planning,15,3,80,no,yes,4,Trip itinerary,</pre>
+        <p><small>Task types: coding, writing, research, analysis, learning, planning, creative, admin, other.</small></p>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

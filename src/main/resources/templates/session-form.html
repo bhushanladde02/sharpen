@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title th:text="${mode == 'new'} ? 'Log a session — Sharpen' : 'Rate session — Sharpen'">Log a session — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow" th:text="${mode == 'rate'} ? 'Needs your rating' : (${mode == 'edit'} ? 'Edit' : 'New session')">New session</p>
+      <h1 th:text="${mode == 'new'} ? 'Log an AI session' : (${mode == 'rate'} ? 'How did this session go?' : 'Edit session')">Log an AI session</h1>
+      <p th:if="${mode == 'rate' and session != null}" th:text="'Captured by ' + ${session.source.label.toLowerCase()} + ' on ' + ${session.occurredOn} + ' — ' + ${session.tool} + ', ' + ${session.durationMinutes} + ' minutes, ' + ${session.promptCount} + ' prompts. Fill in the four questions below.'">captured</p>
+      <p th:if="${mode == 'new'}">Fifteen seconds. The four self-assessment questions are what the score is built from.</p>
+    </div>
+  </div>
+
+  <form th:action="${mode == 'new'} ? @{/sessions} : @{/sessions/{id}(id=${session.id})}" th:object="${form}" method="post" class="stack" style="max-width:760px">
+    <div class="card stack">
+      <h2>What happened</h2>
+      <div class="field-row">
+        <div><label for="occurredOn">Date</label><input type="date" id="occurredOn" th:field="*{occurredOn}" required>
+          <div class="error" th:if="${#fields.hasErrors('occurredOn')}" th:errors="*{occurredOn}"></div></div>
+        <div><label for="context">Context</label>
+          <select id="context" th:field="*{context}"><option th:each="c : ${contexts}" th:value="${c}" th:text="${c.label}">Professional</option></select></div>
+        <div><label for="tool">Tool</label><input type="text" id="tool" th:field="*{tool}" list="toolList" required maxlength="60">
+          <datalist id="toolList"><option th:each="t : ${tools}" th:value="${t}"></option></datalist>
+          <div class="error" th:if="${#fields.hasErrors('tool')}" th:errors="*{tool}"></div></div>
+        <div><label for="taskCategory">Task type</label>
+          <select id="taskCategory" th:field="*{taskCategory}"><option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}">Coding</option></select></div>
+      </div>
+      <div class="field-row">
+        <div><label for="durationMinutes">Minutes</label><input type="number" id="durationMinutes" th:field="*{durationMinutes}" min="0" max="1440">
+          <div class="error" th:if="${#fields.hasErrors('durationMinutes')}" th:errors="*{durationMinutes}"></div></div>
+        <div><label for="promptCount">Prompts sent</label><input type="number" id="promptCount" th:field="*{promptCount}" min="0" max="2000">
+          <div class="error" th:if="${#fields.hasErrors('promptCount')}" th:errors="*{promptCount}"></div></div>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h2>Your part</h2>
+      <div>
+        <label for="humanContributionPct">How much of the finished work was yours? <b class="num" id="humanOut" th:text="*{humanContributionPct} + '%'">50%</b></label>
+        <input type="range" id="humanContributionPct" th:field="*{humanContributionPct}" min="0" max="100" step="5"
+               oninput="document.getElementById('humanOut').textContent = this.value + '%'">
+        <div class="help">0% = pasted the answer as-is. 100% = you did it, AI only confirmed or suggested.</div>
+      </div>
+      <div class="field-row">
+        <label class="check"><input type="checkbox" th:field="*{verifiedOutput}"> I checked the output (source, test, or my own judgement)</label>
+        <label class="check"><input type="checkbox" th:field="*{learnedSomething}"> I can now do something I couldn't before</label>
+      </div>
+      <div>
+        <label for="outcome">How useful was the result? <b class="num" id="outcomeOut" th:text="*{outcome} + '/5'">4/5</b></label>
+        <input type="range" id="outcome" th:field="*{outcome}" min="1" max="5" step="1"
+               oninput="document.getElementById('outcomeOut').textContent = this.value + '/5'">
+      </div>
+      <div><label for="notes">Notes (optional)</label><textarea id="notes" th:field="*{notes}" rows="2" maxlength="500" placeholder="What was the task? What would you do differently?"></textarea></div>
+    </div>
+
+    <div class="row between">
+      <div class="row">
+        <button class="btn primary" type="submit">Save</button>
+        <button class="btn" type="submit" name="next" value="rate" th:if="${mode == 'rate'}">Save and rate next</button>
+        <a class="btn" th:href="@{/sessions}">Cancel</a>
+      </div>
+      <button class="btn danger" type="submit" th:if="${mode != 'new' and session != null}" th:formaction="@{/sessions/{id}/delete(id=${session.id})}" formmethod="post">Delete</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,6 @@
+date,context,tool,task,minutes,prompts,human_pct,verified,learned,outcome,notes,external_id
+2026-09-01,professional,Claude,coding,45,6,60,yes,no,4,Refactored the Airflow DAG factory,sample-1
+2026-09-01,personal,ChatGPT,planning,15,3,80,no,yes,4,Weekend trip itinerary,sample-2
+2026-09-02,professional,GitHub Copilot,coding,90,20,70,yes,no,4,Parquet writer tests,sample-3
+2026-09-03,professional,Claude,analysis,30,5,50,yes,yes,5,"Explained a query plan, then rewrote the join myself",sample-4
+2026-09-04,personal,Gemini,learning,25,8,40,no,yes,3,Spanish verb drills,sample-5

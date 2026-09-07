@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Dashboard — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Rolling 90 days</p>
+      <h1 th:text="'Hello, ' + ${#strings.substringBefore(me.displayName, ' ')}">Hello</h1>
+      <p th:text="${month.label()} + ' so far: ' + ${month.sessions} + ' sessions, ' + ${month.hours()} + ' h, ' + ${month.prompts} + ' prompts'">This month</p>
+    </div>
+    <div class="row actions">
+      <a class="btn" th:href="@{/reports}">Monthly reports</a>
+      <a class="btn primary" th:href="@{/sessions/new}">Log a session</a>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div th:if="${!#lists.isEmpty(unrated)}" class="notice row between">
+      <span th:text="${unratedCount} + ' session' + (${unratedCount} == 1 ? '' : 's') + ' from the extension or an import need a 15-second rating before they count.'">Unrated</span>
+      <a class="btn small" th:href="@{/sessions/{id}/edit(id=${unrated[0].id})}">Rate now</a>
+    </div>
+
+    <div class="grid two">
+      <div class="card lift">
+        <h2>AI score</h2>
+        <div th:replace="~{fragments :: scorePanel(${score})}"></div>
+        <div style="margin-top:1rem"><div th:replace="~{fragments :: flags(${score})}"></div></div>
+      </div>
+      <div class="card">
+        <h2>Score by month</h2>
+        <div th:replace="~{fragments :: trendChart(${trend}, ${trendPath})}"></div>
+        <div class="grid four" style="margin-top:1rem">
+          <div class="stat"><span class="label">Rated sessions</span><span class="value num" th:text="${score.assessedCount}">42</span><span class="sub">last 90 days</span></div>
+          <div class="stat"><span class="label">All sessions</span><span class="value num" th:text="${total}">180</span><span class="sub">since you started</span></div>
+          <div class="stat"><span class="label">Work / personal</span><span class="value num" th:text="${month.professionalPct()} + '/' + ${month.personalPct()}">70/30</span><span class="sub">% of minutes this month</span></div>
+          <div class="stat"><span class="label">Active days</span><span class="value num" th:text="${month.activeDays}">14</span><span class="sub">this month</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid three">
+      <div class="card">
+        <h2>This month by week</h2>
+        <div th:replace="~{fragments :: weekBars(${month})}"></div>
+      </div>
+      <div class="card">
+        <h2>Tools</h2>
+        <div th:replace="~{fragments :: shares(${month.tools})}"></div>
+      </div>
+      <div class="card">
+        <h2>Task types</h2>
+        <div th:replace="~{fragments :: shares(${month.categories})}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row between" style="margin-bottom:.5rem"><h2 style="margin:0">Recent sessions</h2><a th:href="@{/sessions}">All sessions</a></div>
+      <div class="table-wrap">
+        <table class="stackable">
+          <thead><tr><th>Date</th><th>Context</th><th>Tool</th><th>Task</th><th class="num">Min</th><th class="num">Prompts</th><th class="num">Human %</th><th>Checked</th><th>Learned</th><th></th></tr></thead>
+          <tbody>
+          <tr th:each="s : ${recent}" th:classappend="${!s.selfAssessed} ? 'unrated'">
+            <td class="num" data-label="Date" th:text="${s.occurredOn}">2026-09-01</td>
+            <td data-label="Context"><span class="chip" th:classappend="${s.context.name() == 'PERSONAL'} ? 'personal' : 'pro'" th:text="${s.context.label}">Professional</span></td>
+            <td data-label="Tool" th:text="${s.tool}">Claude</td>
+            <td data-label="Task" th:text="${s.taskCategory.label}">Coding</td>
+            <td class="num" data-label="Minutes" th:text="${s.durationMinutes}">45</td>
+            <td class="num" data-label="Prompts" th:text="${s.promptCount}">6</td>
+            <td class="num" data-label="Human %" th:text="${s.selfAssessed} ? ${s.humanContributionPct} : '—'">60</td>
+            <td data-label="Checked" th:text="${s.selfAssessed} ? (${s.verifiedOutput} ? 'Yes' : 'No') : '—'">Yes</td>
+            <td data-label="Learned" th:text="${s.selfAssessed} ? (${s.learnedSomething} ? 'Yes' : 'No') : '—'">No</td>
+            <td data-label="Action"><a th:href="@{/sessions/{id}/edit(id=${s.id})}" th:text="${s.selfAssessed} ? 'Edit' : 'Rate'">Edit</a></td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(recent)}"><td colspan="10" class="empty" data-label="">No sessions yet. <a th:href="@{/sessions/new}">Log your first one</a> or <a th:href="@{/import}">import</a>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

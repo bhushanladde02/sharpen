@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Settings — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head"><div><h1>Settings</h1><p>Your AI profile is what companies see. Nothing else from your account is public.</p></div></div>
+
+  <div class="grid two">
+    <form th:action="@{/settings}" th:object="${form}" method="post" class="card stack">
+      <h2>Profile</h2>
+      <div><label for="displayName">Name</label><input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
+        <div class="error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div></div>
+      <div th:unless="${me.company}"><label for="handle">Public URL handle</label><input type="text" id="handle" th:field="*{handle}" required maxlength="60" pattern="[a-z0-9-]+">
+        <div class="help" th:text="'sharpen.io/p/' + *{handle}">sharpen.io/p/handle</div>
+        <div class="error" th:if="${#fields.hasErrors('handle')}" th:errors="*{handle}"></div></div>
+      <input type="hidden" th:if="${me.company}" th:field="*{handle}">
+      <div><label for="headline">Headline</label><input type="text" id="headline" th:field="*{headline}" maxlength="160" placeholder="How you use AI, in one line">
+        <div class="error" th:if="${#fields.hasErrors('headline')}" th:errors="*{headline}"></div></div>
+      <div class="field-row" th:unless="${me.company}">
+        <div><label for="jobTitle">Job title</label><input type="text" id="jobTitle" th:field="*{jobTitle}" maxlength="120"></div>
+        <div><label for="industry">Industry</label><input type="text" id="industry" th:field="*{industry}" maxlength="80"></div>
+        <div><label for="yearsExperience">Years of experience</label><input type="number" id="yearsExperience" th:field="*{yearsExperience}" min="0" max="60"></div>
+        <div><label for="location">Location</label><input type="text" id="location" th:field="*{location}" maxlength="120"></div>
+      </div>
+      <div th:unless="${me.company}"><label for="primaryTools">Tools you use (comma-separated)</label><input type="text" id="primaryTools" th:field="*{primaryTools}" maxlength="300" placeholder="Claude, ChatGPT, GitHub Copilot"></div>
+      <label class="check" th:unless="${me.company}"><input type="checkbox" th:field="*{publicProfile}"> Public profile — visible at your URL and in the candidates list</label>
+      <div><button class="btn primary" type="submit">Save</button></div>
+    </form>
+
+    <div class="stack">
+      <div class="card">
+        <h2>API key</h2>
+        <p>Used by the browser extension and import scripts. Treat it like a password.</p>
+        <pre th:text="${me.apiKey}">shp_…</pre>
+        <form th:action="@{/settings/api-key}" method="post"><button class="btn" type="submit">Issue a new key</button></form>
+      </div>
+      <div class="card">
+        <h2>API</h2>
+        <p style="font-size:.85rem">Send sessions with <code>X-Api-Key</code>:</p>
+<pre>POST /api/v1/sessions?defaultContext=PROFESSIONAL
+{"sessions":[{"externalId":"ext-2026-09-02-claude",
+  "date":"2026-09-02","tool":"Claude","task":"coding",
+  "minutes":42,"prompts":7}]}</pre>
+        <p style="font-size:.85rem"><code>GET /api/v1/me/score</code> returns your rolling score as JSON.</p>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sharpen</title>
+  <style>
+    body { font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; padding: 14px; width: 300px; color: #141a22; }
+    h1 { font-size: 15px; margin: 0 0 10px; }
+    label { display: block; font-size: 11px; font-weight: 600; color: #4d5967; margin: 8px 0 3px; }
+    input, select { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid #d7dde5; border-radius: 6px; font: inherit; }
+    button { margin-top: 10px; padding: 7px 12px; border-radius: 6px; border: 1px solid #2a5bd7; background: #2a5bd7; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    button.secondary { background: #fff; color: #2a5bd7; margin-left: 6px; }
+    #status { margin-top: 10px; font-size: 12px; color: #4d5967; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+    td { padding: 3px 0; border-bottom: 1px solid #e9edf2; }
+    td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <h1>Sharpen capture</h1>
+  <label for="portalUrl">Portal URL</label>
+  <input id="portalUrl" placeholder="http://localhost:8080">
+  <label for="apiKey">API key (Settings → API key)</label>
+  <input id="apiKey" placeholder="shp_…">
+  <label for="context">Count this browser's AI time as</label>
+  <select id="context"><option value="PROFESSIONAL">Professional</option><option value="PERSONAL">Personal</option></select>
+  <button id="save">Save</button><button id="sync" class="secondary">Sync now</button>
+  <div id="status"></div>
+  <table id="records"></table>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: sharpen
+  datasource:
+    url: jdbc:h2:file:./data/sharpen;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  thymeleaf:
+    cache: false
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**
+      cache:
+        cachecontrol:
+          max-age: 365d
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  compression:
+    enabled: true
+  error:
+    include-message: always
+
+sharpen:
+  demo-data: true
+
+logging:
+  level:
+    io.sharpen: INFO
+    org.hibernate.SQL: WARN
+    com.openhtmltopdf: WARN   # PDF renderer is chatty at INFO (parser, timings, "prepare to fly")

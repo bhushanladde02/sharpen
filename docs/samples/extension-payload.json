@@ -1,0 +1,6 @@
+{
+  "sessions": [
+    { "externalId": "ext:2026-09-05:Claude", "date": "2026-09-05", "tool": "Claude", "minutes": 38, "prompts": 9, "task": "other" },
+    { "externalId": "ext:2026-09-05:ChatGPT", "date": "2026-09-05", "tool": "ChatGPT", "minutes": 12, "prompts": 4, "task": "other" }
+  ]
+}

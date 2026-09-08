@@ -20,4 +20,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findByAccountTypeAndPublicProfileTrue(AccountType accountType);
 
     List<Person> findByAccountType(AccountType accountType);
+
+    long countByAccountType(AccountType accountType);
 }

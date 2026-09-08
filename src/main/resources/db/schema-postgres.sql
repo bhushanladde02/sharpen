@@ -62,3 +62,14 @@ create table monthly_report (
     generated_at  timestamp(6) with time zone not null default now()
 );
 create unique index ux_report_person_month on monthly_report (person_id, year_month);
+
+create table feedback (
+    id         bigserial primary key,
+    person_id  bigint,
+    email      varchar(190),
+    rating     integer,
+    message    varchar(2000) not null,
+    page       varchar(200),
+    created_at timestamp(6) with time zone not null default now()
+);
+create index ix_feedback_created on feedback (created_at);

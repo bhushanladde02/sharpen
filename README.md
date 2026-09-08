@@ -70,6 +70,10 @@ Composite = weighted sum × 10. Fewer than 8 rated sessions → "provisional". M
 
 ## Documentation
 
+Start with **[docs/architecture/how-it-works.rst](docs/architecture/how-it-works.rst)** — the design explained
+with flow diagrams: the system on one page, what Spring Boot does at startup, one request end to end, how a
+session becomes a score, the monthly report, security, and which Spring Boot features we use and why.
+
 The full requirement set (numbered FR/NFR/SC/… ids), scoring specification, report specification, API,
 security/privacy, data model and roadmap live in `docs/` as reStructuredText. Build with
 `cd docs && pip install -r requirements.txt && make html`, or read the `.rst` files directly in IntelliJ.
@@ -90,9 +94,18 @@ src/main/resources
   static/css/  app.css — tokens, light/dark, no framework
   db/          schema-postgres.sql
 chrome-extension/   MV3 capture extension (background, content, popup)
-docs/               Sphinx (RST) requirements and design docs — `cd docs && make html`
+deploy/             production compose, Caddyfile, VM setup script, deployment guide
+docs/               Sphinx (RST) requirements and design docs — `./docs/view.sh`
 docs/samples/       import examples for each route
 ```
+
+## Publishing a pilot
+
+`deploy/README.md` walks through a zero-cost public deployment (Oracle Cloud Always Free VM, Docker Compose with
+PostgreSQL, Caddy for automatic HTTPS) and how to update it with one command. The landing page and every
+signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
+a `/feedback` form open to everyone, and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
+`/admin/feedback`.
 
 ## Release 1 checklist
 

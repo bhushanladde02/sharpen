@@ -1,0 +1,56 @@
+# Production on one small VM: PostgreSQL + Sharpen + Caddy (automatic HTTPS).
+#   cp deploy/.env.example deploy/.env   # then edit
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sharpen
+      POSTGRES_USER: sharpen
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../src/main/resources/db/schema-postgres.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sharpen"]
+      interval: 5s
+      retries: 12
+
+  app:
+    build:
+      context: ..
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SHARPEN_DB_URL: jdbc:postgresql://db:5432/sharpen
+      SHARPEN_DB_USER: sharpen
+      SHARPEN_DB_PASSWORD: ${DB_PASSWORD}
+      SHARPEN_DEMO_DATA: ${DEMO_DATA:-false}
+      SHARPEN_ADMIN_EMAIL: ${ADMIN_EMAIL}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

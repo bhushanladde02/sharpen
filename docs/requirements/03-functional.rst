@@ -252,3 +252,35 @@ See :doc:`08-api`.
      - ``GET /api/v1/health`` must be open for monitoring.
      - Done
      - ``SessionApiController``
+
+Community and feedback
+----------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 8 62 12 18
+
+   * - ID
+     - Requirement
+     - Status
+     - Where
+   * - FR-70
+     - The landing page and every signed-in page must show the live number of members, sessions logged and
+       reports generated, refreshed without a reload (every 30 s and when the tab regains focus).
+     - Done
+     - ``CommunityService``, ``/api/v1/public/stats``, ``layout.html``
+   * - FR-71
+     - Counters are served from a 10-second in-memory cache and invalidated on registration, so a new member
+       sees themselves counted immediately while page views never trigger COUNT queries.
+     - Done
+     - ``CommunityService``
+   * - FR-72
+     - Anyone, signed in or not, must be able to leave feedback (message, optional 1–5 rating, optional email);
+       the page they came from is recorded.
+     - Done
+     - ``CommunityController``, ``feedback.html``
+   * - FR-73
+     - The account whose email matches ``sharpen.admin-email`` can read the latest 200 messages and the counters
+       at ``/admin/feedback``; everyone else gets 404.
+     - Done
+     - ``CommunityController``

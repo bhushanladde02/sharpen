@@ -15,6 +15,11 @@
         <a class="btn" th:href="@{/p/priya-natarajan}">See an example</a>
       </div>
       <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
+      <div class="counter-strip">
+        <div><b class="num" data-count="members" th:text="${#numbers.formatInteger(community.members, 1, 'COMMA')}">0</b><span>people tracking their AI use</span></div>
+        <div><b class="num" data-count="sessions" th:text="${#numbers.formatInteger(community.sessions, 1, 'COMMA')}">0</b><span>sessions logged</span></div>
+        <div><b class="num" data-count="reports" th:text="${#numbers.formatInteger(community.reports, 1, 'COMMA')}">0</b><span>monthly reports</span></div>
+      </div>
     </div>
     <div class="hero-card" aria-label="Example AI score">
       <p class="eyebrow">Example · rolling 90 days</p>
@@ -76,7 +81,7 @@
 
   <footer class="footer">
     <span>Sharpen · the AI profile</span>
-    <span><a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></span>
+    <span><a th:href="@{/feedback}">Feedback</a> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></span>
   </footer>
 </main>
 </body>

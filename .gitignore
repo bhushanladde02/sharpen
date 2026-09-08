@@ -7,3 +7,5 @@ data/
 .vscode/
 .DS_Store
 docs/_build/
+docs/.venv/
+deploy/.env

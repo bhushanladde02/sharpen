@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/health").permitAll()
+                        .requestMatchers("/api/v1/health", "/api/v1/public/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }
@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/p/**", "/css/**", "/js/**", "/img/**",
+                        .requestMatchers("/", "/login", "/register", "/feedback", "/p/**", "/css/**", "/js/**", "/img/**",
                                 "/error", "/h2-console/**").permitAll()
                         .requestMatchers("/candidates/**").hasRole("COMPANY")
                         .anyRequest().authenticated())

@@ -19,3 +19,4 @@ spring:
 
 sharpen:
   demo-data: ${SHARPEN_DEMO_DATA:false}
+  admin-email: ${SHARPEN_ADMIN_EMAIL:}

@@ -28,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:mem:sharpen-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
-        "sharpen.demo-data=false"
+        "sharpen.demo-data=false",
+        "sharpen.admin-email=flow@example.com"
 })
 class WebFlowTest {
 
@@ -52,6 +53,18 @@ class WebFlowTest {
         mvc.perform(get("/login")).andExpect(status().isOk());
         mvc.perform(get("/dashboard")).andExpect(status().is3xxRedirection());
         mvc.perform(get("/api/v1/me")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void publicStatsFeedbackAndAdminInbox() throws Exception {
+        mvc.perform(get("/api/v1/public/stats")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.members").isNumber());
+        mvc.perform(get("/feedback")).andExpect(status().isOk());
+        mvc.perform(post("/feedback").with(csrf()).param("message", "Nice idea").param("rating", "4").param("page", "/"))
+                .andExpect(status().is3xxRedirection());
+        mvc.perform(get("/admin/feedback").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isNotFound());
+        mvc.perform(get("/admin/feedback").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Nice idea")));
     }
 
     @Test

@@ -45,6 +45,8 @@ server:
 
 sharpen:
   demo-data: true
+  # The account allowed to read /admin/feedback. Set SHARPEN_ADMIN_EMAIL in production.
+  admin-email: ${SHARPEN_ADMIN_EMAIL:demo@sharpen.io}
 
 logging:
   level:

@@ -23,10 +23,12 @@ public class PersonService {
 
     private final PersonRepository people;
     private final PasswordEncoder passwordEncoder;
+    private final CommunityService community;
 
-    public PersonService(PersonRepository people, PasswordEncoder passwordEncoder) {
+    public PersonService(PersonRepository people, PasswordEncoder passwordEncoder, CommunityService community) {
         this.people = people;
         this.passwordEncoder = passwordEncoder;
+        this.community = community;
     }
 
     public Person register(String email, String rawPassword, String displayName, AccountType type) {
@@ -35,7 +37,9 @@ public class PersonService {
         }
         Person p = new Person(email.trim().toLowerCase(Locale.ROOT), passwordEncoder.encode(rawPassword),
                 displayName.trim(), uniqueHandle(displayName), type, newApiKey());
-        return people.save(p);
+        Person saved = people.save(p);
+        community.invalidate();
+        return saved;
     }
 
     @Transactional(readOnly = true)

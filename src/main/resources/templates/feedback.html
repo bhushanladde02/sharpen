@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Feedback — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card lift" style="max-width:560px">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <h1>Tell us what you think</h1>
+    <p class="muted" style="margin-top:.25rem">Sharpen is an early prototype. What is confusing, what is missing, would you use it? Every message is read by the person building it.</p>
+    <form th:action="@{/feedback}" th:object="${form}" method="post" class="stack">
+      <input type="hidden" th:field="*{page}">
+      <div>
+        <label>Would you use this?</label>
+        <div class="row" role="radiogroup" style="gap:.4rem">
+          <label class="check" th:each="n : ${#numbers.sequence(1,5)}" style="min-height:40px;padding:.2rem .6rem;border:1px solid var(--line);border-radius:8px">
+            <input type="radio" th:field="*{rating}" th:value="${n}"> <span th:text="${n}">1</span>
+          </label>
+        </div>
+        <div class="help">1 = no, 5 = absolutely</div>
+      </div>
+      <div>
+        <label for="message">Your message</label>
+        <textarea id="message" th:field="*{message}" rows="5" maxlength="2000" required placeholder="What would make this useful to you?"></textarea>
+        <div class="error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
+      </div>
+      <div>
+        <label for="email">Email (optional, if you'd like a reply)</label>
+        <input type="email" id="email" th:field="*{email}" autocomplete="email">
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+      </div>
+      <div class="row between">
+        <button class="btn primary block" type="submit">Send</button>
+      </div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

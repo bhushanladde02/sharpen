@@ -14,10 +14,18 @@ public class GlobalModelAttributes {
 
     private final PersonService people;
     private final SessionService sessions;
+    private final io.sharpen.service.CommunityService community;
 
-    public GlobalModelAttributes(PersonService people, SessionService sessions) {
+    public GlobalModelAttributes(PersonService people, SessionService sessions, io.sharpen.service.CommunityService community) {
         this.people = people;
         this.sessions = sessions;
+        this.community = community;
+    }
+
+    /** Live community counters (cached 10 s) for the shell and the landing page. */
+    @ModelAttribute("community")
+    public io.sharpen.service.CommunityStats community() {
+        return community.stats();
     }
 
     @ModelAttribute("me")

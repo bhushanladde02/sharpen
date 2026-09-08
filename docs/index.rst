@@ -27,6 +27,7 @@ them (``FR-12``, ``NFR-3``).
    :maxdepth: 2
    :caption: Design
 
+   architecture/how-it-works
    architecture/overview
    architecture/data-model
    architecture/build-and-run
@@ -41,13 +42,11 @@ them (``FR-12``, ``NFR-3``).
 Building this documentation
 ---------------------------
 
-One command builds the HTML (installing Sphinx into ``docs/.venv`` the first time) and opens it:
-
 .. code-block:: bash
 
-   ./docs/view.sh            # from the project root; --clean rebuilds, --no-open just builds
-
-Or by hand: ``cd docs && pip install -r requirements.txt && make html`` → ``docs/_build/html/index.html``.
+   cd docs
+   pip install -r requirements.txt
+   make html            # output in docs/_build/html/index.html
 
 IntelliJ renders ``.rst`` files with the bundled *ReStructuredText* plugin; enable it under
 *Settings → Plugins* if the preview tab does not appear.

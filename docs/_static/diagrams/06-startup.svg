@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 260" width="1000" height="260" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="260" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">What Spring Boot does at startup (java -jar sharpen.jar)</text>
+<rect x="26" y="70" width="126" height="110" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="89.0" y="108.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Read config</text>
+<text x="89.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">application.yml</text>
+<text x="89.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">plus the active</text>
+<text x="89.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">profile</text>
+<path d="M152 125 L163 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="164" y="70" width="126" height="110" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="227.0" y="94.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Auto-configure</text>
+<text x="227.0" y="111.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">looks at the jars</text>
+<text x="227.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">on the classpath</text>
+<text x="227.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">and wires web,</text>
+<text x="227.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">JPA, security,</text>
+<text x="227.0" y="167.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">Thymeleaf</text>
+<path d="M290 125 L301 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="302" y="70" width="126" height="110" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="365.0" y="94.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Component scan</text>
+<text x="365.0" y="111.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">io.sharpen.*</text>
+<text x="365.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">classes become</text>
+<text x="365.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">beans;</text>
+<text x="365.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">constructor</text>
+<text x="365.0" y="167.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">injection</text>
+<path d="M428 125 L439 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="440" y="70" width="126" height="110" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="503.0" y="101.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Data + JPA</text>
+<text x="503.0" y="118.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">HikariCP pool;</text>
+<text x="503.0" y="132.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">Hibernate maps</text>
+<text x="503.0" y="146.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">entities; ddl</text>
+<text x="503.0" y="160.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">update / validate</text>
+<path d="M566 125 L577 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="578" y="70" width="126" height="110" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="641.0" y="108.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Security chains</text>
+<text x="641.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">the two</text>
+<text x="641.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">SecurityFilterChain</text>
+<text x="641.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">beans</text>
+<path d="M704 125 L715 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="716" y="70" width="126" height="110" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="779.0" y="108.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Tomcat :8080</text>
+<text x="779.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">embedded server</text>
+<text x="779.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">starts and</text>
+<text x="779.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">listens</text>
+<path d="M842 125 L853 125" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="854" y="70" width="126" height="110" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="917.0" y="94.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Runner</text>
+<text x="917.0" y="111.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">ApplicationRunner:</text>
+<text x="917.0" y="125.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">DemoDataLoader</text>
+<text x="917.0" y="139.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">seeds accounts</text>
+<text x="917.0" y="153.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">when</text>
+<text x="917.0" y="167.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">demo-data=true</text>
+<text x="500" y="225" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">No XML, no web.xml, no application server to install: the jar contains the server and the configuration.</text></svg>

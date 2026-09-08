@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="300" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">Two security filter chains, chosen by URL</text>
+<rect x="30" y="110" width="150" height="60" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="105.0" y="137.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Request</text>
+<text x="105.0" y="154.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">any URL</text>
+<path d="M180 128 L248 95" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="183.9" y="87" width="56.199999999999996" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="212" y="99" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">/api/**</text>
+<path d="M180 152 L248 205" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="145.5" y="251" width="109.0" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="200" y="263" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">everything else</text>
+<rect x="250" y="60" width="330" height="70" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="415.0" y="85.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">API chain  @Order(1)</text>
+<text x="415.0" y="102.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">ApiKeyAuthFilter reads X-Api-Key → Person;</text>
+<text x="415.0" y="116.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">stateless; CSRF off; 401 on failure</text>
+<rect x="250" y="170" width="330" height="70" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="415.0" y="195.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Web chain  @Order(2)</text>
+<text x="415.0" y="212.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">form login → session cookie; CSRF on; /, /login,</text>
+<text x="415.0" y="226.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">/register, /p/**, /css/** are open</text>
+<path d="M580 95 L638 95" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M580 205 L638 205" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="640" y="60" width="340" height="70" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="810.0" y="85.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#12171f">ROLE_INDIVIDUAL / ROLE_COMPANY</text>
+<text x="810.0" y="102.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">derived from account_type; the same Person object</text>
+<text x="810.0" y="116.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">either way</text>
+<rect x="640" y="170" width="340" height="70" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="810.0" y="195.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#12171f">Data scoping in queries</text>
+<text x="810.0" y="212.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">findByIdAndPersonId(...): a user can only reach</text>
+<text x="810.0" y="226.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">rows that carry their own id</text>
+<text x="500" y="278" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Passwords: BCrypt. API keys: 192 random bits, rotatable from Settings.</text></svg>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" width="1000" height="540" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="540" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">Sharpen — the whole system on one page</text>
+<rect x="20" y="50" width="210" height="470" rx="14" fill="#eceff4" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="34" y="70" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.2" fill="#7c8794">PEOPLE AND CLIENTS</text>
+<rect x="38" y="90" width="174" height="66" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="125.0" y="113.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Browser</text>
+<text x="125.0" y="130.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">individual or company;</text>
+<text x="125.0" y="144.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">HTML pages, form login</text>
+<rect x="38" y="176" width="174" height="66" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="125.0" y="192.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Chrome extension</text>
+<text x="125.0" y="209.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">times AI sites, counts</text>
+<text x="125.0" y="223.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">prompts; POST</text>
+<text x="125.0" y="237.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">/api/v1/sessions</text>
+<rect x="38" y="262" width="174" height="66" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="125.0" y="285.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Scripts / imports</text>
+<text x="125.0" y="302.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">usage exports, CSV, any</text>
+<text x="125.0" y="316.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">HTTP client with a key</text>
+<rect x="38" y="348" width="174" height="66" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="125.0" y="371.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Recruiter</text>
+<text x="125.0" y="388.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">reads /p/{handle} and</text>
+<text x="125.0" y="402.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">/candidates</text>
+<rect x="258" y="50" width="500" height="470" rx="14" fill="#eceff4" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="272" y="70" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.2" fill="#7c8794">ONE SPRING BOOT APPLICATION (SHARPEN.JAR)</text>
+<rect x="276" y="90" width="110" height="52" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="331.0" y="113.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Tomcat :8080</text>
+<text x="331.0" y="130.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">embedded</text>
+<rect x="398" y="90" width="110" height="52" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="453.0" y="112.0" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring</text>
+<text x="453.0" y="129.0" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Security</text>
+<rect x="520" y="90" width="105" height="52" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="572.5" y="113.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring MVC</text>
+<text x="572.5" y="130.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">controllers</text>
+<rect x="637" y="90" width="103" height="52" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="688.5" y="113.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Thymeleaf</text>
+<text x="688.5" y="130.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">HTML views</text>
+<rect x="276" y="168" width="464" height="56" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="508.0" y="186.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Services</text>
+<text x="508.0" y="203.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">Person · Session · Import · Stats · Report · Pdf — the business rules,</text>
+<text x="508.0" y="217.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">@Transactional</text>
+<rect x="276" y="248" width="222" height="58" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="387.0" y="267.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">AiScoreService</text>
+<text x="387.0" y="284.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">pure scoring, no I/O,</text>
+<text x="387.0" y="298.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">unit-tested</text>
+<rect x="518" y="248" width="222" height="58" rx="10" fill="#fbf0d3" stroke="#9a6400" stroke-width="1.2"/>
+<text x="629.0" y="267.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">@Scheduled job</text>
+<text x="629.0" y="284.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">1st of month 02:00 UTC: freeze</text>
+<text x="629.0" y="298.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">last month's reports</text>
+<rect x="276" y="330" width="464" height="52" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="508.0" y="353.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring Data JPA repositories</text>
+<text x="508.0" y="370.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">PersonRepository · UsageSessionRepository · MonthlyReportRepository</text>
+<rect x="276" y="406" width="222" height="52" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="387.0" y="429.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">openhtmltopdf</text>
+<text x="387.0" y="446.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">report-pdf.html → PDF</text>
+<rect x="518" y="406" width="222" height="52" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="629.0" y="429.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Hibernate + HikariCP</text>
+<text x="629.0" y="446.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">ORM and connection pool</text>
+<text x="508" y="492" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#7c8794">Also: Jackson (JSON) · Bean Validation · profiles dev (H2) / postgres · hashed static files</text>
+<rect x="786" y="50" width="194" height="470" rx="14" fill="#eceff4" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="800" y="70" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.2" fill="#7c8794">STORAGE</text>
+<rect x="804" y="110" width="158" height="70" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="883.0" y="135.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">H2 (file)</text>
+<text x="883.0" y="152.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">development;</text>
+<text x="883.0" y="166.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">./data/sharpen.mv.db</text>
+<rect x="804" y="210" width="158" height="70" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="883.0" y="235.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">PostgreSQL</text>
+<text x="883.0" y="252.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">production profile;</text>
+<text x="883.0" y="266.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">schema-postgres.sql</text>
+<rect x="804" y="320" width="158" height="92" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="883.0" y="349.5" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="500" fill="#12171f">3 tables</text>
+<text x="883.0" y="366.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">person</text>
+<text x="883.0" y="380.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">usage_session</text>
+<text x="883.0" y="394.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">monthly_report</text>
+<path d="M212 123 L274 108" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="221.5" y="89" width="43.0" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="243" y="101" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">HTTPS</text>
+<path d="M212 209 L274 114" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="197.3" y="159" width="69.4" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="232" y="171" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">X-Api-Key</text>
+<path d="M212 295 L274 120" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M212 381 L274 126" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M386 116 L396 116" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M508 116 L518 116" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M625 116 L635 116" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M575 142 L575 166" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M387 224 L387 246" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M629 224 L629 246" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M508 306 L508 328" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M629 382 L629 404" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M740 432 L802 370" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="753.8" y="381" width="36.4" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="772" y="393" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">JDBC</text></svg>

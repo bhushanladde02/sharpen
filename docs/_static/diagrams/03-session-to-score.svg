@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="1000" height="480" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="480" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">From usage to a score: five ways in, one table, one formula</text>
+<rect x="20" y="50" width="230" height="400" rx="14" fill="#eceff4" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="34" y="70" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.2" fill="#7c8794">INGESTION ROUTES</text>
+<rect x="38" y="82" width="194" height="54" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="135.0" y="106.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Log form</text>
+<text x="135.0" y="123.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">self-assessed</text>
+<path d="M232 109 L288 188" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="38" y="152" width="194" height="54" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="135.0" y="176.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Sharpen CSV</text>
+<text x="135.0" y="193.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">assessed if complete</text>
+<path d="M232 179 L288 194" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="38" y="222" width="194" height="54" rx="10" fill="#fbf0d3" stroke="#9a6400" stroke-width="1.2"/>
+<text x="135.0" y="246.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Provider usage export</text>
+<text x="135.0" y="263.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">needs rating</text>
+<path d="M232 249 L288 200" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="38" y="292" width="194" height="54" rx="10" fill="#fbf0d3" stroke="#9a6400" stroke-width="1.2"/>
+<text x="135.0" y="316.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Chrome extension</text>
+<text x="135.0" y="333.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">needs rating</text>
+<path d="M232 319 L288 206" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="38" y="362" width="194" height="54" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="135.0" y="386.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">REST API</text>
+<text x="135.0" y="403.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">either</text>
+<path d="M232 389 L288 212" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="290" y="140" width="230" height="120" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="405.0" y="169.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">SessionService</text>
+<text x="405.0" y="186.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">logManual / upsertExternal:</text>
+<text x="405.0" y="200.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">idempotent by (person,</text>
+<text x="405.0" y="214.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">externalId); never overwrites a</text>
+<text x="405.0" y="228.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">rating; selfAssessed = all 4</text>
+<text x="405.0" y="242.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">answers present</text>
+<path d="M520 200 L566 200" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="568" y="140" width="180" height="120" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="658.0" y="176.5" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="500" fill="#12171f">usage_session</text>
+<text x="658.0" y="193.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">one row per session:</text>
+<text x="658.0" y="207.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">volume + 4 assessment</text>
+<text x="658.0" y="221.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">fields + self_assessed</text>
+<text x="658.0" y="235.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">flag</text>
+<path d="M748 200 L794 200" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="796" y="130" width="184" height="140" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="888.0" y="176.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">AiScoreService</text>
+<text x="888.0" y="193.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">only self_assessed rows;</text>
+<text x="888.0" y="207.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">minute-weighted (5–240); 5</text>
+<text x="888.0" y="221.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">dimensions × weights →</text>
+<text x="888.0" y="235.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">0–1000 + flags</text>
+<rect x="290" y="320" width="230" height="62" rx="10" fill="#fbf0d3" stroke="#9a6400" stroke-width="1.2"/>
+<text x="405.0" y="341.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Rating screen</text>
+<text x="405.0" y="358.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">the person answers the 4</text>
+<text x="405.0" y="372.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">questions for "needs rating" rows</text>
+<path d="M405 320 L405 262" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="413.6" y="284" width="62.8" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="445" y="296" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">assess()</text>
+<path d="M658 260 L658 318" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="658.6" y="281" width="62.8" height="16" rx="4" fill="#ffffff" opacity=".92"/>
+<text x="690" y="293" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#4a5665">unrated?</text>
+<path d="M568 351 L522 351" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="568" y="320" width="180" height="62" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="658.0" y="348.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#12171f">Dashboard badge</text>
+<text x="658.0" y="365.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">count of unrated sessions</text>
+<rect x="796" y="320" width="184" height="76" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="888.0" y="341.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#12171f">Windows</text>
+<text x="888.0" y="358.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">dashboard/profile: 90</text>
+<text x="888.0" y="372.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">days; report: calendar</text>
+<text x="888.0" y="386.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#4a5665">month</text>
+<path d="M888 270 L888 318" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="500" y="440" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Design rule: volume (minutes, prompts, tokens) is stored and shown, but only rated sessions can move the score.</text></svg>

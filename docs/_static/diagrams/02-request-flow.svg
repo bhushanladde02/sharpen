@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="1000" height="580" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="580" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">What happens when the browser asks for GET /dashboard</text>
+<circle cx="40" cy="92" r="11" fill="#2857d9"/>
+<text x="40" y="96" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">1</text>
+<rect x="62" y="70" width="400" height="46" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="262.0" y="97.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Embedded Tomcat</text>
+<text x="480" y="89" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">accepts the HTTP request on :8080 and hands it to the servlet filter chain</text>
+<path d="M262 116 L262 124" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="146" r="11" fill="#2857d9"/>
+<text x="40" y="150" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">2</text>
+<rect x="62" y="124" width="400" height="46" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="262.0" y="151.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring Security filter chain</text>
+<text x="480" y="143" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">session cookie → who is this? CSRF check on POST; role check (/candidates needs</text>
+<text x="480" y="157" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">COMPANY)</text>
+<path d="M262 170 L262 178" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="200" r="11" fill="#2857d9"/>
+<text x="40" y="204" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">3</text>
+<rect x="62" y="178" width="400" height="46" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="262.0" y="205.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">DispatcherServlet</text>
+<text x="480" y="197" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">matches the URL to a handler method: @GetMapping("/dashboard")</text>
+<path d="M262 224 L262 232" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="254" r="11" fill="#2857d9"/>
+<text x="40" y="258" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">4</text>
+<rect x="62" y="232" width="400" height="46" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="262.0" y="259.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">DashboardController</text>
+<text x="480" y="251" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">asks services for the model; @ControllerAdvice adds me, path, unratedCount to</text>
+<text x="480" y="265" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">every page</text>
+<path d="M262 278 L262 286" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="308" r="11" fill="#2857d9"/>
+<text x="40" y="312" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">5</text>
+<rect x="62" y="286" width="400" height="46" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="262.0" y="313.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">StatsService · SessionService</text>
+<text x="480" y="305" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">@Transactional(readOnly): one query for the 90-day window, grouped in memory</text>
+<path d="M262 332 L262 340" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="362" r="11" fill="#2857d9"/>
+<text x="40" y="366" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">6</text>
+<rect x="62" y="340" width="400" height="46" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="262.0" y="367.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">AiScoreService</text>
+<text x="480" y="359" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">pure computation over the session list → AiScore record (composite, 5</text>
+<text x="480" y="373" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">dimensions, flags)</text>
+<path d="M262 386 L262 394" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="416" r="11" fill="#2857d9"/>
+<text x="40" y="420" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">7</text>
+<rect x="62" y="394" width="400" height="46" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="262.0" y="421.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">UsageSessionRepository → Hibernate → DB</text>
+<text x="480" y="413" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">a derived query method becomes SQL; HikariCP lends a pooled connection</text>
+<path d="M262 440 L262 448" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="470" r="11" fill="#2857d9"/>
+<text x="40" y="474" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">8</text>
+<rect x="62" y="448" width="400" height="46" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="262.0" y="475.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Thymeleaf</text>
+<text x="480" y="467" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">renders dashboard.html with the model; fragments draw the ring, bars and trend</text>
+<text x="480" y="481" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">as inline SVG</text>
+<path d="M262 494 L262 502" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="524" r="11" fill="#2857d9"/>
+<text x="40" y="528" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">9</text>
+<rect x="62" y="502" width="400" height="46" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="262.0" y="529.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Response</text>
+<text x="480" y="521" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">one HTML document plus one cached CSS file; no client-side data fetching</text></svg>

@@ -33,6 +33,17 @@ them (``FR-12``, ``NFR-3``).
    architecture/build-and-run
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Deployment (free, on Oracle Cloud)
+
+   deployment/01-what-we-are-doing
+   deployment/02-one-time-setup
+   deployment/03-getting-a-server
+   deployment/04-deploying
+   deployment/05-day-two
+   deployment/06-cheat-sheet
+
+.. toctree::
    :maxdepth: 1
    :caption: Planning
 

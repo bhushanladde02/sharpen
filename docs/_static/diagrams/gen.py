@@ -238,3 +238,50 @@ for i, (t, sub) in enumerate(steps):
     x += 138
 s.text(500, 225, "No XML, no web.xml, no application server to install: the jar contains the server and the configuration.", 11.5, INK2, anchor="middle")
 s.save("06-startup.svg")
+
+# ------------------------------------------------------------------ 7. deployment: where things live
+s = Svg(1000, 480)
+s.text(20, 30, "Where Sharpen runs in production: one free Oracle VM, three containers, one domain name", 15, INK, weight=800)
+
+s.box(30, 120, 170, 90, "A visitor", "opens https://sharpen-ai.duckdns.org in any browser")
+s.arrow(200, 150, 240, 112, "1. which IP?", lx=190, ly=118)
+s.box(242, 66, 170, 70, "DuckDNS", "free DNS: the name points at the VM's public IP", fill=SURF)
+s.arrow(412, 101, 468, 101, "IP", lx=440, ly=94)
+s.arrow(200, 180, 468, 250, "2. HTTPS to that IP, port 443", lx=300, ly=240)
+
+s.group(466, 50, 514, 410, "Oracle Cloud, region Ashburn - Always Free tier")
+s.box(484, 176, 478, 44, "VCN security list", "lets in only ports 22 (SSH), 80 (HTTP) and 443 (HTTPS)", fill=WARN_SOFT, stroke=WARN)
+s.group(484, 234, 478, 214, "VM: VM.Standard.A1.Flex, Ubuntu 24.04, Docker", fill=SURF)
+s.box(500, 278, 140, 104, "caddy", "web server; fetches and renews the HTTPS certificate itself; forwards to the app", fill=ACCENT_SOFT, stroke=ACCENT)
+s.arrow(640, 330, 662, 330)
+s.box(664, 278, 140, 104, "app", "sharpen.jar in a container; Spring Boot, profile postgres", fill=GOOD_SOFT, stroke=GOOD)
+s.arrow(804, 330, 826, 330)
+s.box(828, 278, 118, 104, "db", "PostgreSQL 16; data in a Docker volume, survives restarts", fill=SURF)
+s.text(723, 404, "caddy talks to app on port 8080 and app to db on 5432 - inside the VM only", 11, INK2, anchor="middle")
+s.text(723, 420, "All three start together from deploy/docker-compose.prod.yml", 11, INK2, anchor="middle")
+s.text(723, 436, "Settings (domain, DB password, admin email) live in deploy/.env, never in git", 11, INK2, anchor="middle")
+s.arrow(570, 220, 570, 276)
+
+s.box(30, 320, 170, 90, "You", "ssh -i key ubuntu@IP to manage it; git pull to update", fill=SURF)
+s.arrow(200, 350, 468, 210, "SSH, port 22", lx=300, ly=292)
+s.save("07-deployment.svg")
+
+# ------------------------------------------------------------------ 8. deployment: the steps in order
+s = Svg(1000, 300)
+s.text(20, 30, "Deploying, step by step — each box is one section of the deployment guide", 15, INK, weight=800)
+steps = [("Prepare", "Oracle account, SSH key, OCI CLI, open ports 80/443, DuckDNS name"),
+         ("Get a server", "create an Ampere A1 VM; if \"out of capacity\", let the retry script hunt for you"),
+         ("Point the name", "put the VM's public IP into DuckDNS"),
+         ("Prepare the VM", "ssh in; setup-vm.sh installs Docker and the firewall"),
+         ("Deploy", "git clone; fill deploy/.env; docker compose up"),
+         ("Check", "the site opens with a padlock; register the admin account"),
+         ("Day two", "git pull + compose up to update; nightly backup; read /admin/feedback")]
+x = 26
+for i, (t, sub) in enumerate(steps):
+    s.step(x + 63, 62, i + 1)
+    s.box(x, 80, 126, 140, t, sub, fill=ACCENT_SOFT if i == 4 else SURF, stroke=ACCENT if i == 4 else LINE)
+    if i < len(steps) - 1:
+        s.arrow(x + 126, 150, x + 137, 150)
+    x += 138
+s.text(500, 262, "Only step 2 can take a while (Oracle's free ARM pool is often full). Everything else is about an hour the first time.", 11.5, INK2, anchor="middle")
+s.save("08-deploy-steps.svg")

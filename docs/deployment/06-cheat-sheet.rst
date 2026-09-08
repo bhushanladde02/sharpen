@@ -1,0 +1,81 @@
+Cheat sheet
+===========
+
+Everything from this chapter on one page, for when you already understand it and just need the command.
+``<ip>`` is the Sharpen server's public IP; ``<bot-vm-ip>`` and ``K`` are the address and SSH key of the always-on machine that runs the retry script.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 34 66
+
+   * - I want to…
+     - Command (Mac unless marked *server*)
+   * - see whether the retry script found a server
+     - ``ssh -i "$K" ubuntu@<bot-vm-ip> 'tail -3 retry.log'``
+   * - start the retry script on the bot VM
+     - ``ssh -i "$K" ubuntu@<bot-vm-ip> 'export PATH=$HOME/ocienv/bin:$PATH; SIZES="1:6 2:12" SSH_PUB=~/sharpen_vm.pub nohup bash ~/oci-retry-a1.sh > ~/retry.log 2>&1 &'``
+   * - stop it
+     - ``ssh -i "$K" ubuntu@<bot-vm-ip> 'pkill -f oci-retry-a1.sh'``
+   * - run it on my Mac instead
+     - ``SSH_PUB=~/.ssh/sharpen_vm.pub caffeinate -i bash deploy/oci-retry-a1.sh``
+   * - check my A1 quota
+     - ``oci limits resource-availability get --service-name compute --limit-name standard-a1-core-count --compartment-id <tenancy-ocid> --availability-domain RUzw:US-ASHBURN-AD-1``
+   * - log in to the Sharpen server
+     - ``ssh -i ~/.ssh/sharpen_vm ubuntu@<ip>``
+   * - copy the settings file to it
+     - ``scp -i ~/.ssh/sharpen_vm deploy/.env ubuntu@<ip>:~/sharpen/deploy/.env``
+   * - first-time server setup (*server*)
+     - ``curl -fsSL https://raw.githubusercontent.com/bhushanladde02/sharpen/main/deploy/setup-vm.sh | bash`` then log out and in
+   * - deploy for the first time (*server*)
+     - ``git clone https://github.com/bhushanladde02/sharpen.git && cd sharpen`` → copy ``.env`` → ``docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build``
+   * - update to the latest code (*server*)
+     - ``cd ~/sharpen && git pull && dc up -d --build app``
+   * - see the app log (*server*)
+     - ``dc logs -f app``
+   * - see what is running (*server*)
+     - ``dc ps`` · ``docker stats --no-stream``
+   * - restart (*server*)
+     - ``dc restart app`` · ``dc down && dc up -d`` · ``sudo reboot``
+   * - back up the database (*server*)
+     - ``dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz``
+   * - check DNS
+     - ``dig +short sharpen-ai.duckdns.org``
+   * - check a port from outside
+     - ``nc -zv <ip> 443``
+   * - open the admin inbox
+     - ``https://sharpen-ai.duckdns.org/admin/feedback`` (signed in as ``ADMIN_EMAIL``)
+   * - health check URL
+     - ``https://sharpen-ai.duckdns.org/api/v1/health``
+
+``dc`` is the alias ``docker compose -f ~/sharpen/deploy/docker-compose.prod.yml --env-file ~/sharpen/deploy/.env``
+defined in ``~/.bashrc`` on the server.
+
+Files that matter
+-----------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - File
+     - Role
+   * - ``deploy/docker-compose.prod.yml``
+     - Describes the three containers (db, app, caddy), their ports, volumes and environment.
+   * - ``deploy/Caddyfile``
+     - Caddy's two-line config: serve ``$DOMAIN`` with automatic HTTPS, forward to ``app:8080``, add security headers.
+   * - ``deploy/.env.example`` → ``deploy/.env``
+     - The four settings. ``.env`` is git-ignored; ``.env.example`` is the template.
+   * - ``deploy/setup-vm.sh``
+     - One-time server preparation: Docker, ufw, Oracle iptables fix.
+   * - ``deploy/oci-retry-a1.sh``
+     - Polls Oracle for a free ARM server until one is created.
+   * - ``Dockerfile`` (project root)
+     - Two-stage build: Maven compiles the jar, a slim JRE image runs it.
+   * - ``src/main/resources/db/schema-postgres.sql``
+     - Mounted into the db container; PostgreSQL runs it once when the volume is first created.
+   * - ``src/main/resources/application-postgres.yml``
+     - The production profile: reads ``SHARPEN_DB_*`` and ``SHARPEN_ADMIN_EMAIL`` from the environment.
+   * - ``~/.oci/config`` + ``~/.oci/*.pem`` (Mac and bot VM)
+     - Credentials for the ``oci`` tool. Never commit.
+   * - ``~/.ssh/sharpen_vm`` (Mac)
+     - Private key that opens the Sharpen server. Never commit or share.

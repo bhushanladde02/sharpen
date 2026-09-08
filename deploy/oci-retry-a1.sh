@@ -89,6 +89,12 @@ while true; do
     fi
     if echo "$out" | grep -qi "out of capacity\|Out of host capacity"; then
       echo "out of capacity"; transient=0
+    elif echo "$out" | grep -q "LimitExceeded"; then
+      # This size is above the tenancy's A1 quota (or an existing instance is using part of it). Drop the size
+      # from the rotation and keep trying the smaller ones. Console → Governance → Limits shows the quota.
+      echo "limit exceeded — dropping $OCPUS OCPU/$MEMORY_GB GB from the rotation"
+      SIZES=$(echo " $SIZES " | sed "s/ $size / /" | xargs)
+      [ -n "$SIZES" ] || { echo "Every size is over the tenancy limit; check Governance → Limits / existing instances."; exit 1; }
     elif echo "$out" | grep -qiE "timed out|timeout|TooManyRequests|ServiceUnavailable|InternalError|Connection (reset|refused|aborted)|Max retries|status 5[0-9][0-9]"; then
       # Network hiccup or Oracle throttling: not our fault, just try again a bit later.
       transient=$((${transient:-0} + 1))

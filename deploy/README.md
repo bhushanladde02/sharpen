@@ -1,93 +1,72 @@
 # Deploying Sharpen for free
 
-Goal: a public URL people can try, at zero monthly cost, with real HTTPS, that you can update with one
-command. The recommended path is **Oracle Cloud Always Free** (you already run a workload there), which gives a
-permanent VM large enough for PostgreSQL + the app. Everything below also works on any Ubuntu VM.
+Sharpen runs in production on one **Oracle Cloud Always Free** ARM VM as three Docker containers — PostgreSQL,
+the app, and Caddy for automatic HTTPS — behind a free DuckDNS name. Zero monthly cost, real certificate,
+one-command updates.
 
-## What you need
+**The full, beginner-level walkthrough is in the docs:** `docs/deployment/` (build with `./docs/view.sh`, or
+read the `.rst` files directly). It explains every term, every command and what to expect from each, plus
+troubleshooting and day-two operations. This file is the short version for people who already know the tools.
 
-| Item | Free option | Notes |
-|---|---|---|
-| VM | Oracle Cloud Always Free — Ampere A1, up to 4 OCPU / 24 GB (shape `VM.Standard.A1.Flex`), Ubuntu 24.04 | 1 OCPU / 6 GB is plenty. Capacity in some regions is scarce; retry creation or pick another AD. |
-| Domain | a subdomain of one you own, or a free `*.duckdns.org` name pointed at the VM's public IP | Caddy needs a real name to get a certificate. Free-tier DNS: DuckDNS; a paid `.dev`/`.io` is ~$10–15/yr. |
-| TLS | Let's Encrypt via Caddy | automatic, renews itself |
-| Database | PostgreSQL in Docker on the same VM | data in a Docker volume; back it up (below) |
+## Files here
 
-## If Oracle says "Out of capacity for shape VM.Standard.A1.Flex"
+| File | Role |
+|---|---|
+| `docker-compose.prod.yml` | db (postgres:16) + app (built from `../Dockerfile`) + caddy (ports 80/443) |
+| `Caddyfile` | `{$DOMAIN}` → automatic Let's Encrypt TLS, `reverse_proxy app:8080`, security headers |
+| `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`. `.env` is git-ignored |
+| `setup-vm.sh` | one-time VM prep: Docker, ufw 22/80/443, Oracle iptables fix |
+| `oci-retry-a1.sh` | polls Oracle for a free `VM.Standard.A1.Flex` across all ADs and sizes until one is created |
 
-The free ARM pool in busy regions is often full. It is not a billing block; capacity comes and goes. Try each
-availability domain (AD-1/2/3) from the console; if all fail, let `deploy/oci-retry-a1.sh` poll every two minutes
-across all ADs until one succeeds (one-time setup: `brew install oci-cli jq && oci setup config`, then add the
-generated public key under *Profile → API keys*). It prints the public IP when done. Off-peak hours (early morning
-US Eastern, weekends) have the best odds.
+## Quick path
 
-## Steps
-
-1. **Create the VM** in the Oracle console: Compute → Instances → Create. Image *Canonical Ubuntu 24.04*, shape
-   *Ampere A1 Flex* (1 OCPU, 6 GB), add your SSH key. Note the public IP.
-2. **Open ports 80 and 443** in the VCN: Networking → Virtual Cloud Networks → your VCN → Security Lists → Default →
-   *Add Ingress Rules*: source `0.0.0.0/0`, TCP, destination port `80`; repeat for `443`.
-3. **Point DNS** at the IP: an `A` record for `sharpen.yourdomain.com` (or create a DuckDNS name).
-4. **SSH in and prepare the VM**:
-
+1. **Prepare once** — Oracle Free Tier account (home region Ashburn); SSH key pair (`~/.ssh/sharpen_vm[.pub]`);
+   `brew install oci-cli jq && oci setup config` + register the API key under *My profile → API keys*;
+   VCN default security list: ingress TCP 80 and 443 from `0.0.0.0/0`; a DuckDNS name; `cp .env.example .env`
+   and fill it (`openssl rand -base64 24` for the password); repo pushed to GitHub.
+2. **Get a server** — Console → Compute → Create instance: Ubuntu 24.04, `VM.Standard.A1.Flex` 1 OCPU / 6 GB,
+   public IP, your `.pub` key. If *Out of capacity*: `SSH_PUB=~/.ssh/sharpen_vm.pub bash deploy/oci-retry-a1.sh`
+   (better on an always-on box with `nohup … &`; `SIZES="1:6 2:12"` if your A1 quota is 2 cores). It prints
+   `Public IP:` when done.
+3. **DNS** — put the IP into DuckDNS; `dig +short <name>.duckdns.org` must return it.
+4. **Prepare the VM**
    ```bash
-   ssh ubuntu@<public-ip>
+   ssh -i ~/.ssh/sharpen_vm ubuntu@<ip>
    curl -fsSL https://raw.githubusercontent.com/bhushanladde02/sharpen/main/deploy/setup-vm.sh | bash
    exit   # log out so the docker group applies
    ```
-
-5. **Deploy**:
-
+5. **Deploy**
    ```bash
-   ssh ubuntu@<public-ip>
+   ssh -i ~/.ssh/sharpen_vm ubuntu@<ip>
    git clone https://github.com/bhushanladde02/sharpen.git && cd sharpen
-   cp deploy/.env.example deploy/.env && nano deploy/.env    # DOMAIN, DB_PASSWORD, ADMIN_EMAIL
+   # from your Mac: scp -i ~/.ssh/sharpen_vm deploy/.env ubuntu@<ip>:~/sharpen/deploy/.env
    docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build
    docker compose -f deploy/docker-compose.prod.yml logs -f app   # wait for "Started SharpenApplication"
    ```
+   First build is 5–10 min on A1. Caddy fetches the certificate on the first visit to `https://<DOMAIN>`.
+6. **Check** — register with `ADMIN_EMAIL` first; that account can read `/admin/feedback`.
 
-   The first build compiles the jar inside Docker (a few minutes on A1). Caddy fetches the certificate on the
-   first request to `https://<DOMAIN>`.
-
-6. **Register your own account first** with the `ADMIN_EMAIL` address — that account can open
-   `/admin/feedback` to read what people write.
-
-## Updating
+## Day two
 
 ```bash
-cd ~/sharpen && git pull
-docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build app
+alias dc='docker compose -f ~/sharpen/deploy/docker-compose.prod.yml --env-file ~/sharpen/deploy/.env'
+cd ~/sharpen && git pull && dc up -d --build app      # update (db and caddy keep running)
+dc ps · dc logs -f app · dc restart app · docker stats --no-stream
+dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz   # backup (cron it)
 ```
 
-Postgres keeps running; only the app container is rebuilt. Users are not logged out unless the app restarts
-during their session (it does — sessions are in-memory; Release 1 can move them to the database).
+Live counters on every page come from `/api/v1/public/stats` (30 s refresh); `/api/v1/health` is open for
+uptime checks. Keep `DEMO_DATA=false` on a public site.
 
-## Backups
-
-```bash
-docker compose -f deploy/docker-compose.prod.yml exec db pg_dump -U sharpen sharpen | gzip > sharpen-$(date +%F).sql.gz
-```
-
-Run it from cron nightly and copy the file off the VM (`scp`, or Oracle Object Storage which is also free-tier).
-
-## Before you share the link
-
-* `DEMO_DATA=false` (the default in `.env.example`) so demo accounts are not created in production.
-* The README and login page mention demo credentials — those only exist when demo data is seeded, so they are
-  harmless, but remove the note from `login.html` if you prefer.
-* Company registration is open. If you want to control who sees profiles, set it aside for the pilot
-  (see the Release 1 checklist) or simply tell early users the company view is for demo purposes.
-* Watch the counters: the landing page and every signed-in page show live member and session counts from
-  `/api/v1/public/stats`, refreshed every 30 seconds; `/admin/feedback` shows the same numbers plus messages.
-
-## Alternatives if Oracle capacity is unavailable
+## Alternatives if you cannot get Oracle ARM capacity
 
 | Host | Free tier | Trade-off |
 |---|---|---|
-| Fly.io | small allowance for a shared VM + 3 GB volume | Postgres needs a separate app; usage-based billing above the allowance |
-| Render | free web service + free Postgres (expires after 90 days) | service sleeps after 15 min idle; first visit is slow |
-| Koyeb | one free nano instance | no free managed Postgres; use Neon/Supabase free Postgres |
-| Google Cloud Run | generous free requests | scales to zero, so the monthly scheduler will not fire; needs Cloud SQL ($) or Neon |
+| Oracle `VM.Standard.E2.1.Micro` | always available, 1 GB RAM | needs a small JVM heap + swap; build the jar elsewhere |
+| Fly.io | small shared VM + 3 GB volume | Postgres is a separate app; usage-based above the allowance |
+| Render | free web service + free Postgres (90 days) | sleeps after 15 min idle |
+| Koyeb | one free nano instance | no free managed Postgres; use Neon/Supabase |
+| Google Cloud Run | generous free requests | scales to zero, so the monthly scheduler will not fire |
 
-For any of these, the app is the same jar; set `SPRING_PROFILES_ACTIVE=postgres` and the three `SHARPEN_DB_*`
-variables to the hosted database and apply `src/main/resources/db/schema-postgres.sql` once.
+For any of these the app is the same jar: set `SPRING_PROFILES_ACTIVE=postgres` and the three `SHARPEN_DB_*`
+variables, apply `src/main/resources/db/schema-postgres.sql` once.

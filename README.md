@@ -91,7 +91,7 @@ src/main/java/io/sharpen
   config/      SecurityConfig (form login + API-key chain), DemoDataLoader
 src/main/resources
   templates/   layout, nav, fragments (score ring, charts), one template per page, report-pdf (XHTML for the PDF)
-  static/css/  app.css — tokens, light/dark, no framework
+  static/css/  sharpen.css — tokens, light/dark, no framework
   db/          schema-postgres.sql
 chrome-extension/   MV3 capture extension (background, content, popup)
 deploy/             production compose, Caddyfile, VM setup script, deployment guide
@@ -101,8 +101,10 @@ docs/samples/       import examples for each route
 
 ## Publishing a pilot
 
-`deploy/README.md` walks through a zero-cost public deployment (Oracle Cloud Always Free VM, Docker Compose with
-PostgreSQL, Caddy for automatic HTTPS) and how to update it with one command. The landing page and every
+**[docs/deployment/](docs/deployment/01-what-we-are-doing.rst)** is a from-scratch, no-prior-knowledge guide
+to the zero-cost public deployment: Oracle Cloud Always Free ARM VM, Docker Compose with PostgreSQL, Caddy for
+automatic HTTPS, a free DuckDNS name, the capacity-retry script, day-two operations and troubleshooting, with
+diagrams. `deploy/README.md` is the one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
 a `/feedback` form open to everyone, and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
 `/admin/feedback`.

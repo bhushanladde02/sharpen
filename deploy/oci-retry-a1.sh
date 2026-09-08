@@ -17,8 +17,9 @@
 set -euo pipefail
 
 NAME="${NAME:-sharpen}"
-OCPUS="${OCPUS:-1}"
-MEMORY_GB="${MEMORY_GB:-6}"
+# Sizes to try, "ocpus:memoryGB". All are within the Always Free quota (4 OCPU / 24 GB total). Oracle frees
+# capacity in uneven chunks, so a bigger request sometimes succeeds when a smaller one does not.
+SIZES="${SIZES:-1:6 2:12 4:24}"
 SUBNET_NAME="${SUBNET_NAME:-subnet-20260505-0014}"
 SSH_PUB="${SSH_PUB:-$HOME/.ssh/id_rsa.pub}"
 INTERVAL="${INTERVAL:-120}"          # seconds between attempts; keep >= 60 to stay polite
@@ -63,9 +64,10 @@ if [ -n "$existing" ]; then echo "An instance named $NAME is already running: $e
 
 attempt=0
 while true; do
-  for ad in "${ADS[@]}"; do
+  for ad in "${ADS[@]}"; do for size in $SIZES; do
+    OCPUS="${size%%:*}"; MEMORY_GB="${size##*:}"
     attempt=$((attempt + 1))
-    printf '%s  attempt %d  %s ... ' "$(date '+%H:%M:%S')" "$attempt" "$ad"
+    printf '%s  attempt %d  %s  %s OCPU/%s GB ... ' "$(date '+%H:%M:%S')" "$attempt" "$ad" "$OCPUS" "$MEMORY_GB"
     if out=$(oci compute instance launch \
         --compartment-id "$COMPARTMENT" --availability-domain "$ad" \
         --display-name "$NAME" --shape VM.Standard.A1.Flex \
@@ -86,12 +88,18 @@ while true; do
       exit 0
     fi
     if echo "$out" | grep -qi "out of capacity\|Out of host capacity"; then
-      echo "out of capacity"
+      echo "out of capacity"; transient=0
+    elif echo "$out" | grep -qiE "timed out|timeout|TooManyRequests|ServiceUnavailable|InternalError|Connection (reset|refused|aborted)|Max retries|status 5[0-9][0-9]"; then
+      # Network hiccup or Oracle throttling: not our fault, just try again a bit later.
+      transient=$((${transient:-0} + 1))
+      echo "transient error ($transient in a row) — will retry"
+      [ "$transient" -ge 10 ] && { echo "$out" | head -5; echo "Too many transient errors; check your network and re-run."; exit 1; }
+      sleep 30
     else
       echo "error:"; echo "$out" | head -5
       echo "(not a capacity error — fix the cause before retrying)"; exit 1
     fi
     sleep 5
-  done
+  done; done
   sleep "$INTERVAL"
 done

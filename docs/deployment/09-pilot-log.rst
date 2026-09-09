@@ -167,6 +167,22 @@ free shape. Decision: **Plan B — the 1 GB E2.1.Micro**, with the hunter left r
    app, source on GitHub, no other brand imitated, nothing to remove). Waiting for Google's email.
    The DuckDNS "recreate token" link could not be found in the UI; token unchanged for now.
 
+#. **Favicon.** The browser tab showed Chrome's generic globe because the site served no icon. Added
+   ``static/img/favicon.svg`` (the Sharpen mark: rounded square, white step), a ``.ico`` and PNG fallbacks,
+   ``<link rel="icon">`` lines in the layout, and ``/favicon.ico`` to the security ``permitAll`` list so the
+   browser's automatic request does not bounce to the login page.
+
+#. **Ownership and license.** The decision: keep Sharpen open source, unpaid, but make it unmistakable whose
+   work it is. Chosen license **GNU AGPL-3.0** — anyone may use, modify and even host it, provided they keep
+   the copyright and attribution and publish their changes under the same terms; nobody can take it closed or
+   present it as their own. What changed in the repository: ``LICENSE`` (full AGPL text), ``NOTICE``
+   (copyright and attribution statement), a "License and copyright" section in the README, ``author`` and
+   ``copyright`` ``<meta>`` tags, and a footer on every page — *© 2026 Bhushan Arun Ladde · designed, built
+   and operated by its author · open source under AGPL-3.0* with links to the source and the feedback form.
+   The login page's demo-credentials note now appears only when ``DEMO_DATA=true``; in production it is
+   replaced by a one-line ownership note. Same rollout as before: branch ``ownership`` → PR → merge → Deploy
+   → ``git pull`` + ``remote-deploy.sh`` on the server. Verified live on ``/p/…`` and the login page.
+
 Open items at the end of day 3
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -191,3 +207,5 @@ Things to remember from this log
 * Screenshots leak: the DuckDNS token appeared in two of them and should be regenerated.
 * A required status check listed twice blocks every PR.
 * The first push to ``main`` without a ruleset is fine; the ruleset applies from the moment it is created.
+* Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
+  on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

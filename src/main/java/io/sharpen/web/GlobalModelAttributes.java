@@ -38,6 +38,13 @@ public class GlobalModelAttributes {
         return request.getRequestURI();
     }
 
+    /** The host the visitor used (e.g. {@code sharpen-ai.duckdns.org}), for showing profile URLs. */
+    @ModelAttribute("siteHost")
+    public String siteHost(jakarta.servlet.http.HttpServletRequest request) {
+        String host = request.getHeader("Host");
+        return host != null && !host.isBlank() ? host : request.getServerName();
+    }
+
     @ModelAttribute("unratedCount")
     public long unratedCount() {
         Optional<Person> me = people.current();

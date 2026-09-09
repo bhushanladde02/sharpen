@@ -34,6 +34,7 @@ services:
       SHARPEN_DB_PASSWORD: ${DB_PASSWORD}
       SHARPEN_DEMO_DATA: ${DEMO_DATA:-false}
       SHARPEN_ADMIN_EMAIL: ${ADMIN_EMAIL}
+      SHARPEN_SITE_HOST: ${DOMAIN}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
     depends_on:
       db:

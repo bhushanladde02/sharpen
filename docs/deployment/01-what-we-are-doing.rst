@@ -89,7 +89,9 @@ The steps, in order
 
 The following pages walk through each step. Step 2 is the only one that can take unpredictable time, because
 Oracle's free ARM servers are popular and often "out of capacity"; :doc:`03-getting-a-server` explains how a
-small script waits for one so you do not have to.
+small script waits for one so you do not have to, and :doc:`08-small-vm` is the fallback that launches today
+on the always-available 1 GB machine. :doc:`09-pilot-log` records how the real deployment went, mistakes
+included — read it alongside the steps.
 
 How to read the command blocks
 ------------------------------

@@ -45,6 +45,8 @@ server:
 
 sharpen:
   demo-data: true
+  # Host shown in profile links and the PDF footer; the web pages use the request's Host header instead.
+  site-host: ${SHARPEN_SITE_HOST:localhost:8080}
   # The account allowed to read /admin/feedback. Set SHARPEN_ADMIN_EMAIL in production.
   admin-email: ${SHARPEN_ADMIN_EMAIL:demo@sharpen.io}
 

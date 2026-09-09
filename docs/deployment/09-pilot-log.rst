@@ -156,11 +156,22 @@ free shape. Decision: **Plan B — the 1 GB E2.1.Micro**, with the hunter left r
    recreated ``app``, health OK. An earlier run of the same commands, made *before* the merge, correctly
    reported *Already up to date* and re-pulled the identical image in 0.8 s.
 
+#. **Safe Browsing review.** Google Search Console → *Add property* → **Domain** ``sharpen-ai.duckdns.org``
+   → TXT verification. DuckDNS can publish a TXT record through its update URL
+   (``…/update?domains=sharpen-ai&token=<token>&txt=<value>&verbose=true`` → ``OK … UPDATED``);
+   ``dig +short TXT sharpen-ai.duckdns.org`` showed the ``google-site-verification=…`` string within
+   seconds and *Verify* succeeded. *Security & Manual Actions → Security issues* listed one issue,
+   **"Possible phishing detected on user login"** — description: "the browser will show pop-up warnings when
+   users enter saved login credentials", sample URLs *N/A*, i.e. the classifier reacting to a new login form
+   on a DuckDNS name, not a specific page. *Request review* submitted with an explanation (own open-source
+   app, source on GitHub, no other brand imitated, nothing to remove). Waiting for Google's email.
+   The DuckDNS "recreate token" link could not be found in the UI; token unchanged for now.
+
 Open items at the end of day 3
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Turn on the pipeline's automatic rollout (deploy key + ``production`` secrets, :doc:`07-ci-cd`).
-* Google Safe Browsing false positive: report / Search Console review; decide on a real domain.
+* Google Safe Browsing: review requested 9 Sept via Search Console — check the result; decide on a real domain.
 * Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * The A1 hunter is still running on the bot VM; migrate per :doc:`08-small-vm` if it ever lands.

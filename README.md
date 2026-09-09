@@ -8,6 +8,10 @@ Sharpen tracks how a person works with AI, at work and at home, and turns it int
 
 Java 21 · Spring Boot 3.3 · Thymeleaf · Spring Data JPA · Spring Security · H2 (dev) / PostgreSQL (prod) · openhtmltopdf.
 
+[![CI](https://github.com/bhushanladde02/sharpen/actions/workflows/ci.yml/badge.svg)](https://github.com/bhushanladde02/sharpen/actions/workflows/ci.yml)
+[![Deploy](https://github.com/bhushanladde02/sharpen/actions/workflows/deploy.yml/badge.svg)](https://github.com/bhushanladde02/sharpen/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/bhushanladde02/sharpen/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhushanladde02/sharpen/actions/workflows/codeql.yml)
+
 ## Run it
 
 **IntelliJ IDEA** — open the folder (`File → Open → sharpen/`). The project ships with shared run configurations in `.run/`,
@@ -104,10 +108,40 @@ docs/samples/       import examples for each route
 **[docs/deployment/](docs/deployment/01-what-we-are-doing.rst)** is a from-scratch, no-prior-knowledge guide
 to the zero-cost public deployment: Oracle Cloud Always Free ARM VM, Docker Compose with PostgreSQL, Caddy for
 automatic HTTPS, a free DuckDNS name, the capacity-retry script, day-two operations and troubleshooting, with
-diagrams. `deploy/README.md` is the one-page version for people who already know the tools. The landing page and every
+diagrams, and the CI/CD pipeline (GitHub Actions: test → smoke → docs, then multi-arch image to GHCR → SSH
+rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `deploy/README.md` is the
+one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
 a `/feedback` form open to everyone, and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
 `/admin/feedback`.
+
+## About this project
+
+Sharpen is a solo, end-to-end build by **Bhushan Ladde** (senior backend/data engineer, 11+ years — Python, Java,
+Airflow, PostgreSQL, Docker) made in September 2026 to answer one question: *can the way a person works with AI
+be measured in a way that rewards judgement instead of volume?* Everything in this repository is part of that
+answer — the requirements (`docs/requirements`), the scoring model and its property tests, the Spring Boot
+application, the import pipelines and API, the browser extension, the Docker/Caddy production shape, the Oracle
+Cloud deployment and its documentation.
+
+**AI assistance.** Claude (Anthropic) was used throughout as a pair-programmer to speed the work up: drafting
+code and Thymeleaf templates from the design, generating the documentation and SVG diagrams, and working through
+deployment problems (Oracle capacity, OCI CLI auth, firewall rules) interactively. The product idea, the scoring
+model and its weights, the architecture and technology choices, code review, testing, and every deployment
+decision are the author's. This is deliberately the kind of AI use the product itself is meant to encourage:
+the tool did the typing, the person did the thinking and checked the result.
+
+**A five-minute tour for reviewers**
+
+| If you want to see… | Look at |
+|---|---|
+| the core idea in code | `scoring/AiScoreService.java` and `AiScoreServiceTest` (properties: hours never raise the score, unrated sessions are ignored, long sessions weigh more) |
+| how data gets in without being gameable | `service/ImportService.java`, `service/SessionService.upsertExternal` (idempotent, never overwrites a self-assessment) |
+| security design | `config/SecurityConfig.java` — two filter chains: form login for pages, stateless API-key for `/api/**` |
+| the end-to-end test | `WebFlowTest` — register → log → import → API ingest → report → PDF → public profile → company view |
+| the design explained with diagrams | `docs/architecture/how-it-works.rst` |
+| how it runs in production for $0 | `docs/deployment/` and `deploy/` |
+| the delivery pipeline | `.github/workflows/` (CI, Deploy, CodeQL, Release) and `deploy/remote-deploy.sh` |
 
 ## Release 1 checklist
 

@@ -1,0 +1,16 @@
+# Weekly pull requests for outdated dependencies. CI runs on each PR, so a green check means the update is
+# safe to merge; the deploy workflow only runs after a merge to main.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    groups:
+      spring: { patterns: ["org.springframework*"] }
+      everything-else: { patterns: ["*"], exclude-patterns: ["org.springframework*"] }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday }
+  - package-ecosystem: docker
+    directories: ["/", "/deploy"]
+    schedule: { interval: weekly, day: monday }

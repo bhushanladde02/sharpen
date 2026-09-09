@@ -1,0 +1,17 @@
+# Image build used by the pipeline (.github/workflows/deploy.yml).
+#
+# The root Dockerfile compiles inside the image, which is right for a laptop or a VM. In CI the jar is
+# already built and tested by the previous stage, so this file only wraps it in a JRE. Because nothing is
+# compiled here, buildx can produce the arm64 image (for the Oracle A1 VM) and the amd64 image from the same
+# jar in seconds under QEMU.
+#
+#   mvn -DskipTests package
+#   docker build -f deploy/Dockerfile.ci -t sharpen:local .
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN groupadd --system sharpen && useradd --system --gid sharpen --no-create-home sharpen
+COPY target/sharpen.jar app.jar
+USER sharpen
+ENV SPRING_PROFILES_ACTIVE=postgres
+EXPOSE 8080
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]

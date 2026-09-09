@@ -8,7 +8,9 @@ the full ``docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.e
 Updating to a new version
 -------------------------
 
-Push your changes from IntelliJ to GitHub as usual, then on the server:
+With the pipeline switched on (:doc:`07-ci-cd`), merging to ``main`` is the update: GitHub tests it, builds
+the image and rolls it out with a health check. The manual way still works and is useful when GitHub is
+down or you want to try a branch — push your changes, then on the server:
 
 .. code-block:: bash
 

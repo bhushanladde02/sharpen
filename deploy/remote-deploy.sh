@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Runs ON THE PRODUCTION VM, called by .github/workflows/deploy.yml over SSH (or by hand):
+#
+#   APP_IMAGE=ghcr.io/bhushanladde02/sharpen:<tag> bash ~/sharpen/deploy/remote-deploy.sh
+#
+# Pulls the given image, restarts the stack with it, waits until /api/v1/health answers through Caddy, and if
+# it never does, puts the previous image back so the site is not left broken. Prints what it did.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."                      # repository root on the VM (~/sharpen)
+[ -n "${APP_IMAGE:-}" ] || { echo "APP_IMAGE is not set"; exit 2; }
+[ -f deploy/.env ] || { echo "deploy/.env is missing on the VM"; exit 2; }
+DOMAIN=$(grep -E '^DOMAIN=' deploy/.env | cut -d= -f2-)
+dc() { docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env "$@"; }
+
+previous=$(docker inspect --format '{{.Config.Image}}' "$(dc ps -q app 2>/dev/null)" 2>/dev/null || true)
+echo "current image : ${previous:-<none>}"
+echo "new image     : $APP_IMAGE"
+
+health() {   # true when the app answers through Caddy; --resolve keeps the check local to the VM
+  curl -fsS --max-time 5 -k --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/v1/health" >/dev/null 2>&1
+}
+
+rollout() {  # $1 = image
+  APP_IMAGE="$1" dc pull -q app
+  APP_IMAGE="$1" dc up -d --no-build --remove-orphans
+  for i in $(seq 1 36); do            # up to 3 minutes; the JVM needs ~20 s on A1, more on first start
+    health && return 0
+    sleep 5
+  done
+  return 1
+}
+
+if rollout "$APP_IMAGE"; then
+  echo "healthy       : https://$DOMAIN/api/v1/health"
+  docker image prune -f >/dev/null
+  echo "OK"
+else
+  echo "!! $APP_IMAGE never became healthy. Last log lines:"
+  dc logs --tail 40 app || true
+  if [ -n "$previous" ] && [ "$previous" != "$APP_IMAGE" ]; then
+    echo "!! rolling back to $previous"
+    rollout "$previous" && echo "rolled back   : $previous (site is up on the previous version)" || echo "!! rollback also failed — investigate on the VM"
+  fi
+  exit 1
+fi

@@ -28,8 +28,10 @@ Everything from this chapter on one page, for when you already understand it and
      - ``curl -fsSL https://raw.githubusercontent.com/bhushanladde02/sharpen/main/deploy/setup-vm.sh | bash`` then log out and in
    * - deploy for the first time (*server*)
      - ``git clone https://github.com/bhushanladde02/sharpen.git && cd sharpen`` → copy ``.env`` → ``docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build``
-   * - update to the latest code (*server*)
-     - ``cd ~/sharpen && git pull && dc up -d --build app``
+   * - update to the latest code
+     - merge to ``main`` — the pipeline deploys it (:doc:`07-ci-cd`); by hand on the *server*: ``cd ~/sharpen && git pull && dc up -d --build app``
+   * - deploy a specific image by hand (*server*)
+     - ``APP_IMAGE=ghcr.io/bhushanladde02/sharpen:<tag> bash ~/sharpen/deploy/remote-deploy.sh``
    * - see the app log (*server*)
      - ``dc logs -f app``
    * - see what is running (*server*)
@@ -69,6 +71,10 @@ Files that matter
      - One-time server preparation: Docker, ufw, Oracle iptables fix.
    * - ``deploy/oci-retry-a1.sh``
      - Polls Oracle for a free ARM server until one is created.
+   * - ``deploy/remote-deploy.sh``, ``deploy/Dockerfile.ci``
+     - The VM-side rollout script (pull, restart, health check, rollback) and the pipeline's image recipe.
+   * - ``.github/workflows/*.yml``, ``.github/dependabot.yml``
+     - CI (test, smoke, docs), Deploy (image to GHCR, SSH rollout), CodeQL, Release, Dependabot.
    * - ``Dockerfile`` (project root)
      - Two-stage build: Maven compiles the jar, a slim JRE image runs it.
    * - ``src/main/resources/db/schema-postgres.sql``

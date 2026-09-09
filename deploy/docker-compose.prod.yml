@@ -1,6 +1,11 @@
 # Production on one small VM: PostgreSQL + Sharpen + Caddy (automatic HTTPS).
 #   cp deploy/.env.example deploy/.env   # then edit
 #   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build
+#
+# The app image comes from one of two places:
+#   * built here on the VM from the source tree (`up --build`, the manual path) — tagged sharpen-app:local;
+#   * pulled from the registry, when APP_IMAGE is set (the pipeline's path, see .github/workflows/deploy.yml):
+#       APP_IMAGE=ghcr.io/bhushanladde02/sharpen:<sha> docker compose ... up -d --no-build --pull always app
 services:
   db:
     image: postgres:16-alpine
@@ -18,6 +23,7 @@ services:
       retries: 12
 
   app:
+    image: ${APP_IMAGE:-sharpen-app:local}
     build:
       context: ..
     restart: unless-stopped

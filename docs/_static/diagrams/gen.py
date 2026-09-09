@@ -285,3 +285,30 @@ for i, (t, sub) in enumerate(steps):
     x += 138
 s.text(500, 262, "Only step 2 can take a while (Oracle's free ARM pool is often full). Everything else is about an hour the first time.", 11.5, INK2, anchor="middle")
 s.save("08-deploy-steps.svg")
+
+# ------------------------------------------------------------------ 9. the pipeline
+s = Svg(1000, 430)
+s.text(20, 30, "From git push to the live site: the GitHub Actions pipeline", 15, INK, weight=800)
+
+s.box(30, 90, 130, 64, "git push", "any branch, or a pull request", fill=SURF)
+s.arrow(160, 122, 208, 122)
+
+s.group(206, 50, 380, 300, "Stage 1 - CI  (ci.yml)")
+s.box(224, 90, 160, 62, "Build and test", "mvn verify: 14 unit + MockMvc tests", fill=ACCENT_SOFT, stroke=ACCENT)
+s.box(404, 90, 164, 62, "Docs", "sphinx-build -W, zero warnings", fill=ACCENT_SOFT, stroke=ACCENT)
+s.arrow(304, 152, 304, 190)
+s.box(224, 192, 344, 76, "Boot and serve (smoke)", "starts the real jar, requests every public page, signs in, downloads a report PDF, calls the API with a key", fill=ACCENT_SOFT, stroke=ACCENT)
+s.text(396, 300, "All three green on main  ->  Stage 2 starts automatically", 11.5, INK2, anchor="middle")
+s.text(396, 318, "Red anywhere  ->  nothing is deployed; the PR shows what failed", 11.5, INK2, anchor="middle")
+
+s.arrow(586, 200, 632, 200)
+
+s.group(630, 50, 350, 300, "Stage 2 - Deploy  (deploy.yml)")
+s.box(648, 90, 314, 62, "Build and publish the image", "jar + JRE for arm64 and amd64 -> ghcr.io/<owner>/sharpen:<commit>", fill=GOOD_SOFT, stroke=GOOD)
+s.arrow(805, 152, 805, 190)
+s.box(648, 192, 314, 96, "Roll out to production", "over SSH to the VM: sync repo to the commit, pull image, docker compose up, wait for /api/v1/health; roll back to the previous image if it never answers", fill=GOOD_SOFT, stroke=GOOD)
+s.text(805, 318, "Skipped, not failed, until the DEPLOY_* secrets exist", 11.5, INK2, anchor="middle")
+
+s.box(30, 190, 130, 150, "Also", "CodeQL scan weekly and on PRs; Dependabot PRs for Maven, Actions, Docker; a v* tag makes a Release with the jar", bold=False)
+s.text(500, 392, "Every step is a file in .github/workflows; the VM-side script is deploy/remote-deploy.sh.", 11.5, INK2, anchor="middle")
+s.save("09-pipeline.svg")

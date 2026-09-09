@@ -17,6 +17,8 @@ troubleshooting and day-two operations. This file is the short version for peopl
 | `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`. `.env` is git-ignored |
 | `setup-vm.sh` | one-time VM prep: Docker, ufw 22/80/443, Oracle iptables fix |
 | `oci-retry-a1.sh` | polls Oracle for a free `VM.Standard.A1.Flex` across all ADs and sizes until one is created |
+| `remote-deploy.sh` | runs on the VM: pull `APP_IMAGE`, restart, wait for `/api/v1/health`, roll back on failure |
+| `Dockerfile.ci` | pipeline image: JRE + prebuilt jar, built for arm64 and amd64 in seconds |
 
 ## Quick path
 
@@ -45,6 +47,14 @@ troubleshooting and day-two operations. This file is the short version for peopl
    ```
    First build is 5–10 min on A1. Caddy fetches the certificate on the first visit to `https://<DOMAIN>`.
 6. **Check** — register with `ADMIN_EMAIL` first; that account can read `/admin/feedback`.
+
+## Pipeline (CI/CD)
+
+`.github/workflows/ci.yml` tests every push (unit + MockMvc, a boot-and-serve smoke test, docs build).
+`deploy.yml` runs when CI passes on `main`: builds a multi-arch image, pushes it to `ghcr.io/bhushanladde02/sharpen`,
+and — once the `production` environment has `DEPLOY_HOST` and `DEPLOY_SSH_KEY` secrets — rolls it out over SSH
+via `remote-deploy.sh` with a health check and automatic rollback. `codeql.yml`, `release.yml` (tag `v*` → GitHub
+Release with the jar) and `dependabot.yml` round it out. Setup and troubleshooting: `docs/deployment/07-ci-cd.rst`.
 
 ## Day two
 

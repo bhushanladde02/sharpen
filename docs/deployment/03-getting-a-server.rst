@@ -48,8 +48,8 @@ Click **Create**. One of two things happens:
 .. note::
 
    Only the ARM shape suffers from this. The free tier also includes two tiny x86 machines
-   (``VM.Standard.E2.1.Micro``, 1 GB memory) that are almost always available, but 1 GB is too small to run
-   Sharpen comfortably alongside PostgreSQL; the ARM machine is worth waiting for.
+   (``VM.Standard.E2.1.Micro``, 1 GB memory) that are almost always available. 1 GB is tight but workable
+   with a trimmed configuration — :doc:`08-small-vm` launches on one today while the A1 hunt continues.
 
 2b. Let the retry script wait for you
 -------------------------------------

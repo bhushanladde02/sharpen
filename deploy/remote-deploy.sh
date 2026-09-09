@@ -11,7 +11,10 @@ cd "$(dirname "$0")/.."                      # repository root on the VM (~/shar
 [ -n "${APP_IMAGE:-}" ] || { echo "APP_IMAGE is not set"; exit 2; }
 [ -f deploy/.env ] || { echo "deploy/.env is missing on the VM"; exit 2; }
 DOMAIN=$(grep -E '^DOMAIN=' deploy/.env | cut -d= -f2-)
-dc() { docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env "$@"; }
+FILES=(-f deploy/docker-compose.prod.yml)
+# SMALL_VM=true in deploy/.env (a 1 GB Micro) adds the memory-trimmed overrides.
+grep -qE '^SMALL_VM=true' deploy/.env && FILES+=(-f deploy/docker-compose.micro.yml)
+dc() { docker compose "${FILES[@]}" --env-file deploy/.env "$@"; }
 
 previous=$(docker inspect --format '{{.Config.Image}}' "$(dc ps -q app 2>/dev/null)" 2>/dev/null || true)
 echo "current image : ${previous:-<none>}"

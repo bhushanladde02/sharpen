@@ -1,0 +1,28 @@
+# Overrides for a 1 GB machine (Oracle VM.Standard.E2.1.Micro). Use together with the prod file:
+#   docker compose -f deploy/docker-compose.prod.yml -f deploy/docker-compose.micro.yml --env-file deploy/.env ...
+# remote-deploy.sh adds this file automatically when deploy/.env contains SMALL_VM=true.
+#
+# Budget (1024 MB total, ~150 MB for the OS + Docker): JVM ~380 MB, PostgreSQL ~60 MB, Caddy ~25 MB, and a
+# 2 GB swap file (setup-vm.sh creates it) so a spike swaps instead of getting OOM-killed. Never build the
+# image here — Maven needs more memory than the machine has; pull the pipeline's image instead.
+services:
+  app:
+    environment:
+      # -Xmx wins over the image's -XX:MaxRAMPercentage. Serial GC and C1-only JIT keep the JVM's own
+      # overhead small; the trade is a little throughput, which a pilot with a handful of users never notices.
+      JAVA_TOOL_OPTIONS: >-
+        -Xmx320m -Xss512k -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=48m
+        -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "4"
+      SERVER_TOMCAT_THREADS_MAX: "20"
+    mem_limit: 600m
+    memswap_limit: 1200m
+
+  db:
+    command: >-
+      postgres -c shared_buffers=32MB -c max_connections=20 -c work_mem=2MB
+               -c maintenance_work_mem=16MB -c effective_cache_size=128MB
+    mem_limit: 160m
+
+  caddy:
+    mem_limit: 80m

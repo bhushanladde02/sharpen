@@ -20,6 +20,8 @@ Everything from this chapter on one page, for when you already understand it and
      - ``SSH_PUB=~/.ssh/sharpen_vm.pub caffeinate -i bash deploy/oci-retry-a1.sh``
    * - check my A1 quota
      - ``oci limits resource-availability get --service-name compute --limit-name standard-a1-core-count --compartment-id <tenancy-ocid> --availability-domain RUzw:US-ASHBURN-AD-1``
+   * - create the 1 GB Micro instead (Plan B)
+     - ``SSH_PUB=~/.ssh/sharpen_vm.pub bash deploy/oci-create-micro.sh`` then add ``SMALL_VM=true`` to ``deploy/.env``
    * - log in to the Sharpen server
      - ``ssh -i ~/.ssh/sharpen_vm ubuntu@<ip>``
    * - copy the settings file to it
@@ -71,6 +73,8 @@ Files that matter
      - One-time server preparation: Docker, ufw, Oracle iptables fix.
    * - ``deploy/oci-retry-a1.sh``
      - Polls Oracle for a free ARM server until one is created.
+   * - ``deploy/oci-create-micro.sh``, ``deploy/docker-compose.micro.yml``
+     - Plan B: create the free 1 GB Micro; memory-trimmed overrides applied when ``SMALL_VM=true``.
    * - ``deploy/remote-deploy.sh``, ``deploy/Dockerfile.ci``
      - The VM-side rollout script (pull, restart, health check, rollback) and the pipeline's image recipe.
    * - ``.github/workflows/*.yml``, ``.github/dependabot.yml``

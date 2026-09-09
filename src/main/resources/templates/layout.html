@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0e1218" media="(prefers-color-scheme: dark)">
   <title th:replace="${title}">Sharpen</title>
+  <meta name="author" content="Bhushan Arun Ladde">
+  <meta name="copyright" content="© 2026 Bhushan Arun Ladde">
   <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
   <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" th:href="@{/img/favicon.ico}">
   <link rel="apple-touch-icon" sizes="180x180" th:href="@{/img/apple-touch-icon.png}">
@@ -46,6 +48,14 @@
   <main class="main">
     <div th:if="${flash}" class="flash" th:text="${flash}">Saved.</div>
     <th:block th:replace="${content}"/>
+    <footer class="footer site-footer">
+      <span>© 2026 <b>Bhushan Arun Ladde</b> · Sharpen is designed, built and operated by its author · open source under <a href="https://github.com/bhushanladde02/sharpen/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>.</span>
+      <span>
+        <a href="https://github.com/bhushanladde02/sharpen" rel="author noopener" target="_blank">Source on GitHub</a>
+        · <a th:href="@{/feedback(from=${path})}">Feedback</a>
+        <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>
+      </span>
+    </footer>
   </main>
 
   <!-- Phone tab bar: the four things people do most -->

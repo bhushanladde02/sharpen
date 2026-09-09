@@ -155,3 +155,13 @@ What is deliberately left out of the prototype and what to add before a public r
 - **Provider connectors** — pull usage from OpenAI/Anthropic admin APIs on a schedule instead of CSV uploads.
 - **Caching** — candidates view computes each score on request; cache per person for an hour or store the rolling score on `Person` when sessions change.
 - **Observability** — `spring-boot-starter-actuator`, structured logs, and a health endpoint behind auth.
+
+## License and copyright
+
+© 2026 Bhushan Arun Ladde. Sharpen — the name, the scoring model, the code and the documentation in this
+repository — is the author's original work (see `NOTICE`).
+
+It is free and open source under the **GNU Affero General Public License v3.0** (`LICENSE`). In plain terms:
+anyone may use, study, modify and share it, including running it as a service, provided they keep the
+copyright and attribution, and publish their own changes under the same license. Nobody may take it closed or
+present it as their own work.

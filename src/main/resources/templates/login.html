@@ -6,7 +6,8 @@
   <div class="auth card lift">
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <h1>Sign in</h1>
-    <p class="muted" style="margin-top:.25rem">Demo accounts: <code>demo@sharpen.io</code> (individual) or <code>hiring@sharpen.io</code> (company), password <code>demo1234</code>.</p>
+    <p class="muted" style="margin-top:.25rem" th:if="${demoData}">Demo accounts: <code>demo@sharpen.io</code> (individual) or <code>hiring@sharpen.io</code> (company), password <code>demo1234</code>.</p>
+    <p class="muted" style="margin-top:.25rem" th:unless="${demoData}">Sharpen is an independent project by Bhushan Arun Ladde. This is its own account system — the <a href="https://github.com/bhushanladde02/sharpen" target="_blank" rel="noopener">source is public</a>.</p>
     <div th:if="${param.error}" class="notice" style="margin-bottom:1rem">Email or password did not match.</div>
     <div th:if="${param.registered}" class="flash">Account created. Sign in to continue.</div>
     <div th:if="${param.logout}" class="flash">Signed out.</div>

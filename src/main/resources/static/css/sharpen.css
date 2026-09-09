@@ -329,3 +329,7 @@ pre { background: var(--surface-2); padding: .8rem 1rem; border-radius: var(--ra
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
 @media print { .drawer, .topbar, .tabbar, .no-print { display: none !important; } .shell { display: block; } .main { padding: 0; max-width: none; } .card { break-inside: avoid; } }
+
+/* Ownership footer, rendered by layout.html under every page */
+.site-footer { margin-top: 2.5rem; }
+.site-footer b { color: var(--ink-2); font-weight: 600; }

@@ -43,6 +43,7 @@ them (``FR-12``, ``NFR-3``).
    deployment/05-day-two
    deployment/06-cheat-sheet
    deployment/07-ci-cd
+   deployment/08-small-vm
 
 .. toctree::
    :maxdepth: 1

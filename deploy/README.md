@@ -17,6 +17,8 @@ troubleshooting and day-two operations. This file is the short version for peopl
 | `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`. `.env` is git-ignored |
 | `setup-vm.sh` | one-time VM prep: Docker, ufw 22/80/443, Oracle iptables fix |
 | `oci-retry-a1.sh` | polls Oracle for a free `VM.Standard.A1.Flex` across all ADs and sizes until one is created |
+| `oci-create-micro.sh` | Plan B: creates the always-available free `VM.Standard.E2.1.Micro` (1 GB) |
+| `docker-compose.micro.yml` | overrides for a 1 GB machine (JVM 320 MB heap, small Postgres); on when `SMALL_VM=true` in `.env` |
 | `remote-deploy.sh` | runs on the VM: pull `APP_IMAGE`, restart, wait for `/api/v1/health`, roll back on failure |
 | `Dockerfile.ci` | pipeline image: JRE + prebuilt jar, built for arm64 and amd64 in seconds |
 
@@ -72,7 +74,7 @@ uptime checks. Keep `DEMO_DATA=false` on a public site.
 
 | Host | Free tier | Trade-off |
 |---|---|---|
-| Oracle `VM.Standard.E2.1.Micro` | always available, 1 GB RAM | needs a small JVM heap + swap; build the jar elsewhere |
+| Oracle `VM.Standard.E2.1.Micro` | always available, 1 GB RAM | supported: `oci-create-micro.sh`, `SMALL_VM=true`, deploy the pipeline image (`docs/deployment/08-small-vm.rst`) |
 | Fly.io | small shared VM + 3 GB volume | Postgres is a separate app; usage-based above the allowance |
 | Render | free web service + free Postgres (90 days) | sleeps after 15 min idle |
 | Koyeb | one free nano instance | no free managed Postgres; use Neon/Supabase |

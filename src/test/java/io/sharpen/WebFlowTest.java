@@ -140,6 +140,16 @@ class WebFlowTest {
         // Public profile, and the company sees the candidate
         mvc.perform(get("/p/" + me.getHandle())).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
+        // The open directory lists the public profile, finds it by search, and a missing handle shows the directory too
+        mvc.perform(get("/p")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Flow Tester")));
+        mvc.perform(get("/p").param("q", "flow")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Flow Tester")));
+        mvc.perform(get("/p").param("q", "zzz-nobody")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("No public profile matches")));
+        mvc.perform(get("/p/no-such-handle")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("No public profile at")))
+                .andExpect(content().string(containsString("Flow Tester")));
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
         mvc.perform(get("/candidates").with(asMe)).andExpect(status().isForbidden());

@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/feedback", "/p/**", "/css/**", "/js/**", "/img/**", "/favicon.ico",
+                        .requestMatchers("/", "/login", "/register", "/feedback", "/p", "/p/**", "/profiles", "/css/**", "/js/**", "/img/**", "/favicon.ico",
                                 "/error", "/h2-console/**").permitAll()
                         .requestMatchers("/candidates/**").hasRole("COMPANY")
                         .anyRequest().authenticated())

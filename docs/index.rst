@@ -47,6 +47,7 @@ them (``FR-12``, ``NFR-3``).
    :maxdepth: 1
    :caption: Planning
 
+   for-companies
    roadmap
    glossary
 

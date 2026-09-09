@@ -9,3 +9,6 @@ data/
 docs/_build/
 docs/.venv/
 deploy/.env
+
+# Private notes (credentials etc.) - never committed
+private/

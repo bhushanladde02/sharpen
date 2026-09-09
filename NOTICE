@@ -1,0 +1,17 @@
+Sharpen — the AI profile
+Copyright © 2026 Bhushan Arun Ladde
+
+Sharpen was conceived, designed and written by Bhushan Arun Ladde
+(https://github.com/bhushanladde02). The name "Sharpen", the scoring model
+(independence / effectiveness / verification / growth / breadth), the source
+code, the documentation and the diagrams in this repository are his original
+work.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See LICENSE for the full text.
+
+Attribution: any copy, fork or derivative, and any service built from this
+code, must keep this notice and the copyright line, and must make its own
+source available under the same license (AGPL-3.0, sections 5 and 13).

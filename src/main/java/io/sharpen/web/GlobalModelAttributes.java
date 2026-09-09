@@ -38,6 +38,15 @@ public class GlobalModelAttributes {
         return request.getRequestURI();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${sharpen.demo-data:false}")
+    private boolean demoData;
+
+    /** True only when demo accounts are seeded (dev); the login page shows their credentials then. */
+    @ModelAttribute("demoData")
+    public boolean demoData() {
+        return demoData;
+    }
+
     /** The host the visitor used (e.g. {@code sharpen-ai.duckdns.org}), for showing profile URLs. */
     @ModelAttribute("siteHost")
     public String siteHost(jakarta.servlet.http.HttpServletRequest request) {

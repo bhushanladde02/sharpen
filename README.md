@@ -4,7 +4,7 @@ Sharpen tracks how a person works with AI, at work and at home, and turns it int
 
 1. **A monthly report** — what you used, for what, how much of the thinking stayed yours, and three concrete things to try next month. On screen and as a PDF.
 2. **An AI score (0–1000)** that rewards independence, verification and learning — never hours or prompt volume — so the incentive is to stay sharp, not to use more AI.
-3. **A public AI profile** (`/p/<handle>`) — a LinkedIn-style page with only the AI-related facts, which companies can browse and compare in the candidates view.
+3. **A public AI profile** (`/p/<handle>`) — a LinkedIn-style page with only the AI-related facts. `/p` is the open, searchable directory of every public profile; companies get the ranked, filterable candidates view on top of it.
 
 Java 21 · Spring Boot 3.3 · Thymeleaf · Spring Data JPA · Spring Security · H2 (dev) / PostgreSQL (prod) · openhtmltopdf.
 

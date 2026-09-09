@@ -1,7 +1,10 @@
 package io.sharpen.web;
 
+import io.sharpen.domain.Enums.AccountType;
 import io.sharpen.domain.MonthlyReport;
 import io.sharpen.domain.Person;
+import io.sharpen.repo.PersonRepository;
+import io.sharpen.scoring.AiScore;
 import io.sharpen.service.MonthSummary;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.ReportService;
@@ -20,7 +23,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 /** The public AI profile (the "LinkedIn of AI" page) and the settings page that edits it. */
 @Controller
@@ -73,16 +78,28 @@ public class ProfileController {
         public void setPublicProfile(boolean v) { publicProfile = v; }
     }
 
+    /** One row of the public directory. */
+    public record Listed(Person person, AiScore score, long sessions) {}
+
     private final PersonService people;
+    private final PersonRepository repo;
     private final StatsService stats;
     private final ReportService reports;
     private final SessionService sessions;
 
-    public ProfileController(PersonService people, StatsService stats, ReportService reports, SessionService sessions) {
+    public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports, SessionService sessions) {
         this.people = people;
+        this.repo = repo;
         this.stats = stats;
         this.reports = reports;
         this.sessions = sessions;
+    }
+
+    /** The open directory: every public individual profile, searchable, each linking to its profile page. */
+    @GetMapping({"/p", "/profiles"})
+    public String directory(@RequestParam(required = false) String q, Model model) {
+        fillDirectory(q, model);
+        return "profiles";
     }
 
     @GetMapping("/p/{handle}")
@@ -90,8 +107,10 @@ public class ProfileController {
         Person p = people.byHandle(handle).orElse(null);
         boolean owner = p != null && people.current().map(me -> me.getId().equals(p.getId())).orElse(false);
         if (p == null || p.isCompany() || (!p.isPublicProfile() && !owner)) {
-            model.addAttribute("handle", handle);
-            return "profile-hidden";
+            // Not a dead end: show the directory with a note about the handle that was asked for.
+            model.addAttribute("missingHandle", handle);
+            fillDirectory(null, model);
+            return "profiles";
         }
         LocalDate today = LocalDate.now();
         List<MonthSummary> trend = stats.trend(p, YearMonth.from(today), 6);
@@ -107,6 +126,27 @@ public class ProfileController {
         model.addAttribute("tools", p.getPrimaryTools() == null ? List.of() : List.of(p.getPrimaryTools().split("\\s*,\\s*")));
         return "profile";
     }
+
+    private void fillDirectory(String q, Model model) {
+        LocalDate today = LocalDate.now();
+        String needle = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
+        List<Listed> list = repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL).stream()
+                .filter(p -> needle.isEmpty() || haystack(p).contains(needle))
+                .map(p -> new Listed(p, stats.rollingScore(p, today), sessions.count(p)))
+                .sorted(Comparator.comparingInt((Listed l) -> l.score().hasScore() ? l.score().composite() : -1).reversed()
+                        .thenComparing(l -> l.person().getDisplayName(), String.CASE_INSENSITIVE_ORDER))
+                .toList();
+        model.addAttribute("profiles", list);
+        model.addAttribute("q", q == null ? "" : q.trim());
+        model.addAttribute("total", repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL).size());
+    }
+
+    private static String haystack(Person p) {
+        return String.join(" ", nz(p.getDisplayName()), nz(p.getHandle()), nz(p.getHeadline()), nz(p.getJobTitle()),
+                nz(p.getIndustry()), nz(p.getLocation()), nz(p.getPrimaryTools())).toLowerCase(Locale.ROOT);
+    }
+
+    private static String nz(String s) { return s == null ? "" : s; }
 
     @GetMapping("/settings")
     public String settings(Model model) {

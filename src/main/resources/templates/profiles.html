@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Public AI profiles — Sharpen</title></head>
+<body>
+<main>
+  <div class="card" th:if="${missingHandle}" style="margin-bottom:1rem;border-color:var(--warn, #c9a227)">
+    <b>No public profile at <code th:text="'/p/' + ${missingHandle}">/p/handle</code></b>
+    <span class="muted"> — it is private or does not exist (the owner can make it public under Settings). Here is everyone who is public.</span>
+  </div>
+
+  <div class="page-head">
+    <div><h1>Public AI profiles</h1>
+      <p>Everyone on Sharpen who has made their AI profile public — <span class="num" th:text="${total}">0</span> so far. Pick one to see their score, trend and how they work with AI.</p></div>
+  </div>
+
+  <form method="get" th:action="@{/p}" class="card row" style="margin-bottom:1rem" role="search">
+    <input type="search" name="q" th:value="${q}" placeholder="Search by name, handle, title, industry, tools or location" style="flex:1;min-width:220px" autofocus>
+    <button class="btn primary" type="submit">Search</button>
+    <a class="btn" th:if="${q != ''}" th:href="@{/p}">Clear</a>
+  </form>
+
+  <div class="stack">
+    <a class="card cand" th:each="l : ${profiles}" th:with="s=${l.score}" th:href="@{/p/{h}(h=${l.person.handle})}" style="text-decoration:none;color:inherit">
+      <div class="mini"><span class="num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</span><small th:text="${s.hasScore()} ? ${s.band()} : 'new'">Strong</small></div>
+      <div>
+        <div class="row" style="gap:.5rem"><span style="font-weight:800;font-size:1.05rem" th:text="${l.person.displayName}">Name</span>
+          <span class="muted-3" style="font-size:.8rem" th:text="'/p/' + ${l.person.handle}">/p/handle</span>
+          <span class="chip warn" th:if="${s.confidence.name() == 'LOW'}">provisional</span></div>
+        <div class="muted" style="font-size:.88rem" th:if="${l.person.headline}" th:text="${l.person.headline}">Headline</div>
+        <div class="muted-3" style="font-size:.8rem">
+          <span th:text="${l.person.jobTitle}">Title</span><span th:if="${l.person.industry}" th:text="' · ' + ${l.person.industry}"></span><span th:if="${l.person.location}" th:text="' · ' + ${l.person.location}"></span><span th:if="${l.person.primaryTools}" th:text="' · ' + ${l.person.primaryTools}"></span>
+          <span th:text="' · ' + ${l.sessions} + ' sessions'"> · 12 sessions</span>
+        </div>
+      </div>
+      <span class="btn small cta">View profile</span>
+    </a>
+    <div class="card empty" th:if="${#lists.isEmpty(profiles) and q != ''}">No public profile matches “<span th:text="${q}"></span>”. <a th:href="@{/p}">Show everyone</a>.</div>
+    <div class="card empty" th:if="${#lists.isEmpty(profiles) and q == ''}">
+      Nobody has made a profile public yet. <a th:href="@{/register}">Create an account</a>, log a few sessions and switch on
+      <i>Public profile</i> under Settings to be the first.
+    </div>
+  </div>
+</main>
+</body>
+</html>

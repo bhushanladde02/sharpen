@@ -22,7 +22,7 @@
   <header class="topbar">
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <span class="grow"></span>
-    <nav class="nav" th:if="${me == null}"><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
+    <nav class="nav" th:if="${me == null}"><a th:href="@{/p}">Public profiles</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
     <label class="menu-toggle" for="nav-open" aria-label="Menu" th:if="${me != null}"><span></span></label>
   </header>
   <input type="checkbox" id="nav-open" aria-hidden="true">
@@ -52,6 +52,7 @@
       <span>© 2026 <b>Bhushan Arun Ladde</b> · Sharpen is designed, built and operated by its author · open source under <a href="https://github.com/bhushanladde02/sharpen/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>.</span>
       <span>
         <a href="https://github.com/bhushanladde02/sharpen" rel="author noopener" target="_blank">Source on GitHub</a>
+        · <a th:href="@{/p}">Public profiles</a>
         · <a th:href="@{/feedback(from=${path})}">Feedback</a>
         <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>
       </span>

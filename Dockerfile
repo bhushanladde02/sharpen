@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn -q -B package -DskipTests
 
 # Run stage
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /src/target/sharpen.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=postgres

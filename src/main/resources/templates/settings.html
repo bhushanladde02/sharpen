@@ -11,7 +11,7 @@
       <div><label for="displayName">Name</label><input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
         <div class="error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div></div>
       <div th:unless="${me.company}"><label for="handle">Public URL handle</label><input type="text" id="handle" th:field="*{handle}" required maxlength="60" pattern="[a-z0-9-]+">
-        <div class="help" th:text="'sharpen.io/p/' + *{handle}">sharpen.io/p/handle</div>
+        <div class="help" th:text="${siteHost} + '/p/' + *{handle}">host/p/handle</div>
         <div class="error" th:if="${#fields.hasErrors('handle')}" th:errors="*{handle}"></div></div>
       <input type="hidden" th:if="${me.company}" th:field="*{handle}">
       <div><label for="headline">Headline</label><input type="text" id="headline" th:field="*{headline}" maxlength="160" placeholder="How you use AI, in one line">

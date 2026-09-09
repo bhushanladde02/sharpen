@@ -35,7 +35,7 @@
 <body th:with="m=${r.month}, s=${r.month.score}, d=${r.delta}, b=${r.brainActive}">
   <div class="eyebrow">Sharpen · Monthly AI report</div>
   <h1 th:text="${r.label}">August 2026</h1>
-  <p class="muted"><span th:text="${r.personName}">Name</span><span th:if="${r.headline != null}" th:text="' · ' + ${r.headline}"></span> · sharpen.io/p/<span th:text="${r.handle}">handle</span></p>
+  <p class="muted"><span th:text="${r.personName}">Name</span><span th:if="${r.headline != null}" th:text="' · ' + ${r.headline}"></span> · <span th:text="${siteHost}">host</span>/p/<span th:text="${r.handle}">handle</span></p>
 
   <table>
     <tr>

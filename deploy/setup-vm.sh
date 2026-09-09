@@ -27,12 +27,14 @@ sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw --force enable
 
-# Oracle's Ubuntu images ship iptables rules that block 80/443 even with ufw open; remove that reject rule.
+# Oracle's Ubuntu images ship iptables rules (loaded by netfilter-persistent) that reject 80/443 even with ufw
+# open. Insert accept rules ahead of the reject for the running system. Installing ufw removes
+# netfilter-persistent, so after a reboot the Oracle rule set is no longer loaded and ufw's rules apply alone;
+# do NOT reinstall iptables-persistent here — on 24.04 it conflicts with ufw and its install asks an
+# interactive question that hangs a piped script.
 if sudo iptables -L INPUT -n | grep -q "reject-with icmp-host-prohibited"; then
   sudo iptables -I INPUT 5 -p tcp --dport 80 -j ACCEPT
   sudo iptables -I INPUT 5 -p tcp --dport 443 -j ACCEPT
-  sudo apt-get install -y iptables-persistent >/dev/null 2>&1 || true
-  sudo netfilter-persistent save >/dev/null 2>&1 || true
 fi
 
 echo

@@ -41,14 +41,18 @@ public class PdfService {
     }
 
     private final TemplateEngine templates;
+    private final String siteHost;
 
-    public PdfService(TemplateEngine templates) {
+    public PdfService(TemplateEngine templates,
+                      @org.springframework.beans.factory.annotation.Value("${sharpen.site-host:localhost:8080}") String siteHost) {
         this.templates = templates;
+        this.siteHost = siteHost;
     }
 
     public byte[] monthlyReport(ReportModel model) {
         Context ctx = new Context(Locale.ENGLISH);
         ctx.setVariable("r", model);
+        ctx.setVariable("siteHost", siteHost);
         String html = templates.process("report-pdf", ctx);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             new PdfRendererBuilder()

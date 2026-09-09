@@ -28,7 +28,7 @@
     <nav class="nav" th:replace="~{nav :: navlinks}"></nav>
     <div class="spacer"></div>
     <div class="nav" th:if="${me != null}">
-      <div class="who"><b th:text="${me.displayName}">Name</b><span th:text="${me.company} ? 'Company account' : ('sharpen.io/p/' + ${me.handle})">handle</span></div>
+      <div class="who"><b th:text="${me.displayName}">Name</b><span th:text="${me.company} ? 'Company account' : (${siteHost} + '/p/' + ${me.handle})">handle</span></div>
       <div class="who counter" style="border-top:0;padding-top:0">
         <b><span class="num" data-count="members" th:text="${#numbers.formatInteger(community.members, 1, 'COMMA')}">0</span> members</b>
         <span><span class="num" data-count="sessions" th:text="${#numbers.formatInteger(community.sessions, 1, 'COMMA')}">0</span> sessions logged</span>

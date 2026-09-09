@@ -25,14 +25,17 @@ From your Mac (the ``oci`` tool is already set up from :doc:`02-one-time-setup`)
    SSH_PUB=~/.ssh/sharpen_vm.pub bash deploy/oci-create-micro.sh
 
 It finds the Ubuntu 24.04 x86 image and your subnet, tries the availability domains in turn, and ends with
-``Public IP: …``. Takes about a minute. The instance is named ``sharpen-micro`` (so the A1 hunter, which looks
+``Public IP: …``. Takes about a minute. (On 9 September 2026 it succeeded in AD-1 on the first attempt and
+produced ``sharpen-micro`` at ``150.136.83.28`` — the full story is in :doc:`09-pilot-log`.) The instance is named ``sharpen-micro`` (so the A1 hunter, which looks
 for one named ``sharpen``, keeps going). The console alternative is *Compute → Create instance* with shape
 *Specialty and previous generation → VM.Standard.E2.1.Micro*, otherwise the same choices as :doc:`03-getting-a-server`.
 
 2. Point the name, prepare the machine
 --------------------------------------
 
-Exactly Steps 3 and 4 of :doc:`04-deploying`: put the IP into DuckDNS, then
+Exactly Steps 3 and 4 of :doc:`04-deploying`: put the IP into DuckDNS — the **current ip** box, not the
+*ipv6* one next to it (leave ipv6 empty) — click *update ip*, confirm with ``dig +short <name>.duckdns.org``,
+then
 
 .. code-block:: bash
 

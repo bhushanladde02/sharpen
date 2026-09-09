@@ -19,4 +19,5 @@ spring:
 
 sharpen:
   demo-data: ${SHARPEN_DEMO_DATA:false}
+  site-host: ${SHARPEN_SITE_HOST:localhost:8080}
   admin-email: ${SHARPEN_ADMIN_EMAIL:}

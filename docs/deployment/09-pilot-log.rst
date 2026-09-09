@@ -127,15 +127,51 @@ free shape. Decision: **Plan B — the 1 GB E2.1.Micro**, with the hunter left r
 #. DuckDNS: the IP was first typed into the **ipv6** box by mistake. Corrected: ipv6 emptied, IP into
    *current ip*, *update ip* → *success: ip address for sharpen-ai.duckdns.org updated to 150.136.83.28*.
    ``dig +short sharpen-ai.duckdns.org`` on the Mac → ``150.136.83.28``.
-#. *(next)* ``ssh -i ~/.ssh/sharpen_vm ubuntu@150.136.83.28`` → ``setup-vm.sh`` from ``main`` (adds the 2 GB
-   swap) → clone → ``scp`` the ``.env`` → ``APP_IMAGE=ghcr.io/bhushanladde02/sharpen:latest bash
-   deploy/remote-deploy.sh`` → register the admin account → turn on the pipeline's deploy stage
-   (:doc:`07-ci-cd`, "Turning the deploy stage on").
+#. ``ssh -i ~/.ssh/sharpen_vm ubuntu@150.136.83.28`` (fingerprint accepted), then ``setup-vm.sh`` piped
+   from GitHub. It installed Docker 29.8, printed *Added a 2 GB swap file (machine has 954 MB RAM)*,
+   enabled ufw — and then appeared to **hang** after *Firewall is active*. Cause: the last step installed
+   ``iptables-persistent``, whose debconf question ("save current rules?") was invisible behind
+   ``>/dev/null``. Ctrl+C dismissed it and the script printed *Done*; everything before it had completed.
+   Verified: ``iptables -L INPUT`` showed ACCEPT 443/80 above Oracle's REJECT, ``ufw status`` active with
+   22/80/443, ``free -m`` showed ``Swap: 2047``. The script no longer installs that package.
+#. ``git clone`` on the server; ``scp`` of ``deploy/.env`` from the Mac **failed once** because it ran before
+   the clone existed (*No such file or directory*) — order matters. Second attempt: 195 bytes copied.
+#. The deploy command was pasted into the **Mac** tab by mistake (``docker: command not found`` — harmless).
+   Run on the server: ``APP_IMAGE=ghcr.io/bhushanladde02/sharpen:latest bash deploy/remote-deploy.sh``
+   pulled the image (47.6 s), postgres:16-alpine (41 s) and caddy:2-alpine (11 s), created the network and
+   three volumes, ``deploy-db-1 Healthy`` in 13.8 s, ``app`` and ``caddy`` started, and printed
+   ``healthy : https://sharpen-ai.duckdns.org/api/v1/health`` then ``OK``. **The site was live** — verified
+   from outside: valid certificate, landing page with counters at 0, ``{"status":"ok"}``.
+#. Registered the admin account with the ``ADMIN_EMAIL`` address; the sidebar showed *1 members*.
+#. Chrome showed a red **"Dangerous"** badge (Google Safe Browsing) on the login page: a brand-new
+   ``duckdns.org`` subdomain with a password form matches the phishing heuristic. The certificate was valid.
+   Actions: *Site is legitimate* for the local browser; report the false positive to Google; consider a
+   real domain. Recorded as an open item.
+#. Noticed the sidebar said ``sharpen.io/p/…`` — a hostname hardcoded in three templates. Fixed to use the
+   request's Host header (pages) and ``SHARPEN_SITE_HOST`` = ``DOMAIN`` (PDF footer). Tests 14/14.
+#. Second PR (#11, branch ``micro-live``): the branch was cut from ``micro-plan-b`` instead of ``main``
+   because ``git checkout main`` refused with uncommitted files, so GitHub asked for **Update branch**
+   before merging (the ruleset's "up to date" rule). Updated, checks reran green, merged as ``805b178``.
+   Deploy #3 published the new image; on the server ``git pull`` + ``remote-deploy.sh`` pulled it in 13 s,
+   recreated ``app``, health OK. An earlier run of the same commands, made *before* the merge, correctly
+   reported *Already up to date* and re-pulled the identical image in 0.8 s.
+
+Open items at the end of day 3
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Turn on the pipeline's automatic rollout (deploy key + ``production`` secrets, :doc:`07-ci-cd`).
+* Google Safe Browsing false positive: report / Search Console review; decide on a real domain.
+* Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
+* Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
+* The A1 hunter is still running on the bot VM; migrate per :doc:`08-small-vm` if it ever lands.
 
 Things to remember from this log
 --------------------------------
 
 * Oracle's free ARM pool in Ashburn can be unavailable for days; the Micro is available in seconds.
+* A script piped into ``bash`` with output silenced can hide an interactive prompt and look hung.
+* Clone before you ``scp`` into the clone; run server commands only at the server prompt.
+* A fresh ``duckdns.org`` login page will be flagged by Safe Browsing; plan a real domain for anything public.
 * A Free Tier tenancy may have an A1 quota of 2 cores, not 4 — check *Limits* before assuming.
 * Run anything that must poll for hours on a machine that does not sleep.
 * Paste server commands only when the prompt says you are on the server.

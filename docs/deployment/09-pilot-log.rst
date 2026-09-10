@@ -251,8 +251,12 @@ Day 4 — Thursday 10 September: the directory grows up, profile pictures
 
 #. **Nicer failures.** Spring Boot's "Whitelabel Error Page" is replaced by a Sharpen-styled one
    (``error.html`` + ``ErrorPageController``) with a plain-language hint per status — the 403 case says to
-   go back, reload and retry. A small filter redirects any ``GET`` ending in ``/`` to the canonical URL
-   (``/sessions/`` → ``/sessions``), since Spring 6 no longer treats them as the same address.
+   go back, reload and retry. ``/sessions/`` now reaches the same page as ``/sessions`` (Spring 6 stopped
+   matching a trailing slash by default). The first attempt was a redirect filter; CodeQL flagged it as an
+   open redirect (CWE-601) — correctly, since ``//evil.com/`` would have become ``Location: //evil.com`` —
+   and kept flagging the whitelisted rewrite because any request-derived string in ``Location`` is tainted
+   to the analyzer. Final answer: no redirect at all, just ``PathPatternParser.setMatchOptionalTrailingSeparator``
+   in a ``WebMvcConfigurer``. Lesson: when a scanner keeps objecting, look for a design without the sink.
 
 Open items (as of day 4)
 ^^^^^^^^^^^^^^^^^^^^^^^^

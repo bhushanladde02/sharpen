@@ -189,6 +189,9 @@ class WebFlowTest {
                 .andExpect(header().string("Location", "/sessions"));
         mvc.perform(get("/p/?q=x")).andExpect(status().isMovedPermanently())
                 .andExpect(header().string("Location", "/p?q=x"));
+        // …but never to another host: a protocol-relative path is not redirected at all (open-redirect guard)
+        mvc.perform(get("//evil.example/")).andExpect(header().doesNotExist("Location"));
+        mvc.perform(get("/p/?q=x&next=//evil.example")).andExpect(header().doesNotExist("Location"));
 
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));

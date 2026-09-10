@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title th:text="${errTitle} + ' — Sharpen'">Error — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card lift">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <p class="eyebrow" th:text="'Error ' + ${status}">Error 404</p>
+    <h1 th:text="${errTitle}">Page not found</h1>
+    <p class="muted" style="margin-top:.5rem" th:text="${errHint}">Hint.</p>
+    <p class="muted-3" th:if="${uri != ''}" style="font-size:.8rem"><code th:text="${uri}">/path</code></p>
+    <div class="row" style="margin-top:.5rem">
+      <a class="btn primary" th:href="@{/}">Home</a>
+      <a class="btn" th:if="${status == 403}" href="javascript:history.back()">Go back</a>
+      <a class="btn" th:href="@{/p}">Public profiles</a>
+      <a class="btn" th:href="@{/feedback(from=${uri})}">Feedback</a>
+    </div>
+  </div>
+</main>
+</body>
+</html>

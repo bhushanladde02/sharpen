@@ -10,7 +10,9 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -64,9 +66,10 @@ public class SessionController {
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable Long id, Model model) {
         UsageSession s = sessions.find(people.requireCurrent(), id)
-                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found"));
         model.addAttribute("form", SessionForm.from(s));
-        model.addAttribute("session", s);
+        // Not "session": Thymeleaf reserves that name for the HTTP session, which silently shadows the model attribute.
+        model.addAttribute("entry", s);
         model.addAttribute("mode", s.isSelfAssessed() ? "edit" : "rate");
         return "session-form";
     }
@@ -76,7 +79,7 @@ public class SessionController {
                          Model model, RedirectAttributes redirect, @RequestParam(required = false) String next) {
         Person me = people.requireCurrent();
         if (binding.hasErrors()) {
-            model.addAttribute("session", sessions.find(me, id).orElse(null));
+            model.addAttribute("entry", sessions.find(me, id).orElse(null));
             model.addAttribute("mode", "edit");
             return "session-form";
         }

@@ -229,6 +229,31 @@ Day 4 — Thursday 10 September: the directory grows up, profile pictures
    Filtered-out cards were counted but still visible: the card's ``display:grid`` beat the ``hidden``
    attribute; one CSS line fixes it.
 
+#. **First real user session finds three bugs.** After the deploy the admin logged a session, opened it to
+   edit, pressed *Save* — and got a "Whitelabel Error Page" for ``/sessions/`` (404); earlier a login attempt
+   had shown a 403. Investigation, in order:
+
+   * The 403 was the harmless one: a login form loaded before the restart carried an expired security token.
+   * The 404 was a bug. The edit template built its form action from ``${session.id}`` — but ``session`` is a
+     name Thymeleaf reserves for the HTTP session, so the model attribute was silently shadowed, ``id`` came
+     out empty and the form posted to ``/sessions/`` — nothing listens there. *Delete* had the same fault. The
+     attribute is now called ``entry``. Lesson: never name a model attribute ``session``, ``param`` or
+     ``application``.
+   * Fixing that exposed a second one: the date field was rendered in the locale's short format
+     (``8/27/26``) but ``<input type="date">`` only accepts ``yyyy-MM-dd``, so the browser blanked it and the
+     ``required`` rule blocked the submit with no visible message. Dates are now ISO
+     (``@DateTimeFormat(iso = DATE)`` and ``spring.mvc.format.date: iso``).
+   * And a third: editing a session id that does not exist threw a raw exception (HTTP 500) instead of 404.
+
+   None of this was covered by the end-to-end test, which logged sessions through the form but never opened
+   the edit page. It now does: render, form action, ISO date, save, read back, delete, and 404 afterwards —
+   and the whole flow was re-run in a real headless browser before shipping.
+
+#. **Nicer failures.** Spring Boot's "Whitelabel Error Page" is replaced by a Sharpen-styled one
+   (``error.html`` + ``ErrorPageController``) with a plain-language hint per status — the 403 case says to
+   go back, reload and retry. A small filter redirects any ``GET`` ending in ``/`` to the canonical URL
+   (``/sessions/`` → ``/sessions``), since Spring 6 no longer treats them as the same address.
+
 Open items (as of day 4)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -253,6 +278,8 @@ Things to remember from this log
 * Screenshots leak: the DuckDNS token appeared in two of them and should be regenerated.
 * A required status check listed twice blocks every PR.
 * The first push to ``main`` without a ruleset is fine; the ruleset applies from the moment it is created.
+* A model attribute called ``session`` is invisible to Thymeleaf; a date field must be ISO for ``type=date``.
+* If a test never opens a page, that page is untested — the edit form shipped broken behind a green suite.
 * Any schema change: migration script first, image second — the health check will tell you if you forget.
 * Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
   on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

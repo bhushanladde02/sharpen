@@ -7,12 +7,12 @@
     <div>
       <p class="eyebrow" th:text="${mode == 'rate'} ? 'Needs your rating' : (${mode == 'edit'} ? 'Edit' : 'New session')">New session</p>
       <h1 th:text="${mode == 'new'} ? 'Log an AI session' : (${mode == 'rate'} ? 'How did this session go?' : 'Edit session')">Log an AI session</h1>
-      <p th:if="${mode == 'rate' and session != null}" th:text="'Captured by ' + ${session.source.label.toLowerCase()} + ' on ' + ${session.occurredOn} + ' — ' + ${session.tool} + ', ' + ${session.durationMinutes} + ' minutes, ' + ${session.promptCount} + ' prompts. Fill in the four questions below.'">captured</p>
+      <p th:if="${mode == 'rate' and entry != null}" th:text="'Captured by ' + ${entry.source.label.toLowerCase()} + ' on ' + ${entry.occurredOn} + ' — ' + ${entry.tool} + ', ' + ${entry.durationMinutes} + ' minutes, ' + ${entry.promptCount} + ' prompts. Fill in the four questions below.'">captured</p>
       <p th:if="${mode == 'new'}">Fifteen seconds. The four self-assessment questions are what the score is built from.</p>
     </div>
   </div>
 
-  <form th:action="${mode == 'new'} ? @{/sessions} : @{/sessions/{id}(id=${session.id})}" th:object="${form}" method="post" class="stack" style="max-width:760px">
+  <form th:action="${mode == 'new'} ? @{/sessions} : @{/sessions/{id}(id=${entry.id})}" th:object="${form}" method="post" class="stack" style="max-width:760px">
     <div class="card stack">
       <h2>What happened</h2>
       <div class="field-row">
@@ -60,7 +60,7 @@
         <button class="btn" type="submit" name="next" value="rate" th:if="${mode == 'rate'}">Save and rate next</button>
         <a class="btn" th:href="@{/sessions}">Cancel</a>
       </div>
-      <button class="btn danger" type="submit" th:if="${mode != 'new' and session != null}" th:formaction="@{/sessions/{id}/delete(id=${session.id})}" formmethod="post">Delete</button>
+      <button class="btn danger" type="submit" th:if="${mode != 'new' and entry != null}" th:formaction="@{/sessions/{id}/delete(id=${entry.id})}" formmethod="post">Delete</button>
     </div>
   </form>
 </main>

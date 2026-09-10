@@ -166,6 +166,30 @@ class WebFlowTest {
                 .andExpect(flash().attribute("flash", containsString("JPEG or PNG")));
         mvc.perform(post("/settings/avatar/remove").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
         mvc.perform(get("/p/" + me.getHandle() + "/avatar")).andExpect(status().isNotFound());
+        // Edit an existing session: the page renders, the form posts to /sessions/{id}, the change is saved, delete works
+        var firstId = mvc.perform(get("/sessions").with(asMe)).andReturn().getResponse().getContentAsString()
+                .replaceAll("(?s).*?href=\"/sessions/(\\d+)/edit\".*", "$1");
+        mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("action=\"/sessions/" + firstId + "\"")))
+                .andExpect(content().string(containsString("value=\"" + day + "\"")))   // ISO date, not 8/27/26
+                .andExpect(content().string(containsString("formaction=\"/sessions/" + firstId + "/delete\"")));
+        mvc.perform(post("/sessions/" + firstId).with(csrf()).with(asMe)
+                        .param("occurredOn", day.toString()).param("context", "PERSONAL").param("tool", "Claude Code")
+                        .param("taskCategory", "CODING").param("durationMinutes", "45").param("promptCount", "20")
+                        .param("humanContributionPct", "50").param("verifiedOutput", "true").param("learnedSomething", "true")
+                        .param("outcome", "4").param("notes", "edited"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sessions"));
+        mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("value=\"Claude Code\"")));
+        mvc.perform(post("/sessions/" + firstId + "/delete").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().is4xxClientError());
+
+        // Trailing slashes redirect to the canonical URL instead of 404ing
+        mvc.perform(get("/sessions/").with(asMe)).andExpect(status().isMovedPermanently())
+                .andExpect(header().string("Location", "/sessions"));
+        mvc.perform(get("/p/?q=x")).andExpect(status().isMovedPermanently())
+                .andExpect(header().string("Location", "/p?q=x"));
+
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
         mvc.perform(get("/candidates").with(asMe)).andExpect(status().isForbidden());

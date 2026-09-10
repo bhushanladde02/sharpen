@@ -4,6 +4,7 @@ import io.sharpen.domain.Enums.TaskCategory;
 import io.sharpen.domain.Enums.UsageContext;
 import io.sharpen.domain.UsageSession;
 import io.sharpen.service.SessionService.SessionInput;
+import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 /** The log / rate form. Deliberately short: a session should take fifteen seconds to record. */
 public class SessionForm {
 
-    @NotNull @PastOrPresent private LocalDate occurredOn = LocalDate.now();
+    /** ISO so the value round-trips through {@code <input type="date">}, which only accepts yyyy-MM-dd. */
+    @NotNull @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate occurredOn = LocalDate.now();
     @NotNull private UsageContext context = UsageContext.PROFESSIONAL;
     @NotBlank @Size(max = 60) private String tool = "Claude";
     @NotNull private TaskCategory taskCategory = TaskCategory.CODING;

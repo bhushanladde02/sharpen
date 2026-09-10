@@ -33,6 +33,9 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  mvc:
+    format:
+      date: iso            # form dates are exchanged as yyyy-MM-dd, what <input type="date"> expects
   jackson:
     default-property-inclusion: non_null
 

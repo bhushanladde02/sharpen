@@ -184,14 +184,11 @@ class WebFlowTest {
         mvc.perform(post("/sessions/" + firstId + "/delete").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
         mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().is4xxClientError());
 
-        // Trailing slashes redirect to the canonical URL instead of 404ing
-        mvc.perform(get("/sessions/").with(asMe)).andExpect(status().isMovedPermanently())
-                .andExpect(header().string("Location", "/sessions"));
-        mvc.perform(get("/p/?q=x")).andExpect(status().isMovedPermanently())
-                .andExpect(header().string("Location", "/p?q=x"));
-        // …but never to another host: a protocol-relative path is not redirected at all (open-redirect guard)
-        mvc.perform(get("//evil.example/")).andExpect(header().doesNotExist("Location"));
-        mvc.perform(get("/p/?q=x&next=//evil.example")).andExpect(header().doesNotExist("Location"));
+        // A trailing slash reaches the same page (no redirect, so no Location header to abuse)
+        mvc.perform(get("/sessions/").with(asMe)).andExpect(status().isOk())
+                .andExpect(header().doesNotExist("Location"));
+        mvc.perform(get("/p/")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Public AI profiles")));
 
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));

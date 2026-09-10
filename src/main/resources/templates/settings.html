@@ -29,6 +29,20 @@
 
     <div class="stack">
       <div class="card">
+        <h2>Picture</h2>
+        <div class="avatar-edit">
+          <span th:replace="~{fragments :: avatar(${me}, 'lg')}"></span>
+          <div class="stack" style="gap:.5rem;flex:1">
+            <form th:action="@{/settings/avatar}" method="post" enctype="multipart/form-data" class="stack" style="gap:.5rem">
+              <input type="file" name="picture" accept="image/jpeg,image/png,image/gif,image/webp" required aria-label="Choose a picture">
+              <div class="row"><button class="btn primary small" type="submit">Upload</button>
+                <span class="help" style="margin:0">JPEG or PNG, up to 8 MB. It is cropped to a square and shown at 256 px.</span></div>
+            </form>
+            <form th:action="@{/settings/avatar/remove}" method="post" th:if="${me.hasAvatar}"><button class="btn small danger" type="submit">Remove picture</button></form>
+          </div>
+        </div>
+      </div>
+      <div class="card">
         <h2>API key</h2>
         <p>Used by the browser extension and import scripts. Treat it like a password.</p>
         <pre th:text="${me.apiKey}">shp_…</pre>

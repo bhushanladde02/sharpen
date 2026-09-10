@@ -64,6 +64,10 @@ public class Person {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
+    /** 0 = no picture; otherwise bumped on every upload so the picture URL changes and caches refresh. */
+    @Column(name = "avatar_version", nullable = false)
+    private int avatarVersion = 0;
+
     protected Person() {}
 
     public Person(String email, String passwordHash, String displayName, String handle, AccountType accountType, String apiKey) {
@@ -103,4 +107,24 @@ public class Person {
     public String getApiKey() { return apiKey; }
     public void setApiKey(String apiKey) { this.apiKey = apiKey; }
     public Instant getCreatedAt() { return createdAt; }
+    public int getAvatarVersion() { return avatarVersion; }
+    public void setAvatarVersion(int avatarVersion) { this.avatarVersion = avatarVersion; }
+    public boolean isHasAvatar() { return avatarVersion > 0; }
+
+    /** Up to two initials for the fallback avatar: "Priya Natarajan" → "PN", "Acme" → "A". */
+    public String getInitials() {
+        String[] parts = displayName == null ? new String[0] : displayName.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isEmpty() && Character.isLetterOrDigit(part.charAt(0))) sb.append(Character.toUpperCase(part.charAt(0)));
+            if (sb.length() == 2) break;
+        }
+        return sb.length() == 0 ? "?" : sb.toString();
+    }
+
+    /** A stable hue (0–359) derived from the handle, so each fallback avatar has its own colour. */
+    public int getAvatarHue() {
+        int h = handle == null ? 0 : handle.hashCode();
+        return Math.floorMod(h * 31 + 7, 360);
+    }
 }

@@ -3,7 +3,8 @@
 <head><title th:text="${person.displayName} + ' — AI profile — Sharpen'">AI profile — Sharpen</title></head>
 <body>
 <main>
-  <div class="page-head">
+  <div class="page-head profile-head">
+    <span th:replace="~{fragments :: avatar(${person}, 'xl')}"></span>
     <div>
       <p class="eyebrow">AI profile</p>
       <h1 th:text="${person.displayName}">Name</h1>

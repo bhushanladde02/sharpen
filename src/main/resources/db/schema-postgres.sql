@@ -16,7 +16,16 @@ create table person (
     primary_tools    varchar(300),
     public_profile   boolean      not null default true,
     api_key          varchar(64)  not null,
-    created_at       timestamp(6) with time zone not null default now()
+    created_at       timestamp(6) with time zone not null default now(),
+    avatar_version   integer      not null default 0
+);
+
+-- Profile pictures live apart from person so the bytes are never loaded with the person row.
+create table person_avatar (
+    person_id    bigint      primary key references person (id) on delete cascade,
+    content_type varchar(40) not null,
+    bytes        bytea       not null,
+    updated_at   timestamp(6) with time zone not null default now()
 );
 create unique index ux_person_email   on person (email);
 create unique index ux_person_handle  on person (handle);

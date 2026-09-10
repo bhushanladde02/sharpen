@@ -2,6 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<!-- Profile picture, or initials on a colour derived from the handle. cls: avatar size class (sm / md / lg / xl). -->
+<span th:fragment="avatar(p, cls)" th:class="'avatar ' + ${cls}" th:style="${p.hasAvatar} ? null : ('--hue:' + ${p.avatarHue})">
+  <img th:if="${p.hasAvatar}" th:src="@{/p/{h}/avatar(h=${p.handle}, v=${p.avatarVersion})}" th:alt="${p.displayName}" width="256" height="256" loading="lazy">
+  <span th:unless="${p.hasAvatar}" th:text="${p.initials}" aria-hidden="true">PN</span>
+</span>
+
 <!-- Score ring + five dimension bars. `s` is an AiScore. -->
 <div th:fragment="scorePanel(s)" class="score">
   <div class="ring">

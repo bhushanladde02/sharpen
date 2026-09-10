@@ -20,7 +20,8 @@
   </form>
 
   <div class="stack">
-    <div class="card cand" th:each="c : ${candidates}" th:with="s=${c.score}">
+    <div class="card cand with-avatar" th:each="c : ${candidates}" th:with="s=${c.score}">
+      <span th:replace="~{fragments :: avatar(${c.person}, 'md')}"></span>
       <div class="mini"><span class="num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</span><small th:text="${s.band()}">Strong</small></div>
       <div>
         <div class="row" style="gap:.5rem"><a th:href="@{/p/{h}(h=${c.person.handle})}" style="font-weight:800;font-size:1.05rem" th:text="${c.person.displayName}">Name</a>

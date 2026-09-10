@@ -140,18 +140,43 @@ class WebFlowTest {
         // Public profile, and the company sees the candidate
         mvc.perform(get("/p/" + me.getHandle())).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
-        // The open directory lists the public profile, finds it by search, and a missing handle shows the directory too
+        // The open directory lists the public profile with its search text and filter chips; ?q= pre-fills the box;
+        // a missing handle shows the directory too
         mvc.perform(get("/p")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Flow Tester")));
+                .andExpect(content().string(containsString("Flow Tester")))
+                .andExpect(content().string(containsString("data-search=\"flow tester")))
+                .andExpect(content().string(containsString("id=\"dir-sort\"")));
         mvc.perform(get("/p").param("q", "flow")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Flow Tester")));
-        mvc.perform(get("/p").param("q", "zzz-nobody")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("No public profile matches")));
+                .andExpect(content().string(containsString("value=\"flow\"")));
         mvc.perform(get("/p/no-such-handle")).andExpect(status().isOk())
                 .andExpect(content().string(containsString("No public profile at")))
                 .andExpect(content().string(containsString("Flow Tester")));
+
+        // Profile picture: none yet → initials; upload → served with a year-long cache; remove → gone again
+        mvc.perform(get("/p/" + me.getHandle() + "/avatar")).andExpect(status().isNotFound());
+        mvc.perform(get("/p")).andExpect(content().string(containsString(">FT<")));
+        mvc.perform(multipart("/settings/avatar").file(new MockMultipartFile("picture", "me.png", "image/png", testPng(300, 200)))
+                .with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/p/" + me.getHandle() + "/avatar").param("v", "1")).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+                .andExpect(header().string("Cache-Control", containsString("max-age=31536000")));
+        mvc.perform(get("/p")).andExpect(content().string(containsString("/p/" + me.getHandle() + "/avatar?v=1")));
+        mvc.perform(multipart("/settings/avatar").file(new MockMultipartFile("picture", "notes.txt", "text/plain", "hello".getBytes()))
+                .with(csrf()).with(asMe)).andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("flash", containsString("JPEG or PNG")));
+        mvc.perform(post("/settings/avatar/remove").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/p/" + me.getHandle() + "/avatar")).andExpect(status().isNotFound());
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
         mvc.perform(get("/candidates").with(asMe)).andExpect(status().isForbidden());
+    }
+
+    /** A small solid PNG, wider than tall, so the crop path is exercised. */
+    private static byte[] testPng(int w, int h) throws Exception {
+        var img = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        var g = img.createGraphics(); g.setColor(java.awt.Color.ORANGE); g.fillRect(0, 0, w, h); g.dispose();
+        var out = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(img, "png", out);
+        return out.toByteArray();
     }
 }

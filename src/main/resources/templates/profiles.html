@@ -3,43 +3,121 @@
 <head><title>Public AI profiles — Sharpen</title></head>
 <body>
 <main>
-  <div class="card" th:if="${missingHandle}" style="margin-bottom:1rem;border-color:var(--warn, #c9a227)">
+  <div class="notice" th:if="${missingHandle}">
     <b>No public profile at <code th:text="'/p/' + ${missingHandle}">/p/handle</code></b>
-    <span class="muted"> — it is private or does not exist (the owner can make it public under Settings). Here is everyone who is public.</span>
+    <span class="muted"> — it is private or does not exist; the owner can make it public under Settings. Everyone who is public is below.</span>
   </div>
 
   <div class="page-head">
     <div><h1>Public AI profiles</h1>
-      <p>Everyone on Sharpen who has made their AI profile public — <span class="num" th:text="${total}">0</span> so far. Pick one to see their score, trend and how they work with AI.</p></div>
+      <p>Everyone on Sharpen who has made their AI profile public. Pick a person to see their score, their trend and how they work with AI.</p></div>
   </div>
 
-  <form method="get" th:action="@{/p}" class="card row" style="margin-bottom:1rem" role="search">
-    <input type="search" name="q" th:value="${q}" placeholder="Search by name, handle, title, industry, tools or location" style="flex:1;min-width:220px" autofocus>
-    <button class="btn primary" type="submit">Search</button>
-    <a class="btn" th:if="${q != ''}" th:href="@{/p}">Clear</a>
-  </form>
+  <section class="card directory-tools" id="dir-tools" th:if="${total > 0}">
+    <form method="get" th:action="@{/p}" class="search" role="search" onsubmit="return false">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" id="dir-q" name="q" th:value="${q}" placeholder="Search people — name, title, industry, tool, city…" autocomplete="off" spellcheck="false" aria-label="Search public profiles" autofocus>
+      <button type="button" class="search-clear" id="dir-clear" aria-label="Clear search" hidden>×</button>
+    </form>
+    <div class="dir-row">
+      <div class="dir-count" id="dir-count" aria-live="polite"><b class="num" th:text="${total}">0</b> <span th:text="${total == 1} ? 'profile' : 'profiles'">profiles</span></div>
+      <label class="dir-sort">Sort
+        <select id="dir-sort">
+          <option value="score">AI score</option>
+          <option value="name">Name</option>
+          <option value="sessions">Sessions logged</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" th:if="${!#lists.isEmpty(toolChips)}">
+      <span class="chips-label">Tools</span>
+      <button type="button" class="filter-chip" th:each="t : ${toolChips}" data-group="tools" th:data-value="${#strings.toLowerCase(t)}" aria-pressed="false" th:text="${t}">Claude</button>
+    </div>
+    <div class="chips" th:if="${!#lists.isEmpty(industryChips)}">
+      <span class="chips-label">Industry</span>
+      <button type="button" class="filter-chip" th:each="i : ${industryChips}" data-group="industry" th:data-value="${#strings.toLowerCase(i)}" aria-pressed="false" th:text="${i}">Software</button>
+    </div>
+  </section>
 
-  <div class="stack">
-    <a class="card cand" th:each="l : ${profiles}" th:with="s=${l.score}" th:href="@{/p/{h}(h=${l.person.handle})}" style="text-decoration:none;color:inherit">
-      <div class="mini"><span class="num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</span><small th:text="${s.hasScore()} ? ${s.band()} : 'new'">Strong</small></div>
-      <div>
-        <div class="row" style="gap:.5rem"><span style="font-weight:800;font-size:1.05rem" th:text="${l.person.displayName}">Name</span>
-          <span class="muted-3" style="font-size:.8rem" th:text="'/p/' + ${l.person.handle}">/p/handle</span>
-          <span class="chip warn" th:if="${s.confidence.name() == 'LOW'}">provisional</span></div>
-        <div class="muted" style="font-size:.88rem" th:if="${l.person.headline}" th:text="${l.person.headline}">Headline</div>
-        <div class="muted-3" style="font-size:.8rem">
-          <span th:text="${l.person.jobTitle}">Title</span><span th:if="${l.person.industry}" th:text="' · ' + ${l.person.industry}"></span><span th:if="${l.person.location}" th:text="' · ' + ${l.person.location}"></span><span th:if="${l.person.primaryTools}" th:text="' · ' + ${l.person.primaryTools}"></span>
-          <span th:text="' · ' + ${l.sessions} + ' sessions'"> · 12 sessions</span>
-        </div>
-      </div>
-      <span class="btn small cta">View profile</span>
+  <div class="stack" id="dir-list">
+    <a class="card person-card" th:each="l : ${profiles}" th:with="s=${l.score}, p=${l.person}"
+       th:href="@{/p/{h}(h=${p.handle})}"
+       th:data-name="${#strings.toLowerCase(p.displayName)}"
+       th:data-search="${l.searchText}"
+       th:data-tools="${p.primaryTools == null} ? '' : ${#strings.toLowerCase(p.primaryTools)}"
+       th:data-industry="${p.industry == null} ? '' : ${#strings.toLowerCase(p.industry)}"
+       th:data-score="${s.hasScore()} ? ${s.composite} : -1"
+       th:data-sessions="${l.sessions}">
+      <span th:replace="~{fragments :: avatar(${p}, 'md')}"></span>
+      <span class="person-main">
+        <span class="person-name"><span th:text="${p.displayName}">Name</span>
+          <span class="chip warn" th:if="${s.confidence.name() == 'LOW'}">provisional</span></span>
+        <span class="person-headline" th:if="${p.headline}" th:text="${p.headline}">Headline</span>
+        <span class="person-meta">
+          <span th:if="${p.jobTitle}" th:text="${p.jobTitle}">Title</span>
+          <span th:if="${p.industry}" th:text="${p.industry}">Industry</span>
+          <span th:if="${p.location}" th:text="${p.location}">City</span>
+          <span th:text="${l.sessions} + ' sessions'">12 sessions</span>
+        </span>
+        <span class="person-tools" th:if="${p.primaryTools}">
+          <span class="chip" th:each="t : ${#strings.arraySplit(p.primaryTools, ',')}" th:text="${#strings.trim(t)}">Claude</span>
+        </span>
+      </span>
+      <span class="person-score" th:classappend="${s.hasScore()} ? '' : 'none'">
+        <b class="num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</b>
+        <small th:text="${s.hasScore()} ? ${s.band()} : 'no score yet'">Strong</small>
+      </span>
     </a>
-    <div class="card empty" th:if="${#lists.isEmpty(profiles) and q != ''}">No public profile matches “<span th:text="${q}"></span>”. <a th:href="@{/p}">Show everyone</a>.</div>
-    <div class="card empty" th:if="${#lists.isEmpty(profiles) and q == ''}">
+    <div class="card empty" id="dir-empty" hidden>No one matches. <button type="button" class="linklike" id="dir-reset">Clear the search and filters</button>.</div>
+    <div class="card empty" th:if="${total == 0}">
       Nobody has made a profile public yet. <a th:href="@{/register}">Create an account</a>, log a few sessions and switch on
       <i>Public profile</i> under Settings to be the first.
     </div>
   </div>
+
+  <script>
+  (function () {
+    var q = document.getElementById('dir-q'); if (!q) return;
+    var clear = document.getElementById('dir-clear'), sort = document.getElementById('dir-sort'),
+        count = document.getElementById('dir-count'), list = document.getElementById('dir-list'),
+        empty = document.getElementById('dir-empty'), chips = Array.prototype.slice.call(document.querySelectorAll('.filter-chip')),
+        cards = Array.prototype.slice.call(list.querySelectorAll('.person-card'));
+    function selected(group) {
+      return chips.filter(function (c) { return c.dataset.group === group && c.getAttribute('aria-pressed') === 'true'; })
+                  .map(function (c) { return c.dataset.value; });
+    }
+    function tokens(s) { return s.trim().toLowerCase().split(/\s+/).filter(Boolean); }
+    function apply() {
+      var words = tokens(q.value), tools = selected('tools'), inds = selected('industry'), shown = 0;
+      cards.forEach(function (c) {
+        var hay = c.dataset.search || '', ok = words.every(function (w) { return hay.indexOf(w) !== -1; });
+        if (ok && tools.length) { var mine = c.dataset.tools.split(/\s*,\s*/); ok = tools.some(function (t) { return mine.indexOf(t) !== -1; }); }
+        if (ok && inds.length) ok = inds.indexOf(c.dataset.industry) !== -1;
+        c.hidden = !ok; if (ok) shown++;
+      });
+      var by = sort.value, sorted = cards.slice().sort(function (a, b) {
+        if (by === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+        if (by === 'sessions') return (+b.dataset.sessions) - (+a.dataset.sessions) || a.dataset.name.localeCompare(b.dataset.name);
+        return (+b.dataset.score) - (+a.dataset.score) || a.dataset.name.localeCompare(b.dataset.name);
+      });
+      sorted.forEach(function (c) { list.insertBefore(c, empty); });
+      count.innerHTML = '<b class="num">' + shown + '</b> ' + (shown === 1 ? 'profile' : 'profiles') + (shown !== cards.length ? ' of ' + cards.length : '');
+      empty.hidden = shown !== 0;
+      clear.hidden = q.value === '';
+      try { var u = new URL(location.href); if (q.value) u.searchParams.set('q', q.value); else u.searchParams.delete('q'); history.replaceState(null, '', u); } catch (e) {}
+    }
+    q.addEventListener('input', apply);
+    q.addEventListener('keydown', function (e) { if (e.key === 'Escape') { q.value = ''; apply(); } });
+    clear.addEventListener('click', function () { q.value = ''; q.focus(); apply(); });
+    sort.addEventListener('change', apply);
+    chips.forEach(function (c) { c.addEventListener('click', function () { c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); apply(); }); });
+    document.getElementById('dir-reset').addEventListener('click', function () {
+      q.value = ''; chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); }); apply(); q.focus();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === '/' && document.activeElement !== q && !/input|textarea|select/i.test(document.activeElement.tagName)) { e.preventDefault(); q.focus(); } });
+    apply();
+  })();
+  </script>
 </main>
 </body>
 </html>

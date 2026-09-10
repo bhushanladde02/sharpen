@@ -190,8 +190,47 @@ free shape. Decision: **Plan B — the 1 GB E2.1.Micro**, with the hunter left r
    one-line note at the top. Linked from the top bar, the sidebar and the footer as *Public profiles*.
    ``profile-hidden.html`` is no longer used.
 
-Open items at the end of day 3
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Day 4 — Thursday 10 September: the directory grows up, profile pictures
+-----------------------------------------------------------------------
+
+#. **Why the dead end was reached at all.** The landing page's *See an example* button pointed at
+   ``/p/priya-natarajan`` — a demo account that only exists with ``DEMO_DATA=true``. On the live site it
+   led straight to "No public profile here". The button now opens the directory (*Browse public profiles*).
+   Lesson: never hard-code demo data into a page that ships to production.
+
+#. **Search that works while you type.** The first directory had a plain, unstyled search box that reloaded
+   the page. Replaced with: a rounded search field with an icon and a clear button (``/`` focuses it, Esc
+   clears); filtering as you type across name, handle, headline, title, industry, tools and location; toggle
+   chips for every tool and industry found in the public profiles (any of the chosen tools, and the chosen
+   industry); sort by AI score, name or sessions; a live "n profiles of m" count; and a "no one matches"
+   card with a reset link. Everything happens in the browser — the server sends all public profiles once,
+   which is the right trade for a pilot-sized directory on a 1 GB machine. ``?q=`` links still pre-fill
+   the box. Cards show the picture, name, headline, meta line, tool chips and the score on the right.
+
+#. **Profile pictures.** Settings → *Picture*: upload a JPEG or PNG (up to 8 MB); the server centre-crops
+   it to a square, scales it to 256 px and re-encodes it as JPEG (typically 10–30 KB), so the stored
+   picture is small, uniform and stripped of metadata. Pictures live in their own table
+   (``person_avatar``) so the bytes are never loaded with the person row, and ``person.avatar_version``
+   is bumped on each upload so the URL (``/p/<handle>/avatar?v=N``) changes and can be cached for a year.
+   The picture follows the profile's visibility (private profile → 404 to everyone but the owner).
+   People without a picture get an initials disc on a colour derived from their handle. Pictures show in
+   the directory, the profile header, the sidebar, the candidates view and Settings (with *Remove picture*).
+   Phone photos in HEIC need exporting as JPEG first; ImageIO does not read them.
+
+#. **A real database migration.** First schema change since going live. Because production validates the
+   schema on start, the new image will not boot until the columns exist — so the order on the server is
+   ``git pull`` → run ``src/main/resources/db/migrations/2026-09-10-avatars.sql`` → ``remote-deploy.sh``.
+   Verified locally by applying ``schema-postgres.sql`` plus the migration to a scratch PostgreSQL 16 and
+   booting the jar with the ``postgres`` profile (health ``ok``, upload and fetch through the browser).
+   :doc:`05-day-two` now describes the migration step.
+
+#. **Small things found on the way.** The extra *Public profiles* link in the signed-out top bar pushed the
+   bar past 400 px on phones — it is hidden below 520 px (the footer and home page link there instead).
+   Filtered-out cards were counted but still visible: the card's ``display:grid`` beat the ``hidden``
+   attribute; one CSS line fixes it.
+
+Open items (as of day 4)
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Turn on the pipeline's automatic rollout (deploy key + ``production`` secrets, :doc:`07-ci-cd`).
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result; decide on a real domain.
@@ -214,5 +253,6 @@ Things to remember from this log
 * Screenshots leak: the DuckDNS token appeared in two of them and should be regenerated.
 * A required status check listed twice blocks every PR.
 * The first push to ``main`` without a ruleset is fine; the ruleset applies from the moment it is created.
+* Any schema change: migration script first, image second — the health check will tell you if you forget.
 * Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
   on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

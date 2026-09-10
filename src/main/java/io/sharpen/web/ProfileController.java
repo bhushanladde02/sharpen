@@ -5,6 +5,8 @@ import io.sharpen.domain.MonthlyReport;
 import io.sharpen.domain.Person;
 import io.sharpen.repo.PersonRepository;
 import io.sharpen.scoring.AiScore;
+import io.sharpen.domain.PersonAvatar;
+import io.sharpen.service.AvatarService;
 import io.sharpen.service.MonthSummary;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.ReportService;
@@ -15,10 +17,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -26,6 +32,9 @@ import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 /** The public AI profile (the "LinkedIn of AI" page) and the settings page that edits it. */
 @Controller
@@ -79,20 +88,63 @@ public class ProfileController {
     }
 
     /** One row of the public directory. */
-    public record Listed(Person person, AiScore score, long sessions) {}
+    public record Listed(Person person, AiScore score, long sessions, String searchText) {}
 
     private final PersonService people;
     private final PersonRepository repo;
     private final StatsService stats;
     private final ReportService reports;
     private final SessionService sessions;
+    private final AvatarService avatars;
 
-    public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports, SessionService sessions) {
+    public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports,
+                             SessionService sessions, AvatarService avatars) {
         this.people = people;
         this.repo = repo;
         this.stats = stats;
         this.reports = reports;
         this.sessions = sessions;
+        this.avatars = avatars;
+    }
+
+    /** True when {@code viewer} may see {@code p}'s profile: public, or the owner looking at their own. */
+    private boolean visible(Person p) {
+        if (p == null) return false;
+        if (people.current().map(me -> me.getId().equals(p.getId())).orElse(false)) return true;
+        return !p.isCompany() && p.isPublicProfile();
+    }
+
+    /** The picture itself. The URL carries {@code ?v=<version>}, so it can be cached for a year. */
+    @GetMapping("/p/{handle}/avatar")
+    public ResponseEntity<byte[]> avatar(@PathVariable String handle) {
+        Person p = people.byHandle(handle).orElse(null);
+        if (!visible(p)) return ResponseEntity.notFound().build();
+        PersonAvatar a = avatars.find(p).orElse(null);
+        if (a == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(a.getContentType()))
+                .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                .eTag("\"" + p.getAvatarVersion() + "\"")
+                .body(a.getBytes());
+    }
+
+    @PostMapping("/settings/avatar")
+    public String uploadAvatar(@RequestParam("picture") MultipartFile picture, RedirectAttributes redirect) {
+        Person me = people.requireCurrent();
+        try {
+            avatars.store(me, picture);
+            redirect.addFlashAttribute("flash", "Picture updated.");
+        } catch (AvatarService.InvalidImage e) {
+            redirect.addFlashAttribute("flash", e.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/settings/avatar/remove")
+    public String removeAvatar(RedirectAttributes redirect) {
+        avatars.remove(people.requireCurrent());
+        redirect.addFlashAttribute("flash", "Picture removed.");
+        return "redirect:/settings";
     }
 
     /** The open directory: every public individual profile, searchable, each linking to its profile page. */
@@ -127,20 +179,32 @@ public class ProfileController {
         return "profile";
     }
 
+    /**
+     * Every public profile goes to the page; searching, filtering and sorting happen in the browser so results
+     * update as the visitor types. {@code q} only pre-fills the box (so links like {@code /p?q=claude} work).
+     */
     private void fillDirectory(String q, Model model) {
         LocalDate today = LocalDate.now();
-        String needle = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
-        List<Listed> list = repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL).stream()
-                .filter(p -> needle.isEmpty() || haystack(p).contains(needle))
-                .map(p -> new Listed(p, stats.rollingScore(p, today), sessions.count(p)))
+        List<Person> all = repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL);
+        List<Listed> list = all.stream()
+                .map(p -> new Listed(p, stats.rollingScore(p, today), sessions.count(p), haystack(p)))
                 .sorted(Comparator.comparingInt((Listed l) -> l.score().hasScore() ? l.score().composite() : -1).reversed()
                         .thenComparing(l -> l.person().getDisplayName(), String.CASE_INSENSITIVE_ORDER))
                 .toList();
+        Set<String> tools = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> industries = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Person p : all) {
+            if (p.getPrimaryTools() != null) for (String t : p.getPrimaryTools().split("\\s*,\\s*")) if (!t.isBlank()) tools.add(t.trim());
+            if (p.getIndustry() != null && !p.getIndustry().isBlank()) industries.add(p.getIndustry().trim());
+        }
         model.addAttribute("profiles", list);
         model.addAttribute("q", q == null ? "" : q.trim());
-        model.addAttribute("total", repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL).size());
+        model.addAttribute("total", all.size());
+        model.addAttribute("toolChips", tools);
+        model.addAttribute("industryChips", industries);
     }
 
+    /** Lower-cased text the browser-side search matches against. */
     private static String haystack(Person p) {
         return String.join(" ", nz(p.getDisplayName()), nz(p.getHandle()), nz(p.getHeadline()), nz(p.getJobTitle()),
                 nz(p.getIndustry()), nz(p.getLocation()), nz(p.getPrimaryTools())).toLowerCase(Locale.ROOT);

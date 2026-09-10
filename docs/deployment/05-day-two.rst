@@ -21,11 +21,19 @@ Only the ``app`` container is rebuilt and replaced; PostgreSQL and Caddy keep ru
 The site is down for about thirty seconds while the new jar starts. Signed-in users are logged out (sessions
 are in memory in the prototype; Release 1 moves them to the database).
 
-If a database column was added, apply the change to PostgreSQL before starting the new version, for example
-``dc exec db psql -U sharpen -c "ALTER TABLE person ADD COLUMN …"``. The app runs with ``ddl-auto=validate``
-in production, so it refuses to start against a schema that does not match — deliberately, so a mismatch is
-noticed at deploy time rather than as a runtime error later. (Flyway migrations are on the Release 1 list to
-make this automatic.)
+If a database column or table was added, apply the change to PostgreSQL **before** starting the new version.
+Every such change ships as a dated script in ``src/main/resources/db/migrations/`` that is safe to run more
+than once; after ``git pull``:
+
+.. code-block:: bash
+
+   dc exec -T db psql -U sharpen sharpen < src/main/resources/db/migrations/<date>-<name>.sql
+
+The app runs with ``ddl-auto=validate`` in production, so it refuses to start against a schema that does not
+match — deliberately, so a mismatch is noticed at deploy time rather than as a runtime error later. With the
+pipeline, that shows up as a failed health check and an automatic rollback to the previous image; run the
+migration, then re-run the deploy. (Flyway, which applies these scripts automatically, is on the Release 1
+list.)
 
 Looking at what is happening
 ----------------------------

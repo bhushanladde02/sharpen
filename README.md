@@ -4,7 +4,7 @@ Sharpen tracks how a person works with AI, at work and at home, and turns it int
 
 1. **A monthly report** — what you used, for what, how much of the thinking stayed yours, and three concrete things to try next month. On screen and as a PDF.
 2. **An AI score (0–1000)** that rewards independence, verification and learning — never hours or prompt volume — so the incentive is to stay sharp, not to use more AI.
-3. **A public AI profile** (`/p/<handle>`) — a LinkedIn-style page with only the AI-related facts. `/p` is the open, searchable directory of every public profile; companies get the ranked, filterable candidates view on top of it.
+3. **A public AI profile** (`/p/<handle>`) — a LinkedIn-style page with only the AI-related facts. `/p` is the open directory of every public profile — search as you type, tool and industry filters, profile pictures; companies get the ranked, filterable candidates view on top of it.
 
 Java 21 · Spring Boot 3.3 · Thymeleaf · Spring Data JPA · Spring Security · H2 (dev) / PostgreSQL (prod) · openhtmltopdf.
 
@@ -147,7 +147,7 @@ the tool did the typing, the person did the thinking and checked the result.
 
 What is deliberately left out of the prototype and what to add before a public release:
 
-- **Migrations** — add `flyway-core`, move `schema-postgres.sql` to `V1__init.sql`.
+- **Migrations** — add `flyway-core`, move `schema-postgres.sql` to `V1__init.sql` and the dated scripts in `db/migrations/` after it.
 - **Email** — verification on sign-up, password reset, and the monthly report as an email (the PDF service already exists).
 - **Rate limiting** on `/api/v1/**` and `/register`; put the app behind TLS.
 - **Auth for companies** — invite-only company accounts or domain verification, and an audit log of profile views.

@@ -28,6 +28,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
+        System.out.println("In dashboard");
         Person me = people.requireCurrent();
         if (me.isCompany()) return "redirect:/candidates";
 

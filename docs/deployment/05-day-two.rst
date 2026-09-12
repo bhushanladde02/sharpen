@@ -194,8 +194,10 @@ names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps
    ``deploy/caddy-extra/legacy-redirect.caddy.example`` to ``legacy-redirect.caddy`` with the old name and
    ``www`` in it — Caddy imports every ``*.caddy`` in that folder and answers those names with a permanent
    redirect to the new one, so every old link and search result keeps working.
-#. ``dc up -d --force-recreate app caddy`` (the app reads ``SHARPEN_SITE_HOST`` from ``DOMAIN``; Caddy fetches
-   certificates for all three names on first request).
+#. ``APP_IMAGE=ghcr.io/<owner>/sharpen:latest dc up -d --force-recreate app caddy`` (the app reads
+   ``SHARPEN_SITE_HOST`` from ``DOMAIN``; Caddy fetches certificates for all three names on first request).
+   Without ``APP_IMAGE`` Compose builds the image from source on the server instead — it works, but then
+   production is not running the exact image the pipeline published; ``remote-deploy.sh`` puts that right.
 #. GitHub → environment ``production`` → variable ``SITE_DOMAIN`` = the new domain. Search Console → add a
    Domain property for the new name (TXT record in Cloudflare DNS), then *Settings → Change of address* on
    the old property so Google carries the history across; submit the new sitemap.

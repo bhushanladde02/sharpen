@@ -321,6 +321,10 @@ Day 5 — Saturday 12 September: hands off the keyboard
    three places (JSON-LD, the ``deploy.yml`` environment URL, template fallbacks) — now everything derives
    from ``SHARPEN_SITE_HOST``. Caddy gained an ``import /etc/caddy/extra/*.caddy`` so the old name and
    ``www`` redirect permanently to the new one. Steps in :doc:`05-day-two`, *Moving to your own domain*.
+   Cutover 22:20 UTC: ``DOMAIN`` changed, redirect file dropped in, ``app`` and ``caddy`` recreated — 200 on
+   the new name and 301s from ``www`` and the DuckDNS name within a minute, no downtime. One slip: the
+   recreate ran without ``APP_IMAGE``, so Compose rebuilt the image from source on the A1 (three minutes);
+   ``remote-deploy.sh`` restored the pipeline's image straight after.
 
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^

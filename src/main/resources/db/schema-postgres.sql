@@ -82,3 +82,17 @@ create table feedback (
     created_at timestamp(6) with time zone not null default now()
 );
 create index ix_feedback_created on feedback (created_at);
+
+-- First-party traffic analytics: one row per page view, anonymised visitor hash (see PageView.java).
+create table page_view (
+    id          bigserial    primary key,
+    occurred_at timestamp(6) with time zone not null default now(),
+    view_day    date         not null,
+    path        varchar(200) not null,
+    referrer    varchar(190),
+    visitor     varchar(64)  not null,
+    lang        varchar(16),
+    signed_in   boolean      not null default false
+);
+create index ix_page_view_day  on page_view (view_day);
+create index ix_page_view_path on page_view (path);

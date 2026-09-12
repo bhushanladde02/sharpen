@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="'Sharpen traffic ' + ${s.from} + ' to ' + ${s.to}">Sharpen traffic</title>
+  <style type="text/css">
+    @page { size: A4; margin: 18mm 16mm; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #141a22; line-height: 1.45; }
+    h1 { font-size: 20pt; margin: 0 0 2pt; }
+    h2 { font-size: 11.5pt; margin: 14pt 0 6pt; padding-bottom: 3pt; border-bottom: 1px solid #d7dde5; }
+    p { margin: 0 0 6pt; }
+    .eyebrow { font-size: 8pt; letter-spacing: 1px; text-transform: uppercase; color: #7b8794; font-weight: bold; }
+    .muted { color: #4d5967; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { padding: 3pt 6pt; vertical-align: top; text-align: left; }
+    th { font-size: 8pt; text-transform: uppercase; color: #7b8794; border-bottom: 1px solid #d7dde5; }
+    td.n, th.n { text-align: right; font-family: Courier, monospace; }
+    .stats td { width: 25%; border: 1px solid #d7dde5; }
+    .big { font-size: 18pt; font-weight: bold; }
+    .label { font-size: 8pt; color: #4d5967; font-weight: bold; }
+    .days td { border-bottom: 1px solid #eef1f5; }
+    .foot { margin-top: 14pt; padding-top: 6pt; border-top: 1px solid #d7dde5; font-size: 8pt; color: #7b8794; }
+  </style>
+</head>
+<body>
+  <p class="eyebrow">Sharpen · traffic and usage record</p>
+  <h1 th:text="${#temporals.format(s.from, 'd MMMM yyyy')} + ' – ' + ${#temporals.format(s.to, 'd MMMM yyyy')}">Period</h1>
+  <p class="muted">Site: <span th:text="'https://' + ${siteHost}">https://sharpen-ai.duckdns.org</span> · generated <span th:text="${generatedAt}">now</span> by the application from its own records.</p>
+
+  <table class="stats"><tr>
+    <td><div class="label">Page views</div><div class="big" th:text="${#numbers.formatInteger(s.views, 1, 'COMMA')}">0</div></td>
+    <td><div class="label">Visitors (unique per day)</div><div class="big" th:text="${#numbers.formatInteger(s.visitors, 1, 'COMMA')}">0</div></td>
+    <td><div class="label">New accounts</div><div class="big" th:text="${s.signups}">0</div><div class="muted" th:text="${s.members} + ' members total, ' + ${s.publicProfiles} + ' public profiles'">t</div></td>
+    <td><div class="label">Sessions logged · reports</div><div class="big" th:text="${s.sessions} + ' · ' + ${s.reports}">0</div><div class="muted" th:text="${s.feedback} + ' feedback messages (all time)'">f</div></td>
+  </tr></table>
+
+  <h2>Top pages</h2>
+  <table><thead><tr><th>Path</th><th class="n">Views</th><th class="n">Visitors</th></tr></thead>
+    <tbody><tr th:each="r : ${s.pages}"><td th:text="${r.key}">/</td><td class="n" th:text="${r.views}">0</td><td class="n" th:text="${r.visitors}">0</td></tr></tbody></table>
+
+  <h2>Referrers</h2>
+  <table><thead><tr><th>Source</th><th class="n">Views</th></tr></thead>
+    <tbody><tr th:each="r : ${s.referrers}"><td th:text="${r.key}">(direct)</td><td class="n" th:text="${r.views}">0</td></tr></tbody></table>
+
+  <h2>Day by day</h2>
+  <table class="days"><thead><tr><th>Day</th><th class="n">Views</th><th class="n">Visitors</th><th class="n">Sign-ups</th><th class="n">Sessions</th><th class="n">Reports</th></tr></thead>
+    <tbody><tr th:each="d : ${s.days}"><td th:text="${d.day}">d</td><td class="n" th:text="${d.views}">0</td><td class="n" th:text="${d.visitors}">0</td><td class="n" th:text="${d.signups}">0</td><td class="n" th:text="${d.sessions}">0</td><td class="n" th:text="${d.reports}">0</td></tr></tbody></table>
+
+  <div class="foot">
+    Method: every successfully served HTML page is counted once, server-side, in the application's own PostgreSQL database
+    (table <span style="font-family:Courier">page_view</span>). Requests whose user agent identifies a crawler, monitor or command-line tool
+    are excluded. A visitor is a salted hash of (day, network address, user agent), so one browser counts once per day and cannot be
+    identified or followed across days; no cookies or third-party scripts are used. Sign-ups, sessions and reports come from the
+    application's account, session and report tables. Source code: https://github.com/bhushanladde02/sharpen (AGPL-3.0). © Bhushan Arun Ladde.
+  </div>
+</body>
+</html>

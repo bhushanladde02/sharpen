@@ -18,6 +18,8 @@
     <a th:href="@{/p/{h}(h=${me.handle})}" th:classappend="${path == '/p/' + me.handle} ? 'active'">My AI profile</a>
     <a th:href="@{/p}" th:classappend="${path == '/p'} ? 'active'">Public profiles</a>
     <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
+    <a th:if="${isAdmin}" th:href="@{/admin/traffic}" th:classappend="${#strings.startsWith(path, '/admin/traffic')} ? 'active'">Traffic</a>
+    <a th:if="${isAdmin}" th:href="@{/admin/feedback}" th:classappend="${path == '/admin/feedback'} ? 'active'">Inbox</a>
   </th:block>
   <th:block th:if="${me != null and me.company}">
     <a th:href="@{/candidates}" th:classappend="${path == '/candidates'} ? 'active'">Candidates</a>

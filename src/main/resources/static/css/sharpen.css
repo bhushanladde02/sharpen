@@ -373,6 +373,7 @@ pre { background: var(--surface-2); padding: .8rem 1rem; border-radius: var(--ra
 .filter-chip { font: inherit; font-size: .8rem; font-weight: 700; padding: .3rem .8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: background .12s, border-color .12s, color .12s; }
 .filter-chip:hover { border-color: var(--ink-3); color: var(--ink); }
 .filter-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+a.filter-chip { text-decoration: none; display: inline-block; }
 .person-card { display: grid; grid-template-columns: 56px 1fr; gap: .9rem 1rem; align-items: center; color: inherit; text-decoration: none; transition: border-color .12s, box-shadow .12s, transform .12s; }
 .person-card[hidden] { display: none; }
 .person-card:hover, .person-card:focus-visible { text-decoration: none; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow); transform: translateY(-1px); }

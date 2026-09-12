@@ -3,7 +3,7 @@ package io.sharpen.web;
 import io.sharpen.domain.Enums.AccountType;
 import io.sharpen.domain.Person;
 import io.sharpen.repo.PersonRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +21,19 @@ import java.util.concurrent.TimeUnit;
 public class SeoController {
 
     private final PersonRepository people;
+    private final String base;
 
-    public SeoController(PersonRepository people) {
+    /**
+     * URLs are built from the configured host ({@code sharpen.site-host}), never from the request's
+     * {@code Host} header, so nothing a client sends can end up in the body of these responses.
+     */
+    public SeoController(PersonRepository people, @Value("${sharpen.site-host:localhost:8080}") String siteHost) {
         this.people = people;
-    }
-
-    private static String base(HttpServletRequest req) {
-        String host = req.getHeader("Host");
-        return "https://" + (host == null || host.isBlank() ? req.getServerName() : host);
+        this.base = (siteHost.startsWith("localhost") ? "http://" : "https://") + siteHost;
     }
 
     @GetMapping(value = "/robots.txt", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> robots(HttpServletRequest req) {
+    public ResponseEntity<String> robots() {
         String body = """
             User-agent: *
             Allow: /
@@ -49,13 +50,12 @@ public class SeoController {
             Disallow: /api/
 
             Sitemap: %s/sitemap.xml
-            """.formatted(base(req));
+            """.formatted(base);
         return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic()).body(body);
     }
 
     @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> sitemap(HttpServletRequest req) {
-        String base = base(req);
+    public ResponseEntity<String> sitemap() {
         String today = LocalDate.now().toString();
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                 .append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");

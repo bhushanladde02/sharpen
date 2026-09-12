@@ -81,6 +81,16 @@ public class GlobalModelAttributes {
         return DEFAULT_DESCRIPTION;
     }
 
+    @org.springframework.beans.factory.annotation.Value("${sharpen.admin-email:}")
+    private String adminEmail;
+
+    /** True for the owner's account, which sees the Traffic and Inbox links. */
+    @ModelAttribute("isAdmin")
+    public boolean isAdmin() {
+        String admin = adminEmail == null ? "" : adminEmail.trim().toLowerCase(java.util.Locale.ROOT);
+        return !admin.isEmpty() && people.current().map(p -> admin.equals(p.getEmail().toLowerCase(java.util.Locale.ROOT))).orElse(false);
+    }
+
     @ModelAttribute("unratedCount")
     public long unratedCount() {
         Optional<Person> me = people.current();

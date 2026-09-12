@@ -53,7 +53,20 @@ public class PdfService {
         Context ctx = new Context(Locale.ENGLISH);
         ctx.setVariable("r", model);
         ctx.setVariable("siteHost", siteHost);
-        String html = templates.process("report-pdf", ctx);
+        return render("report-pdf", ctx);
+    }
+
+    /** The owner's traffic/usage evidence report for a period. */
+    public byte[] trafficReport(TrafficService.Summary summary) {
+        Context ctx = new Context(Locale.ENGLISH);
+        ctx.setVariable("s", summary);
+        ctx.setVariable("siteHost", siteHost);
+        ctx.setVariable("generatedAt", java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm 'UTC'", Locale.ENGLISH)));
+        return render("traffic-pdf", ctx);
+    }
+
+    private byte[] render(String template, Context ctx) {
+        String html = templates.process(template, ctx);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             new PdfRendererBuilder()
                     .useFastMode()

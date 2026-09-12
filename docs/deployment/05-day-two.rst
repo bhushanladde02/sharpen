@@ -164,3 +164,18 @@ To get indexed, once: Google Search Console → the ``sharpen-ai.duckdns.org`` p
 *Request indexing*. Google usually crawls within days; the description it shows is the meta description,
 though it may rewrite it. A Safe Browsing flag (see :doc:`09-pilot-log`) blocks indexing until the review
 clears. Check with ``site:sharpen-ai.duckdns.org`` in Google.
+
+Traffic and the evidence record
+-------------------------------
+
+Sharpen measures its own traffic — no Google Analytics, no cookie banner. Every HTML page served is
+counted once, server-side (``page_view`` table; bots excluded by user agent; a visitor is a salted hash of
+day + address + user agent, so one browser counts once per day and cannot be identified or followed). The
+owner's account sees **Traffic** in the sidebar: page views, visitors, sign-ups, sessions and reports per
+day, top pages, referrers, languages, for 7/30/90/365 days, all time, or any month — with a **CSV** of the
+daily series and an **Evidence PDF** that states the method in its footer.
+
+Keep three independent sources of the same story, monthly: Sharpen's own PDF + CSV, Google Search Console's
+Performance export (Google's own count of impressions and clicks), and GitHub Insights → Traffic. The
+``private/evidence/`` folder (git-ignored) holds them by month with a checklist and an index of everything
+citable — articles, posts, listings, mentions — with dates and URLs.

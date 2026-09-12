@@ -21,9 +21,11 @@ Only the ``app`` container is rebuilt and replaced; PostgreSQL and Caddy keep ru
 The site is down for about thirty seconds while the new jar starts. Signed-in users are logged out (sessions
 are in memory in the prototype; Release 1 moves them to the database).
 
-If a database column or table was added, apply the change to PostgreSQL **before** starting the new version.
-Every such change ships as a dated script in ``src/main/resources/db/migrations/`` that is safe to run more
-than once; after ``git pull``:
+If a database column or table was added, it ships as a dated script in ``src/main/resources/db/migrations/``.
+``remote-deploy.sh`` applies every script that is not yet listed in the ``schema_migration`` table **before**
+starting the new version, and records it, so each runs exactly once — whether the pipeline or you started
+the deploy. To see what has been applied: ``dc exec -T db psql -U sharpen sharpen -c 'table schema_migration'``.
+By hand, the equivalent is:
 
 .. code-block:: bash
 

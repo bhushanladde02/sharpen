@@ -50,14 +50,14 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload the test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: surefire-reports
           path: target/surefire-reports
           retention-days: 14
       - name: Upload the runnable jar
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sharpen-jar
           path: target/sharpen.jar
@@ -135,7 +135,7 @@ jobs:
       - name: Build with warnings as errors (same as docs/view.sh)
         run: sphinx-build -W -q -b html docs docs/_build/html
       - name: Upload the rendered documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs-html
           path: docs/_build/html

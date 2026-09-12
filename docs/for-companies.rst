@@ -94,6 +94,6 @@ decision — it is a structured, comparable signal about a habit that otherwise 
 Try it
 ------
 
-The pilot is free and needs no card: ``https://sharpen-ai.duckdns.org``. Register as a company, browse the
+The pilot is free and needs no card: ``https://sharpenscore.com``. Register as a company, browse the
 candidates view, and use the *Feedback* link on any page to tell us what would make this useful in your hiring
 process — that feedback is what decides what gets built next.

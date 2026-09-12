@@ -290,8 +290,11 @@ Day 5 — Saturday 12 September: hands off the keyboard
    Total downtime about six minutes. The Micro stays stopped as a spare.
 #. **Pipeline switched on.** ``production`` environment: ``DEPLOY_HOST``, ``DEPLOY_USER``,
    ``DEPLOY_SSH_KEY`` (a dedicated ``ed25519`` key, comment ``github-actions-deploy``), variable
-   ``SITE_DOMAIN``, and a deployment-branch rule restricting the environment to ``main``. This log entry is
-   the first change to reach production without anyone typing on the server.
+   ``SITE_DOMAIN``, and a deployment-branch rule restricting the environment to ``main``. The first two
+   runs after that looked green but had **skipped** the rollout: the "is production configured?" check
+   lived in the image-building job, which is not part of the ``production`` environment and so cannot see
+   its secrets — it always answered "no". Moved into the deploy job itself (first step; the rest run only
+   when it passes). Lesson: environment secrets exist only inside a job that names the environment.
 
 #. **Locking the doors.** Before the first automatic rollout, the rules were tightened so that nothing
    merges or deploys without the owner: the ruleset's bypass list emptied (the day-4 direct push to
@@ -311,6 +314,13 @@ Day 5 — Saturday 12 September: hands off the keyboard
    ``day`` is a reserved word there, so the column is ``view_day``. Verified against scratch PostgreSQL:
    migration applies, the app boots with ``validate``, 15 test views from 2 visitors counted, the Googlebot
    request dropped. Details in :doc:`05-day-two`, *Traffic and the evidence record*.
+
+#. **A real domain.** ``sharpen-ai.com``, ``sharpenai.com``, ``getsharpen.com`` and ``trysharpen.com`` were all
+   taken (checked against the registries' RDAP); ``sharpenscore.com`` was free — and says what the product is.
+   Bought at Cloudflare Registrar for $10.46/yr at cost, auto-renew on. The code had the DuckDNS name in
+   three places (JSON-LD, the ``deploy.yml`` environment URL, template fallbacks) — now everything derives
+   from ``SHARPEN_SITE_HOST``. Caddy gained an ``import /etc/caddy/extra/*.caddy`` so the old name and
+   ``www`` redirect permanently to the new one. Steps in :doc:`05-day-two`, *Moving to your own domain*.
 
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^

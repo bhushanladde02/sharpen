@@ -5,8 +5,9 @@ name: Deploy
 #                as ghcr.io/<owner>/sharpen:<short-sha> and :latest.
 #   2. deploy  — over SSH to the production VM: sync the repo to this commit, pull the image, restart the app,
 #                wait for /api/v1/health, roll back to the previous image if it never comes up.
-# The deploy job is skipped (not failed) until the three DEPLOY_* secrets exist, so the pipeline is safe to
-# merge before the VM does. Secrets are set under Settings → Environments → production (see docs/deployment).
+# The deploy job ends early (green, "not configured") until the DEPLOY_* secrets exist, so the pipeline is safe
+# to merge before the VM does. Secrets live in Settings → Environments → production (see docs/deployment) and
+# are only visible to a job that declares that environment — which is why the check happens inside "deploy".
 on:
   workflow_run:
     workflows: ['CI']
@@ -39,7 +40,6 @@ jobs:
     outputs:
       sha: ${{ steps.fullsha.outputs.sha }}
       tag: ${{ steps.fullsha.outputs.tag }}
-      deploy_configured: ${{ steps.gate.outputs.configured }}
     steps:
       - name: Resolve the commit to deploy
         id: meta
@@ -85,23 +85,17 @@ jobs:
             org.opencontainers.image.revision=${{ steps.fullsha.outputs.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Is the production VM configured?
-        id: gate
-        run: echo "configured=${{ secrets.DEPLOY_HOST != '' && secrets.DEPLOY_SSH_KEY != '' }}" >> "$GITHUB_OUTPUT"
       - name: Summary
-        run: |
-          echo "Published \`${IMAGE}:${{ steps.fullsha.outputs.tag }}\` (and \`:latest\`) for linux/arm64 and linux/amd64." >> "$GITHUB_STEP_SUMMARY"
-          [ "${{ steps.gate.outputs.configured }}" = "true" ] || echo "Production VM not configured yet (no DEPLOY_HOST / DEPLOY_SSH_KEY secrets) — deploy skipped." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "Published \`${IMAGE}:${{ steps.fullsha.outputs.tag }}\` (and \`:latest\`) for linux/arm64 and linux/amd64." >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
     name: Roll out to production
     needs: image
-    if: needs.image.outputs.deploy_configured == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
       name: production
-      url: https://${{ vars.SITE_DOMAIN || 'sharpen-ai.duckdns.org' }}
+      url: https://${{ vars.SITE_DOMAIN || 'sharpenscore.com' }}
     permissions:
       contents: read
       packages: read
@@ -110,10 +104,17 @@ jobs:
       USER: ${{ secrets.DEPLOY_USER || 'ubuntu' }}
       GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
     steps:
+      - name: Is the production VM configured?
+        id: gate
+        run: |
+          if [ -n "$HOST" ] && [ -n "${{ secrets.DEPLOY_SSH_KEY }}" ]; then echo "configured=true" >> "$GITHUB_OUTPUT"
+          else echo "configured=false" >> "$GITHUB_OUTPUT"; echo "Production VM not configured yet (no DEPLOY_HOST / DEPLOY_SSH_KEY secrets in the production environment) — nothing rolled out." >> "$GITHUB_STEP_SUMMARY"; fi
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.configured == 'true'
         with:
           ref: ${{ needs.image.outputs.sha }}
       - name: Install the SSH key
+        if: steps.gate.outputs.configured == 'true'
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
@@ -128,12 +129,15 @@ jobs:
             ConnectTimeout 20
           EOF
       - name: Sync the checkout on the VM to this commit
+        if: steps.gate.outputs.configured == 'true'
         run: |
           ssh vm 'set -e; cd ~/sharpen; git fetch -q origin; git reset -q --hard ${{ needs.image.outputs.sha }}; git log -1 --oneline'
       - name: Let the VM pull from GHCR (only needed while the package is private)
-        if: env.GHCR_PULL_TOKEN != ''
+        if: steps.gate.outputs.configured == 'true' && env.GHCR_PULL_TOKEN != ''
         run: printf '%s' "$GHCR_PULL_TOKEN" | ssh vm "docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin"
       - name: Pull the image, restart, wait for health (roll back on failure)
+        if: steps.gate.outputs.configured == 'true'
         run: ssh vm "APP_IMAGE=${IMAGE}:${{ needs.image.outputs.tag }} bash ~/sharpen/deploy/remote-deploy.sh"
       - name: Summary
+        if: steps.gate.outputs.configured == 'true'
         run: echo "Deployed \`${IMAGE}:${{ needs.image.outputs.tag }}\` (commit ${{ needs.image.outputs.sha }}) to \`$HOST\`." >> "$GITHUB_STEP_SUMMARY"

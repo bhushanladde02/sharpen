@@ -131,7 +131,7 @@ On github.com → the repository → **Settings** → **Environments** → **New
    * - ``GHCR_PULL_TOKEN``
      - only if you keep the image private — see the next section
 
-Under *Environment variables* (not secrets) you may add ``SITE_DOMAIN`` = ``sharpen-ai.duckdns.org``; it is
+Under *Environment variables* (not secrets) you may add ``SITE_DOMAIN`` = ``sharpenscore.com``; it is
 only used for the link GitHub shows on the deployment.
 
 3. Make the image public (or give the VM a token)
@@ -151,7 +151,7 @@ If you would rather keep it private: create a *classic* personal access token wi
 ^^^^^^^^^^^^^^
 
 Push any commit to ``main`` — or *Actions → Deploy → Run workflow*. Watch the two jobs; the second ends with
-``healthy : https://sharpen-ai.duckdns.org/api/v1/health`` and ``OK``. From now on, every green merge to
+``healthy : https://sharpenscore.com/api/v1/health`` and ``OK``. From now on, every green merge to
 ``main`` is live within about five minutes, and the manual "Updating" steps in :doc:`05-day-two` are no
 longer needed (they still work).
 

@@ -10,5 +10,6 @@ docs/_build/
 docs/.venv/
 deploy/.env
 
-# Private notes (credentials etc.) - never committed
+# Private notes (credentials etc.) — never committed
 private/
+deploy/caddy-extra/*.caddy

@@ -24,7 +24,7 @@
 <body>
   <p class="eyebrow">Sharpen · traffic and usage record</p>
   <h1 th:text="${#temporals.format(s.from, 'd MMMM yyyy')} + ' – ' + ${#temporals.format(s.to, 'd MMMM yyyy')}">Period</h1>
-  <p class="muted">Site: <span th:text="'https://' + ${siteHost}">https://sharpen-ai.duckdns.org</span> · generated <span th:text="${generatedAt}">now</span> by the application from its own records.</p>
+  <p class="muted">Site: <span th:text="'https://' + ${siteHost}">https://sharpenscore.com</span> · generated <span th:text="${generatedAt}">now</span> by the application from its own records.</p>
 
   <table class="stats"><tr>
     <td><div class="label">Page views</div><div class="big" th:text="${#numbers.formatInteger(s.views, 1, 'COMMA')}">0</div></td>

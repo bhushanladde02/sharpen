@@ -68,7 +68,7 @@ Then, on the server, fetch the code and settings and start everything from the p
 ``remote-deploy.sh`` pulls PostgreSQL, Caddy and the Sharpen image (about 400 MB in total, a minute or two),
 starts the three containers, and polls ``/api/v1/health`` through Caddy. On the Micro the JVM needs 40–60
 seconds to start, and the very first request also makes Caddy fetch the certificate; the script waits up to
-three minutes. It ends with ``healthy : https://sharpen-ai.duckdns.org/api/v1/health`` and ``OK``.
+three minutes. It ends with ``healthy : https://sharpenscore.com/api/v1/health`` and ``OK``.
 
 Then :doc:`04-deploying` Step 6 — open the site, register the admin account — and :doc:`07-ci-cd`
 "Turning the deploy stage on", so future merges roll out by themselves.

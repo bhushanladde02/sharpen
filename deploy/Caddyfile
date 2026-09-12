@@ -9,3 +9,7 @@
         -Server
     }
 }
+
+# Optional extra site blocks — e.g. redirects from an old name or www — live in deploy/caddy-extra/*.caddy
+# (git-ignored; see legacy-redirect.caddy.example). Nothing there is fine: a glob that matches nothing is skipped.
+import /etc/caddy/extra/*.caddy

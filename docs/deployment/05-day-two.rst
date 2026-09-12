@@ -159,11 +159,11 @@ LinkedIn or Slack show when the link is pasted), JSON-LD structured data on the 
 pages, and ``/sitemap.xml`` listing the landing page, the directory and every public profile. Personal pages
 carry ``noindex``.
 
-To get indexed, once: Google Search Console → the ``sharpen-ai.duckdns.org`` property → *Sitemaps* → add
-``https://sharpen-ai.duckdns.org/sitemap.xml``; then *URL inspection* → enter the home page →
+To get indexed, once: Google Search Console → the ``sharpenscore.com`` property → *Sitemaps* → add
+``https://sharpenscore.com/sitemap.xml``; then *URL inspection* → enter the home page →
 *Request indexing*. Google usually crawls within days; the description it shows is the meta description,
 though it may rewrite it. A Safe Browsing flag (see :doc:`09-pilot-log`) blocks indexing until the review
-clears. Check with ``site:sharpen-ai.duckdns.org`` in Google.
+clears. Check with ``site:sharpenscore.com`` in Google.
 
 Traffic and the evidence record
 -------------------------------
@@ -179,3 +179,25 @@ Keep three independent sources of the same story, monthly: Sharpen's own PDF + C
 Performance export (Google's own count of impressions and clicks), and GitHub Insights → Traffic. The
 ``private/evidence/`` folder (git-ignored) holds them by month with a checklist and an index of everything
 citable — articles, posts, listings, mentions — with dates and URLs.
+
+Moving to your own domain
+-------------------------
+
+A free ``duckdns.org`` name is fine for a pilot; a real domain is worth its ~$10 a year the moment anyone
+outside sees the site (credibility, search ranking, and the Safe Browsing classifier treats free dynamic-DNS
+names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps, with no downtime:
+
+#. Buy the domain (Cloudflare Registrar sells at cost with WHOIS privacy; turn auto-renew on). In its DNS,
+   add ``A @`` and ``A www`` records pointing at the server, *DNS only* (grey cloud) so Caddy can fetch the
+   certificate itself.
+#. On the server, set ``DOMAIN=<new domain>`` in ``deploy/.env`` and copy
+   ``deploy/caddy-extra/legacy-redirect.caddy.example`` to ``legacy-redirect.caddy`` with the old name and
+   ``www`` in it — Caddy imports every ``*.caddy`` in that folder and answers those names with a permanent
+   redirect to the new one, so every old link and search result keeps working.
+#. ``dc up -d --force-recreate app caddy`` (the app reads ``SHARPEN_SITE_HOST`` from ``DOMAIN``; Caddy fetches
+   certificates for all three names on first request).
+#. GitHub → environment ``production`` → variable ``SITE_DOMAIN`` = the new domain. Search Console → add a
+   Domain property for the new name (TXT record in Cloudflare DNS), then *Settings → Change of address* on
+   the old property so Google carries the history across; submit the new sitemap.
+#. Keep the old DuckDNS name pointing at the server indefinitely — it costs nothing and the redirect is what
+   preserves old links.

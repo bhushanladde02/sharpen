@@ -105,7 +105,7 @@ Started``. Watch the application come up:
 Step 6 — Check
 --------------
 
-On any device, open ``https://sharpen-ai.duckdns.org``. The **first** visit can take up to a minute: Caddy sees
+On any device, open ``https://sharpenscore.com``. The **first** visit can take up to a minute: Caddy sees
 the domain for the first time, asks Let's Encrypt for a certificate (Let's Encrypt connects back to port 80 to
 verify you control the name — this is why 80 must be open too), installs it, and only then serves the page.
 Refresh if the browser gives up early. After that it is instant, with the padlock.
@@ -114,7 +114,7 @@ What to verify:
 
 * The landing page shows the live counters (members, sessions, reports) — all zero on a fresh database.
 * **Register** with the ``ADMIN_EMAIL`` address from ``.env``. That account, and only that one, can open
-  ``https://sharpen-ai.duckdns.org/admin/feedback``.
+  ``https://sharpenscore.com/admin/feedback``.
 * Log a session, open the dashboard, generate a report, download its PDF. If all of that works on the server,
   the deployment is complete.
 

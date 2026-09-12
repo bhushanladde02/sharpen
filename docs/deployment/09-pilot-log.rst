@@ -326,10 +326,28 @@ Day 5 — Saturday 12 September: hands off the keyboard
    recreate ran without ``APP_IMAGE``, so Compose rebuilt the image from source on the A1 (three minutes);
    ``remote-deploy.sh`` restored the pipeline's image straight after.
 
+#. **Search Console on the new name.** Adding ``sharpenscore.com`` as a Domain property no longer means
+   copying a TXT value: Google recognised Cloudflare as the DNS host and offered a one-time *Authorize*
+   that wrote the record itself. Verified in seconds; sitemap submitted. The *Change of address* tool on
+   the old property, though, failed twice with *Couldn't fetch http://sharpen-ai.duckdns.org/* while
+   ``curl`` from a laptop got a clean redirect. Two things were true at once: Caddy's automatic
+   HTTP→HTTPS hop is a **308**, and the checker wants a **301** straight from the old homepage — fixed by
+   listing ``http://`` and ``https://`` names explicitly in the redirect file (the example in
+   ``deploy/caddy-extra/`` shows the shape); and Google's fetcher was still working from a cached answer,
+   which no server change clears. Left to retry in a day; the redirects do the real work regardless.
+
+#. **The approval gate, checked.** The ``production`` environment showed *Required reviewers* unticked —
+   the day-4 setting had not stuck. Re-added the owner as reviewer, admin bypass off, saved; the next
+   Deploy run paused at *Roll out to production* and mailed *waiting for your review*. That is the state
+   the rule "nothing reaches production without me" actually needs, and it is now recorded under
+   ``private/evidence/`` with the run that proved it.
+
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Google Safe Browsing: review requested 9 Sept via Search Console — check the result; decide on a real domain.
+* Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
+* Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
+* Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
 * Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).
@@ -353,5 +371,8 @@ Things to remember from this log
 * If a test never opens a page, that page is untested — the edit form shipped broken behind a green suite.
 * A fresh PostgreSQL container is not empty — it has the schema; drop it before restoring a dump.
 * Any schema change: migration script first, image second — the health check will tell you if you forget.
+* A redirect that looks right from a laptop can still fail a checker: Caddy's http→https hop is a 308, and
+  Google's change-of-address test wants a 301 from the very first hop.
+* Re-open a settings page after saving it; the day-4 *Required reviewers* tick had not survived.
 * Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
   on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

@@ -43,7 +43,11 @@ Everything from this chapter on one page, for when you already understand it and
    * - back up the database (*server*)
      - ``dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz``
    * - check DNS
-     - ``dig +short sharpen-ai.duckdns.org``
+     - ``dig +short sharpenscore.com`` · ``dig +short sharpen-ai.duckdns.org`` (old name, must still point here)
+   * - check the redirects (old name and www → 301 to the site)
+     - ``for u in http://sharpen-ai.duckdns.org/ https://sharpen-ai.duckdns.org/ https://www.sharpenscore.com/; do curl -s -o /dev/null -w "$u %{http_code} -> %{redirect_url}\n" $u; done``
+   * - reload Caddy after editing ``deploy/caddy-extra/*.caddy`` (*server*)
+     - ``dc exec caddy caddy reload --config /etc/caddy/Caddyfile``
    * - check a port from outside
      - ``nc -zv <ip> 443``
    * - open the admin inbox

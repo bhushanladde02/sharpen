@@ -127,6 +127,14 @@ This is done once per VCN, not per server — a future server in the same networ
 1e. A free domain name at DuckDNS
 ---------------------------------
 
+.. note::
+
+   This is the pilot route: a free name, no card. Sharpen ran on ``sharpen-ai.duckdns.org`` for its first
+   five days and then moved to its own domain, ``sharpenscore.com`` (about $10 a year at Cloudflare
+   Registrar) — see :doc:`05-day-two`, *Moving to your own domain*. If you already own a domain, point an
+   ``A`` record at the server instead of doing this section, and use that domain wherever these pages say
+   ``sharpen-ai.duckdns.org``.
+
 #. Open https://www.duckdns.org and sign in with Google (your Gmail).
 #. In the **sub domain** box type the name you want — we used ``sharpen-ai`` — and click **add domain**.
 #. It appears in the table as ``sharpen-ai`` with a **current ip** box. DuckDNS fills that with *your

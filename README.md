@@ -107,7 +107,8 @@ docs/samples/       import examples for each route
 
 **[docs/deployment/](docs/deployment/01-what-we-are-doing.rst)** is a from-scratch, no-prior-knowledge guide
 to the zero-cost public deployment: Oracle Cloud Always Free ARM VM, Docker Compose with PostgreSQL, Caddy for
-automatic HTTPS, a free DuckDNS name, the capacity-retry script, day-two operations and troubleshooting, with
+automatic HTTPS, a domain at Cloudflare (a free DuckDNS name for the pilot), the capacity-retry script,
+day-two operations (migrations, Search Console, traffic records, moving domains) and troubleshooting, with
 diagrams, and the CI/CD pipeline (GitHub Actions: test → smoke → docs, then multi-arch image to GHCR → SSH
 rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `deploy/README.md` is the
 one-page version for people who already know the tools. The landing page and every

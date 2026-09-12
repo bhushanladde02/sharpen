@@ -87,7 +87,10 @@ Turning the deploy stage on
 ---------------------------
 
 Until the secrets below exist, Stage 2 still builds and publishes the image but skips the rollout (the run
-summary says so). Once the production VM exists:
+summary says so). Once switched on, every merge to ``main`` ends with ``remote-deploy.sh`` running on the
+VM over SSH: it applies any migration script in ``src/main/resources/db/migrations/`` that is not yet recorded
+in the ``schema_migration`` table, pulls the new image, restarts the app, waits for the health check and
+rolls back if it fails. Once the production VM exists:
 
 1. A key for the pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^

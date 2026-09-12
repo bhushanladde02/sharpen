@@ -3,8 +3,10 @@
 #
 #   APP_IMAGE=ghcr.io/bhushanladde02/sharpen:<tag> bash ~/sharpen/deploy/remote-deploy.sh
 #
-# Pulls the given image, restarts the stack with it, waits until /api/v1/health answers through Caddy, and if
-# it never does, puts the previous image back so the site is not left broken. Prints what it did.
+# Applies any database migration scripts that have not run yet (src/main/resources/db/migrations/*.sql, each
+# recorded in a schema_migration table so it runs exactly once), pulls the given image, restarts the stack
+# with it, waits until /api/v1/health answers through Caddy, and if it never does, puts the previous image
+# back so the site is not left broken. Prints what it did.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."                      # repository root on the VM (~/sharpen)
@@ -15,6 +17,27 @@ FILES=(-f deploy/docker-compose.prod.yml)
 # SMALL_VM=true in deploy/.env (a 1 GB Micro) adds the memory-trimmed overrides.
 grep -qE '^SMALL_VM=true' deploy/.env && FILES+=(-f deploy/docker-compose.micro.yml)
 dc() { docker compose "${FILES[@]}" --env-file deploy/.env "$@"; }
+
+# --- database migrations, before the new version starts (it validates the schema on boot) ---------------
+migrate() {
+  local dir=src/main/resources/db/migrations
+  [ -d "$dir" ] || return 0
+  dc up -d db >/dev/null
+  for i in $(seq 1 24); do dc exec -T db pg_isready -q -U sharpen && break; sleep 5; done
+  local psql=(dc exec -T -e PGOPTIONS=-cclient_min_messages=warning db psql -q -v ON_ERROR_STOP=1 -U sharpen sharpen)
+  "${psql[@]}" -c "create table if not exists schema_migration (name text primary key, applied_at timestamptz not null default now())" >/dev/null
+  for f in "$dir"/*.sql; do
+    [ -e "$f" ] || continue
+    local name; name=$(basename "$f")
+    if [ "$("${psql[@]}" -tA -c "select count(*) from schema_migration where name = '$name'")" = "1" ]; then
+      continue
+    fi
+    echo "migration     : $name"
+    "${psql[@]}" < "$f"
+    "${psql[@]}" -c "insert into schema_migration (name) values ('$name')" >/dev/null
+  done
+}
+migrate
 
 previous=$(docker inspect --format '{{.Config.Image}}' "$(dc ps -q app 2>/dev/null)" 2>/dev/null || true)
 echo "current image : ${previous:-<none>}"

@@ -63,7 +63,7 @@ Release with the jar) and `dependabot.yml` round it out. Setup and troubleshooti
 ```bash
 alias dc='docker compose -f ~/sharpen/deploy/docker-compose.prod.yml --env-file ~/sharpen/deploy/.env'
 cd ~/sharpen && git pull && dc up -d --build app      # update (db and caddy keep running)
-dc exec -T db psql -U sharpen sharpen < src/main/resources/db/migrations/<file>.sql   # first, if the release added columns
+# migrations in src/main/resources/db/migrations/ are applied by remote-deploy.sh (once each, ledger: schema_migration)
 dc ps · dc logs -f app · dc restart app · docker stats --no-stream
 dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz   # backup (cron it)
 ```

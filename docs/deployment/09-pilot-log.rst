@@ -264,10 +264,22 @@ Day 4 — Thursday 10 September: the directory grows up, profile pictures
    field demoted to "other tools you use, optional" and merged in after. The directory's tool chips, its
    search text and the candidates view use the same source. Lesson: never ask for data you already have.
 
-Open items (as of day 4)
+Day 5 — Saturday 12 September: hands off the keyboard
+-----------------------------------------------------
+
+#. **Automatic rollout.** Every deploy so far ended with the same line typed on the server. The pipeline's
+   deploy stage had been waiting since day 3 for a key: a dedicated ``ed25519`` key for GitHub Actions
+   (``~/.ssh/sharpen_deploy``), its public half in the VM's ``authorized_keys``, and the ``production``
+   environment secrets ``DEPLOY_HOST``, ``DEPLOY_USER``, ``DEPLOY_SSH_KEY`` plus the ``SITE_DOMAIN`` variable.
+   From here on a merge to ``main`` is the deploy.
+#. **Migrations in the rollout.** ``remote-deploy.sh`` now applies any script in ``db/migrations/`` that is
+   not yet in a ``schema_migration`` ledger table, before the new image starts — so the day-4 "run psql
+   first" step is gone. Verified against a scratch PostgreSQL: first run applies and records, second run is
+   silent. The avatars script, already applied by hand, re-runs harmlessly (``if not exists``) and is recorded.
+
+Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Turn on the pipeline's automatic rollout (deploy key + ``production`` secrets, :doc:`07-ci-cd`).
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result; decide on a real domain.
 * Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.

@@ -6,8 +6,24 @@
   <meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0e1218" media="(prefers-color-scheme: dark)">
   <title th:replace="${title}">Sharpen</title>
+  <meta name="description" th:content="${pageDescription}" content="Sharpen — the AI profile.">
   <meta name="author" content="Bhushan Arun Ladde">
   <meta name="copyright" content="© 2026 Bhushan Arun Ladde">
+  <meta name="robots" th:content="${noindex} ? 'noindex, nofollow' : 'index, follow'" content="index, follow">
+  <link rel="canonical" th:href="${canonicalUrl}" href="https://sharpen-ai.duckdns.org/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sharpen">
+  <meta property="og:title" th:content="${ogTitle} ?: 'Sharpen — the AI profile'" content="Sharpen — the AI profile">
+  <meta property="og:description" th:content="${pageDescription}" content="Sharpen — the AI profile.">
+  <meta property="og:url" th:content="${canonicalUrl}" content="https://sharpen-ai.duckdns.org/">
+  <meta property="og:image" th:content="'https://' + ${siteHost} + '/img/og.png'" content="/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" th:content="${ogTitle} ?: 'Sharpen — the AI profile'" content="Sharpen — the AI profile">
+  <meta name="twitter:description" th:content="${pageDescription}" content="Sharpen — the AI profile.">
+  <meta name="twitter:image" th:content="'https://' + ${siteHost} + '/img/og.png'" content="/img/og.png">
+  <th:block th:if="${structuredData}"><script type="application/ld+json" th:utext="${structuredData}"></script></th:block>
   <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
   <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" th:href="@{/img/favicon.ico}">
   <link rel="apple-touch-icon" sizes="180x180" th:href="@{/img/apple-touch-icon.png}">

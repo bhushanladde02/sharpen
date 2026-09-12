@@ -189,6 +189,22 @@ class WebFlowTest {
         mvc.perform(post("/sessions/" + firstId + "/delete").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
         mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().is4xxClientError());
 
+        // Search engines: description + structured data on the landing page, noindex on private pages,
+        // robots.txt and a sitemap that lists the public profile
+        mvc.perform(get("/")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("<meta name=\"description\" content=\"Sharpen is a free")))
+                .andExpect(content().string(containsString("application/ld+json")))
+                .andExpect(content().string(containsString("content=\"index, follow\"")));
+        mvc.perform(get("/dashboard").with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("content=\"noindex, nofollow\"")));
+        mvc.perform(get("/p/" + me.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Flow Tester&#39;s AI profile")));
+        mvc.perform(get("/robots.txt")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Disallow: /dashboard")))
+                .andExpect(content().string(containsString("Sitemap: ")));
+        mvc.perform(get("/sitemap.xml")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("/p/" + me.getHandle() + "</loc>")));
+
         // A trailing slash reaches the same page (no redirect, so no Location header to abuse)
         mvc.perform(get("/sessions/").with(asMe)).andExpect(status().isOk())
                 .andExpect(header().doesNotExist("Location"));

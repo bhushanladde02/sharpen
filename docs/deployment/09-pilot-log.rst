@@ -299,6 +299,11 @@ Day 5 — Saturday 12 September: hands off the keyboard
    off, approval required before any outside contributor's workflow runs, and a ``CODEOWNERS`` file.
    Details in :doc:`07-ci-cd`, *Who can change what*.
 
+#. **Telling search engines what Sharpen is.** Meta descriptions, canonical links, Open Graph/Twitter tags
+   with a generated preview image, JSON-LD on the landing page, ``robots.txt``, ``sitemap.xml`` with every
+   public profile, and ``noindex`` on personal pages. Sitemap submitted and indexing requested in Search
+   Console. Details in :doc:`05-day-two`, *Being found on Google*.
+
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

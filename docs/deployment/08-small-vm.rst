@@ -94,17 +94,29 @@ The manual ``dc`` alias on this machine needs both compose files:
 Moving to an A1 later
 ---------------------
 
-When the hunter finally prints an A1 ``Public IP:``:
+When the hunter finally prints an A1 ``Public IP:`` (it did, on 12 September — see :doc:`09-pilot-log`):
 
-#. Prepare the A1 with Steps 4–5 of :doc:`04-deploying` (its ``.env`` **without** ``SMALL_VM``), but stop
-   before the first visit.
-#. On the Micro: ``dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/sharpen.sql.gz`` and copy the file to
-   the A1 (``scp`` via your Mac).
-#. On the A1, with the containers running and the database still empty:
-   ``gunzip -c ~/sharpen.sql.gz | dc exec -T db psql -U sharpen sharpen``.
-#. Update DuckDNS to the A1's IP; Caddy on the A1 fetches its certificate on the first visit.
-#. Change the ``DEPLOY_HOST`` secret in GitHub to the A1 and add the deploy key to it; the pipeline now
-   targets the A1.
-#. Terminate the Micro in the console (or keep it — it is free).
+#. Prepare the A1: ``setup-vm.sh`` and ``git clone`` (Step 4 of :doc:`04-deploying`), then copy your
+   ``deploy/.env`` across with ``SMALL_VM=false``. Do **not** start the app yet.
+#. On the Micro, stop the app and dump the database (the site is down from here):
+   ``dc stop app`` and ``dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/sharpen.sql.gz``; copy the file
+   to the A1 via your Mac (``scp`` down, ``scp`` up).
+#. On the A1, start only the database and restore. The container applies ``schema-postgres.sql`` on its
+   first start, so the tables already exist — **drop that empty schema first** or the restore collides with
+   it (every ``CREATE`` fails and rows with foreign keys are rejected):
 
-Ten to fifteen minutes; users see at most a minute of downtime while DNS moves.
+   .. code-block:: bash
+
+      dc up -d db && sleep 10
+      dc exec -T db psql -q -U sharpen sharpen -c 'drop schema public cascade; create schema public;'
+      gunzip -c ~/sharpen.sql.gz | dc exec -T db psql -q -v ON_ERROR_STOP=1 -U sharpen sharpen
+      dc exec -T db psql -U sharpen sharpen -c 'select count(*) from person'
+
+#. Update DuckDNS to the A1's IP and wait for ``dig +short`` to agree.
+#. ``APP_IMAGE=ghcr.io/bhushanladde02/sharpen:latest bash deploy/remote-deploy.sh`` on the A1. It applies any
+   pending migrations, pulls the image, and Caddy fetches the certificate on the first health check.
+#. Point the pipeline at the A1: ``DEPLOY_HOST`` in the ``production`` environment, and the deploy key's
+   public half in the A1's ``authorized_keys``.
+#. Leave the Micro stopped as a spare, or terminate it in the console — it is free either way.
+
+Ten to fifteen minutes; users see a few minutes of downtime between the dump and the first health check.

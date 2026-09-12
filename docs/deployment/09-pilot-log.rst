@@ -277,13 +277,35 @@ Day 5 — Saturday 12 September: hands off the keyboard
    first" step is gone. Verified against a scratch PostgreSQL: first run applies and records, second run is
    silent. The avatars script, already applied by hand, re-runs harmlessly (``if not exists``) and is recorded.
 
+#. **The A1 lands.** After roughly five days and well over a thousand attempts, the hunter on the bot VM
+   printed ``Public IP: 129.213.153.181`` — a 1 OCPU / 6 GB ``VM.Standard.A1.Flex`` in AD-1. The move,
+   following :doc:`08-small-vm`: ``setup-vm.sh`` (no swap this time), clone, ``.env`` with
+   ``SMALL_VM=false``, ``dc stop app`` and ``pg_dump`` on the Micro, restore on the A1, DuckDNS to the new
+   IP, ``remote-deploy.sh``. One surprise: the first restore threw a wall of *already exists* errors and
+   rejected the monthly-report rows — the database container had applied ``schema-postgres.sql`` on its
+   first start, so the dump collided with an existing (empty) schema. ``drop schema public cascade; create
+   schema public`` and a second restore with ``ON_ERROR_STOP=1`` went through clean: 2 accounts, 3 sessions,
+   1 report, 1 picture. ``remote-deploy.sh`` then applied the avatars migration into the new
+   ``schema_migration`` ledger, pulled the image, and Caddy had a certificate by the first health check.
+   Total downtime about six minutes. The Micro stays stopped as a spare.
+#. **Pipeline switched on.** ``production`` environment: ``DEPLOY_HOST``, ``DEPLOY_USER``,
+   ``DEPLOY_SSH_KEY`` (a dedicated ``ed25519`` key, comment ``github-actions-deploy``), variable
+   ``SITE_DOMAIN``, and a deployment-branch rule restricting the environment to ``main``. This log entry is
+   the first change to reach production without anyone typing on the server.
+
+#. **Locking the doors.** Before the first automatic rollout, the rules were tightened so that nothing
+   merges or deploys without the owner: the ruleset's bypass list emptied (the day-4 direct push to
+   ``main`` can no longer happen), a required reviewer on the ``production`` environment with admin bypass
+   off, approval required before any outside contributor's workflow runs, and a ``CODEOWNERS`` file.
+   Details in :doc:`07-ci-cd`, *Who can change what*.
+
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result; decide on a real domain.
 * Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
-* The A1 hunter is still running on the bot VM; migrate per :doc:`08-small-vm` if it ever lands.
+* Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).
 
 Things to remember from this log
 --------------------------------
@@ -302,6 +324,7 @@ Things to remember from this log
 * The first push to ``main`` without a ruleset is fine; the ruleset applies from the moment it is created.
 * A model attribute called ``session`` is invisible to Thymeleaf; a date field must be ISO for ``type=date``.
 * If a test never opens a page, that page is untested — the edit form shipped broken behind a green suite.
+* A fresh PostgreSQL container is not empty — it has the schema; drop it before restoring a dump.
 * Any schema change: migration script first, image second — the health check will tell you if you forget.
 * Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
   on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

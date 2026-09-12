@@ -1,0 +1,4 @@
+# Every file in this repository is owned by the author. GitHub requests his review on any pull request
+# automatically; combined with the protect-main ruleset (pull request required, no bypass) and the
+# production environment's required reviewer, nothing merges or deploys without him.
+*   @bhushanladde02

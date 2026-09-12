@@ -209,3 +209,23 @@ What was deliberately left out
 * **Database migrations in the pipeline** — until Flyway is added (Release 1), a schema change is applied by
   hand on the VM *before* merging the code that needs it; the rollback protects the site if you forget.
 * **Approval before deploy** — one click away: *Settings → Environments → production → Required reviewers*.
+
+Who can change what
+-------------------
+
+The repository is public, but three settings mean nothing merges, deploys, or reads a secret without the
+author's explicit action:
+
+* **Merging.** The ``protect-main`` ruleset requires a pull request with green checks and has an *empty*
+  bypass list — even the owner cannot push to ``main`` directly. There are no collaborators; anyone else can
+  only open a pull request, which waits for the owner to merge it. ``.github/CODEOWNERS`` names the owner
+  for every file, so his review is requested automatically on any pull request.
+* **Deploying.** The ``production`` environment has the owner as a *required reviewer* and administrator
+  bypass switched off. Every Deploy run pauses at *Waiting for review* until he approves it in the Actions
+  tab, and the environment only accepts runs from ``main``.
+* **Secrets.** Environment secrets are encrypted and never displayed again after being set. They are
+  decrypted only inside an approved run from ``main``; pull requests from forks never receive them, and
+  workflows from outside contributors do not run at all until the owner approves them
+  (*Settings → Actions → Require approval for all external contributors*). The workflow token is read-only.
+  Everything else sensitive — ``deploy/.env``, ``private/`` — is git-ignored and exists only on the owner's
+  Mac and the server.

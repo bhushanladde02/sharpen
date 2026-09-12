@@ -44,7 +44,10 @@
     <div class="grid two">
       <div class="card">
         <h2>Tools</h2>
-        <div class="row"><span class="chip" th:each="t : ${tools}" th:text="${t}">Claude</span><span class="muted" th:if="${#lists.isEmpty(tools)}">Not listed</span></div>
+        <div class="row">
+          <span class="chip" th:each="t : ${tools}" th:text="${t.name}" th:title="${t.sessions > 0} ? (${t.sessions} + ' sessions · ' + ${t.minutes} + ' min') : 'listed in settings'">Claude</span>
+          <span class="muted" th:if="${#lists.isEmpty(tools)}">No sessions logged yet — tools appear here automatically once they are.</span>
+        </div>
       </div>
       <div class="card">
         <h2>How to read this</h2>

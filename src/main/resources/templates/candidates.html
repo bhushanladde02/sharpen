@@ -29,7 +29,7 @@
           <span class="chip bad" th:if="${s.relianceRisk}">reliance risk</span></div>
         <div class="muted" style="font-size:.88rem" th:text="${c.person.headline}">Headline</div>
         <div class="muted-3" style="font-size:.8rem">
-          <span th:text="${c.person.jobTitle}">Title</span><span th:if="${c.person.industry}" th:text="' · ' + ${c.person.industry}"></span><span th:if="${c.person.location}" th:text="' · ' + ${c.person.location}"></span><span th:if="${c.person.primaryTools}" th:text="' · ' + ${c.person.primaryTools}"></span>
+          <span th:text="${c.person.jobTitle}">Title</span><span th:if="${c.person.industry}" th:text="' · ' + ${c.person.industry}"></span><span th:if="${c.person.location}" th:text="' · ' + ${c.person.location}"></span><span th:if="${!#lists.isEmpty(c.tools)}" th:text="' · ' + ${#strings.listJoin(c.tools, ', ')}"></span>
         </div>
         <div class="cand-dims" style="margin-top:.4rem">
           <span>Independence <b class="num" th:text="${s.independence}">70</b></span>

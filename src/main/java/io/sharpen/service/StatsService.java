@@ -32,6 +32,31 @@ public class StatsService {
         return list.isEmpty() ? MonthSummary.empty(month) : MonthSummary.of(month, list, scoring.compute(list));
     }
 
+    /** One tool on a profile: name, total minutes, number of sessions (0/0 when it was only listed by hand). */
+    public record ToolUse(String name, long minutes, long sessions) {}
+
+    /**
+     * The tools shown on a person's profile: everything they have logged sessions with, most minutes first,
+     * followed by anything they typed into Settings that has not appeared in a session yet. Matching is
+     * case-insensitive so "claude code" and "Claude Code" are one chip.
+     */
+    public List<ToolUse> tools(Person person) {
+        List<ToolUse> out = new java.util.ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (Object[] row : sessions.toolTotals(person)) {
+            String name = ((String) row[0]).trim();
+            if (name.isEmpty() || !seen.add(name.toLowerCase(java.util.Locale.ROOT))) continue;
+            out.add(new ToolUse(name, ((Number) row[1]).longValue(), ((Number) row[2]).longValue()));
+        }
+        if (person.getPrimaryTools() != null) {
+            for (String t : person.getPrimaryTools().split("\\s*,\\s*")) {
+                String name = t.trim();
+                if (!name.isEmpty() && seen.add(name.toLowerCase(java.util.Locale.ROOT))) out.add(new ToolUse(name, 0, 0));
+            }
+        }
+        return out;
+    }
+
     /** The trailing-90-day score shown on the dashboard and the public profile. */
     public AiScore rollingScore(Person person, LocalDate today) {
         return scoring.compute(sessions.between(person, today.minusDays(89), today));

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -181,6 +182,10 @@ class WebFlowTest {
                 .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sessions"));
         mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("value=\"Claude Code\"")));
+        // Tools on the profile come from logged sessions, no Settings entry needed
+        mvc.perform(get("/p/" + me.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(containsString(">Claude Code<")))
+                .andExpect(content().string(not(containsString("Not listed"))));
         mvc.perform(post("/sessions/" + firstId + "/delete").with(csrf()).with(asMe)).andExpect(status().is3xxRedirection());
         mvc.perform(get("/sessions/" + firstId + "/edit").with(asMe)).andExpect(status().is4xxClientError());
 

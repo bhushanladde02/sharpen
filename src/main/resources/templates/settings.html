@@ -22,7 +22,8 @@
         <div><label for="yearsExperience">Years of experience</label><input type="number" id="yearsExperience" th:field="*{yearsExperience}" min="0" max="60"></div>
         <div><label for="location">Location</label><input type="text" id="location" th:field="*{location}" maxlength="120"></div>
       </div>
-      <div th:unless="${me.company}"><label for="primaryTools">Tools you use (comma-separated)</label><input type="text" id="primaryTools" th:field="*{primaryTools}" maxlength="300" placeholder="Claude, ChatGPT, GitHub Copilot"></div>
+      <div th:unless="${me.company}"><label for="primaryTools">Other tools you use (optional, comma-separated)</label><input type="text" id="primaryTools" th:field="*{primaryTools}" maxlength="300" placeholder="Claude, ChatGPT, GitHub Copilot">
+        <div class="help">Tools from your logged sessions are shown on your profile automatically; add here only ones you use but have not logged yet.</div></div>
       <label class="check" th:unless="${me.company}"><input type="checkbox" th:field="*{publicProfile}"> Public profile — visible at your URL and in the candidates list</label>
       <div><button class="btn primary" type="submit">Save</button></div>
     </form>

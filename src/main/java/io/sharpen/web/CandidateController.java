@@ -23,7 +23,7 @@ import java.util.Locale;
 @Controller
 public class CandidateController {
 
-    public record Candidate(Person person, AiScore score, long sessions) {}
+    public record Candidate(Person person, AiScore score, long sessions, List<String> tools) {}
 
     private final PersonRepository people;
     private final StatsService stats;
@@ -42,8 +42,9 @@ public class CandidateController {
         LocalDate today = LocalDate.now();
         String needle = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
         List<Candidate> list = people.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL).stream()
-                .filter(p -> needle.isEmpty() || haystack(p).contains(needle))
-                .map(p -> new Candidate(p, stats.rollingScore(p, today), sessions.count(p)))
+                .map(p -> new Candidate(p, stats.rollingScore(p, today), sessions.count(p),
+                        stats.tools(p).stream().map(StatsService.ToolUse::name).toList()))
+                .filter(c -> needle.isEmpty() || haystack(c).contains(needle))
                 .sorted(comparator(sort))
                 .toList();
         model.addAttribute("candidates", list);
@@ -63,9 +64,10 @@ public class CandidateController {
         };
     }
 
-    private static String haystack(Person p) {
+    private static String haystack(Candidate c) {
+        Person p = c.person();
         return String.join(" ", nz(p.getDisplayName()), nz(p.getHeadline()), nz(p.getJobTitle()), nz(p.getIndustry()),
-                nz(p.getLocation()), nz(p.getPrimaryTools())).toLowerCase(Locale.ROOT);
+                nz(p.getLocation()), String.join(" ", c.tools())).toLowerCase(Locale.ROOT);
     }
 
     private static String nz(String s) { return s == null ? "" : s; }

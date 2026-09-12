@@ -258,6 +258,12 @@ Day 4 — Thursday 10 September: the directory grows up, profile pictures
    to the analyzer. Final answer: no redirect at all, just ``PathPatternParser.setMatchOptionalTrailingSeparator``
    in a ``WebMvcConfigurer``. Lesson: when a scanner keeps objecting, look for a design without the sink.
 
+#. **"Tools: Not listed".** The profile's Tools card read a separate free-text Settings field nobody
+   fills in, and ignored the sessions — which already say which tools were used. Now the list is derived
+   from logged sessions (most minutes first; hover a chip for sessions and minutes), with the Settings
+   field demoted to "other tools you use, optional" and merged in after. The directory's tool chips, its
+   search text and the candidates view use the same source. Lesson: never ask for data you already have.
+
 Open items (as of day 4)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

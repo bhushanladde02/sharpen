@@ -113,6 +113,9 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
+    public List<Object[]> toolTotals(Person person) { return sessions.toolTotals(person.getId()); }
+
+    @Transactional(readOnly = true)
     public List<UsageSession> needingAssessment(Person person, int limit) {
         return sessions.findByPersonIdAndSelfAssessedFalseOrderByOccurredOnDesc(person.getId(), PageRequest.of(0, limit));
     }

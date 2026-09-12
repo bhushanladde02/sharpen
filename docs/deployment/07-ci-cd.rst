@@ -122,7 +122,7 @@ On github.com → the repository → **Settings** → **Environments** → **New
    * - Secret
      - Value
    * - ``DEPLOY_HOST``
-     - the VM's public IP (or ``sharpen-ai.duckdns.org``)
+     - the VM's public IP (a name works too, but the IP survives a DNS change)
    * - ``DEPLOY_SSH_KEY``
      - the whole content of ``~/.ssh/sharpen_deploy`` (``cat ~/.ssh/sharpen_deploy``, from
        ``-----BEGIN`` to ``END OPENSSH PRIVATE KEY-----`` inclusive)
@@ -131,8 +131,8 @@ On github.com → the repository → **Settings** → **Environments** → **New
    * - ``GHCR_PULL_TOKEN``
      - only if you keep the image private — see the next section
 
-Under *Environment variables* (not secrets) you may add ``SITE_DOMAIN`` = ``sharpenscore.com``; it is
-only used for the link GitHub shows on the deployment.
+Under *Environment variables* (not secrets) add ``SITE_DOMAIN`` = ``sharpenscore.com``; it is only used
+for the link GitHub shows on the deployment (set 12 Sept 2026, after the domain move).
 
 3. Make the image public (or give the VM a token)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -206,9 +206,10 @@ What was deliberately left out
 ------------------------------
 
 * **A staging server** — the free tier has room for one VM only. The smoke test in CI is the stand-in.
-* **Database migrations in the pipeline** — until Flyway is added (Release 1), a schema change is applied by
-  hand on the VM *before* merging the code that needs it; the rollback protects the site if you forget.
-* **Approval before deploy** — one click away: *Settings → Environments → production → Required reviewers*.
+* **Flyway** — ``remote-deploy.sh`` applies the dated scripts in ``db/migrations/`` itself, once each, before
+  the rollout (:doc:`05-day-two`); a library would add nothing until the scripts need more than that.
+* **A wait timer** on the environment — the required reviewer (below) is the gate; a timer would only add
+  delay to a rollout the owner has already approved.
 
 Who can change what
 -------------------
@@ -220,9 +221,12 @@ author's explicit action:
   bypass list — even the owner cannot push to ``main`` directly. There are no collaborators; anyone else can
   only open a pull request, which waits for the owner to merge it. ``.github/CODEOWNERS`` names the owner
   for every file, so his review is requested automatically on any pull request.
-* **Deploying.** The ``production`` environment has the owner as a *required reviewer* and administrator
-  bypass switched off. Every Deploy run pauses at *Waiting for review* until he approves it in the Actions
-  tab, and the environment only accepts runs from ``main``.
+* **Deploying.** The ``production`` environment has the owner as a *required reviewer* (*Prevent
+  self-review* off, or he could never approve his own runs) and administrator bypass switched off. Every
+  Deploy run pauses at *Roll out to production — waiting for review*, GitHub e-mails *Deployment review*,
+  and nothing reaches the VM until he clicks *Approve and deploy*; the environment only accepts runs from
+  ``main``. Re-open the environment page after saving it: the reviewer tick once failed to persist, and
+  without it the pipeline deploys every merge unattended.
 * **Secrets.** Environment secrets are encrypted and never displayed again after being set. They are
   decrypted only inside an approved run from ``main``; pull requests from forks never receive them, and
   workflows from outside contributors do not run at all until the owner approves them

@@ -36,7 +36,10 @@ Read the picture left to right. Here is what each thing is.
    ``sharpen-ai.duckdns.org`` is a name that *points at* the IP number. DNS ("domain name system") is the
    internet's phone book that turns a name into a number. DuckDNS is a free service that lets you pick a name
    ending in ``.duckdns.org`` and tell it which IP it should point to. When you visit the site, your browser
-   first asks DuckDNS "what is the IP of sharpen-ai.duckdns.org?", then connects to that IP.
+   first asks DuckDNS "what is the IP of sharpen-ai.duckdns.org?", then connects to that IP. (Sharpen's
+   real address is now ``sharpenscore.com``, a bought domain whose DNS lives at Cloudflare; the DuckDNS name
+   still exists and only redirects there. The pages that follow use the DuckDNS name because that is how
+   the pilot was built — the mechanics are identical.)
 
 **HTTPS and the padlock.**
    ``https://`` (with an *s*) means the connection is encrypted; the browser shows a padlock. It needs a

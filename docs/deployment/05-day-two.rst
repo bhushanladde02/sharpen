@@ -34,8 +34,8 @@ By hand, the equivalent is:
 The app runs with ``ddl-auto=validate`` in production, so it refuses to start against a schema that does not
 match — deliberately, so a mismatch is noticed at deploy time rather than as a runtime error later. With the
 pipeline, that shows up as a failed health check and an automatic rollback to the previous image; run the
-migration, then re-run the deploy. (Flyway, which applies these scripts automatically, is on the Release 1
-list.)
+migration, then re-run the deploy. (The dated-script-plus-ledger approach does what Flyway would; Flyway
+itself stays on the Release 1 list only if the scripts ever need more than "apply once, in order".)
 
 Looking at what is happening
 ----------------------------
@@ -193,13 +193,25 @@ names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps
 #. On the server, set ``DOMAIN=<new domain>`` in ``deploy/.env`` and copy
    ``deploy/caddy-extra/legacy-redirect.caddy.example`` to ``legacy-redirect.caddy`` with the old name and
    ``www`` in it — Caddy imports every ``*.caddy`` in that folder and answers those names with a permanent
-   redirect to the new one, so every old link and search result keeps working.
+   redirect to the new one, so every old link and search result keeps working. List each name **twice**,
+   as ``http://name`` and ``https://name`` (the example does): a bare name makes Caddy answer plain-http
+   requests with its own 308 hop to https first, and Google's *Change of address* check only accepts a 301
+   from the very first hop. After editing the file: ``dc exec caddy caddy reload --config /etc/caddy/Caddyfile``.
+   Check every variant from your Mac — each must print ``301 -> https://<new domain>/``::
+
+      for u in http://<old>/ https://<old>/ http://www.<new>/ https://www.<new>/; do printf '%-36s ' "$u"; curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}\n' "$u"; done
 #. ``APP_IMAGE=ghcr.io/<owner>/sharpen:latest dc up -d --force-recreate app caddy`` (the app reads
    ``SHARPEN_SITE_HOST`` from ``DOMAIN``; Caddy fetches certificates for all three names on first request).
    Without ``APP_IMAGE`` Compose builds the image from source on the server instead — it works, but then
    production is not running the exact image the pipeline published; ``remote-deploy.sh`` puts that right.
-#. GitHub → environment ``production`` → variable ``SITE_DOMAIN`` = the new domain. Search Console → add a
-   Domain property for the new name (TXT record in Cloudflare DNS), then *Settings → Change of address* on
-   the old property so Google carries the history across; submit the new sitemap.
+#. GitHub → environment ``production`` → variable ``SITE_DOMAIN`` = the new domain.
+#. Search Console → *Add property* → **Domain** → the new name → *Continue*. With Cloudflare as the DNS host
+   Google offers *Start verification* instead of a TXT value to copy: it opens a Cloudflare page listing the
+   one TXT record it wants to add; *Authorize* writes it (one-time, no standing access) and the property
+   verifies within seconds. Never delete that TXT record later. Then *Sitemaps* → ``sitemap.xml`` → *Submit*.
+#. On the old property: *Settings → Change of address* → the new property → *Validate & Update*, so Google
+   carries the history across. It can fail with *Couldn't fetch the page* for a day or so after the DNS
+   change even though ``curl`` gets the 301 — Google's fetcher works from a cached answer; retry later. It
+   is not urgent: the 301s already move the ranking, the tool only speeds it up.
 #. Keep the old DuckDNS name pointing at the server indefinitely — it costs nothing and the redirect is what
    preserves old links.

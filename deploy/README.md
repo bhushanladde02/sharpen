@@ -1,8 +1,9 @@
 # Deploying Sharpen for free
 
 Sharpen runs in production on one **Oracle Cloud Always Free** ARM VM as three Docker containers — PostgreSQL,
-the app, and Caddy for automatic HTTPS — behind a free DuckDNS name. Zero monthly cost, real certificate,
-one-command updates.
+the app, and Caddy for automatic HTTPS — at `sharpenscore.com` (Cloudflare Registrar, ~$10/yr; a free
+DuckDNS name did the first five days and now just redirects). Otherwise zero monthly cost, real certificate,
+one-command updates, and every production rollout waits for the owner's approval in GitHub.
 
 **The full, beginner-level walkthrough is in the docs:** `docs/deployment/` (build with `./docs/view.sh`, or
 read the `.rst` files directly). It explains every term, every command and what to expect from each, plus
@@ -26,13 +27,15 @@ troubleshooting and day-two operations. This file is the short version for peopl
 
 1. **Prepare once** — Oracle Free Tier account (home region Ashburn); SSH key pair (`~/.ssh/sharpen_vm[.pub]`);
    `brew install oci-cli jq && oci setup config` + register the API key under *My profile → API keys*;
-   VCN default security list: ingress TCP 80 and 443 from `0.0.0.0/0`; a DuckDNS name; `cp .env.example .env`
+   VCN default security list: ingress TCP 80 and 443 from `0.0.0.0/0`; a domain (or a free DuckDNS name); `cp .env.example .env`
    and fill it (`openssl rand -base64 24` for the password); repo pushed to GitHub.
 2. **Get a server** — Console → Compute → Create instance: Ubuntu 24.04, `VM.Standard.A1.Flex` 1 OCPU / 6 GB,
    public IP, your `.pub` key. If *Out of capacity*: `SSH_PUB=~/.ssh/sharpen_vm.pub bash deploy/oci-retry-a1.sh`
    (better on an always-on box with `nohup … &`; `SIZES="1:6 2:12"` if your A1 quota is 2 cores). It prints
    `Public IP:` when done.
-3. **DNS** — put the IP into DuckDNS; `dig +short <name>.duckdns.org` must return it.
+3. **DNS** — an `A` record for the domain (DNS only / grey cloud at Cloudflare) or the IP in DuckDNS;
+   `dig +short <domain>` must return it. Old names go in `caddy-extra/legacy-redirect.caddy` (see the
+   `.example`) and 301 to the real domain.
 4. **Prepare the VM**
    ```bash
    ssh -i ~/.ssh/sharpen_vm ubuntu@<ip>

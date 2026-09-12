@@ -147,3 +147,35 @@ server:
 Caddy fetches a new certificate on the first visit. To also throw away the server itself, terminate the
 instance in the console (*Compute → Instances → sharpen → More actions → Terminate*, tick *permanently delete
 the boot volume*) — and remember that the retry script hunt starts again if you want a new one.
+
+Being found on Google
+---------------------
+
+Search engines describe a site from what the site itself says, so Sharpen sends the standard signals: a
+``<meta name="description">`` on every page (page-specific on the landing page, the directory and each public
+profile), canonical URLs, Open Graph and Twitter tags with a 1200×630 preview image (``/img/og.png``, what
+LinkedIn or Slack show when the link is pasted), JSON-LD structured data on the landing page describing the
+``SoftwareApplication`` (free, AGPL-3.0, author), ``robots.txt`` that keeps crawlers out of the personal
+pages, and ``/sitemap.xml`` listing the landing page, the directory and every public profile. Personal pages
+carry ``noindex``.
+
+To get indexed, once: Google Search Console → the ``sharpen-ai.duckdns.org`` property → *Sitemaps* → add
+``https://sharpen-ai.duckdns.org/sitemap.xml``; then *URL inspection* → enter the home page →
+*Request indexing*. Google usually crawls within days; the description it shows is the meta description,
+though it may rewrite it. A Safe Browsing flag (see :doc:`09-pilot-log`) blocks indexing until the review
+clears. Check with ``site:sharpen-ai.duckdns.org`` in Google.
+
+Traffic and the evidence record
+-------------------------------
+
+Sharpen measures its own traffic — no Google Analytics, no cookie banner. Every HTML page served is
+counted once, server-side (``page_view`` table; bots excluded by user agent; a visitor is a salted hash of
+day + address + user agent, so one browser counts once per day and cannot be identified or followed). The
+owner's account sees **Traffic** in the sidebar: page views, visitors, sign-ups, sessions and reports per
+day, top pages, referrers, languages, for 7/30/90/365 days, all time, or any month — with a **CSV** of the
+daily series and an **Evidence PDF** that states the method in its footer.
+
+Keep three independent sources of the same story, monthly: Sharpen's own PDF + CSV, Google Search Console's
+Performance export (Google's own count of impressions and clicks), and GitHub Insights → Traffic. The
+``private/evidence/`` folder (git-ignored) holds them by month with a checklist and an index of everything
+citable — articles, posts, listings, mentions — with dates and URLs.

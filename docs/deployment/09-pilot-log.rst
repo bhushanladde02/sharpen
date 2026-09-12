@@ -299,6 +299,19 @@ Day 5 — Saturday 12 September: hands off the keyboard
    off, approval required before any outside contributor's workflow runs, and a ``CODEOWNERS`` file.
    Details in :doc:`07-ci-cd`, *Who can change what*.
 
+#. **Telling search engines what Sharpen is.** Meta descriptions, canonical links, Open Graph/Twitter tags
+   with a generated preview image, JSON-LD on the landing page, ``robots.txt``, ``sitemap.xml`` with every
+   public profile, and ``noindex`` on personal pages. Sitemap submitted and indexing requested in Search
+   Console. Details in :doc:`05-day-two`, *Being found on Google*.
+
+#. **Measuring, first-party.** A ``page_view`` table (migration ``2026-09-12-page-views.sql`` — the ledger
+   applies it on deploy), an interceptor that queues a row per served HTML page and a batch writer every
+   10 s, bot filtering, day-scoped visitor hashes, an owner-only ``/admin/traffic`` dashboard with CSV and
+   PDF exports, and a ``private/evidence/`` folder with a monthly checklist. One H2-only surprise:
+   ``day`` is a reserved word there, so the column is ``view_day``. Verified against scratch PostgreSQL:
+   migration applies, the app boots with ``validate``, 15 test views from 2 visitors counted, the Googlebot
+   request dropped. Details in :doc:`05-day-two`, *Traffic and the evidence record*.
+
 Open items (as of day 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

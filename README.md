@@ -113,7 +113,7 @@ rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `d
 one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
 a `/feedback` form open to everyone, and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
-`/admin/feedback`.
+`/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports).
 
 ## About this project
 

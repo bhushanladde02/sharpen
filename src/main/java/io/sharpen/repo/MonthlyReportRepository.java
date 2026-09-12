@@ -11,4 +11,6 @@ public interface MonthlyReportRepository extends JpaRepository<MonthlyReport, Lo
     Optional<MonthlyReport> findByPersonIdAndYearMonth(Long personId, String yearMonth);
 
     List<MonthlyReport> findByPersonIdOrderByYearMonthDesc(Long personId);
+
+    List<MonthlyReport> findByGeneratedAtBetween(java.time.Instant from, java.time.Instant to);
 }

@@ -1,6 +1,7 @@
 package io.sharpen.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.pattern.PathPatternParser;
@@ -13,6 +14,17 @@ import org.springframework.web.util.pattern.PathPatternParser;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    private final PageViewInterceptor pageViews;
+
+    public WebConfig(PageViewInterceptor pageViews) {
+        this.pageViews = pageViews;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(pageViews);
+    }
 
     @Override
     @SuppressWarnings("deprecation") // still supported in Spring 6.x; revisit if a later major removes it

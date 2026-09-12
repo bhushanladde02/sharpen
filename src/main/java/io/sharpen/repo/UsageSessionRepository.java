@@ -31,6 +31,10 @@ public interface UsageSessionRepository extends JpaRepository<UsageSession, Long
            "group by s.tool order by sum(s.durationMinutes) desc, count(s) desc, s.tool asc")
     List<Object[]> toolTotals(Long personId);
 
+    /** [createdAt (truncated to day is done by the caller), count] for sessions created in a window — small tables, so per-row is fine. */
+    @Query("select s.createdAt, 1L from UsageSession s where s.createdAt >= :from and s.createdAt < :to")
+    List<Object[]> createdPerDay(java.time.Instant from, java.time.Instant to);
+
     @Query("select min(s.occurredOn) from UsageSession s where s.person.id = :personId")
     Optional<LocalDate> firstSessionDate(Long personId);
 }

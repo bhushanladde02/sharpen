@@ -151,6 +151,8 @@ public class ProfileController {
     @GetMapping({"/p", "/profiles"})
     public String directory(@RequestParam(required = false) String q, Model model) {
         fillDirectory(q, model);
+        model.addAttribute("ogTitle", "Public AI profiles on Sharpen");
+        model.addAttribute("pageDescription", "Browse everyone who has made their AI profile public on Sharpen: AI score, tools, industry and how they work with AI. Search by name, title, tool or city.");
         return "profiles";
     }
 
@@ -169,13 +171,20 @@ public class ProfileController {
         List<MonthlyReport> history = reports.history(p);
         model.addAttribute("person", p);
         model.addAttribute("owner", owner);
-        model.addAttribute("score", stats.rollingScore(p, today));
+        AiScore sc = stats.rollingScore(p, today);
+        model.addAttribute("score", sc);
         model.addAttribute("trend", trend);
         model.addAttribute("trendPath", Charts.linePath(trend.stream().map(m -> m.score().hasScore() ? m.score().composite() : -1).toList(), 1000, 320, 80));
         model.addAttribute("reportCount", history.size());
         model.addAttribute("sessionCount", sessions.count(p));
         model.addAttribute("since", sessions.firstSessionDate(p).orElse(null));
         model.addAttribute("tools", stats.tools(p));
+        String role = p.getJobTitle() == null ? "" : p.getJobTitle() + (p.getIndustry() == null ? "" : ", " + p.getIndustry()) + ". ";
+        model.addAttribute("ogTitle", p.getDisplayName() + " — AI profile on Sharpen");
+        model.addAttribute("pageDescription", p.getDisplayName() + "'s AI profile. " + role
+                + (sc.hasScore() ? "AI score " + sc.composite() + " of 1000 (" + sc.band() + ") over the last 90 days" : "Building an AI score")
+                + " — independence, effectiveness, verification, growth and breadth, from " + sessions.count(p) + " logged sessions."
+                + (p.getHeadline() == null ? "" : " \u201c" + p.getHeadline() + "\u201d"));
         return "profile";
     }
 

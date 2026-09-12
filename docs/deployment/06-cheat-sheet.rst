@@ -47,9 +47,9 @@ Everything from this chapter on one page, for when you already understand it and
    * - check a port from outside
      - ``nc -zv <ip> 443``
    * - open the admin inbox
-     - ``https://sharpen-ai.duckdns.org/admin/feedback`` (signed in as ``ADMIN_EMAIL``)
+     - ``https://sharpenscore.com/admin/feedback`` (signed in as ``ADMIN_EMAIL``)
    * - health check URL
-     - ``https://sharpen-ai.duckdns.org/api/v1/health``
+     - ``https://sharpenscore.com/api/v1/health``
 
 ``dc`` is the alias ``docker compose -f ~/sharpen/deploy/docker-compose.prod.yml --env-file ~/sharpen/deploy/.env``
 defined in ``~/.bashrc`` on the server.

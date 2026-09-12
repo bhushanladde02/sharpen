@@ -10,7 +10,7 @@ The goal in one sentence
 
 Right now Sharpen runs only on your laptop, at ``http://localhost:8080``, and only you can see it. When we are
 done, it runs on a small computer in an Oracle data centre, 24 hours a day, at an address like
-``https://sharpen-ai.duckdns.org`` that you can send to anyone.
+``https://sharpenscore.com`` that you can send to anyone.
 
 The pieces
 ----------

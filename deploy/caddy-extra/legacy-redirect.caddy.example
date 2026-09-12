@@ -1,6 +1,10 @@
 # Copy to legacy-redirect.caddy (git-ignored) on the server and restart caddy (dc up -d caddy).
 # Every request to the old name or to www is answered with a permanent redirect to the real domain,
 # so old links, bookmarks and search results keep working and search engines move their ranking across.
-sharpen-ai.duckdns.org, www.sharpenscore.com {
+#
+# The http:// names are listed explicitly: without them Caddy first answers plain-http requests with its
+# own 308 hop to https://, and Google's "Change of address" check insists on a 301 directly from the old
+# homepage. Listing both schemes makes every variant a single 301.
+http://sharpen-ai.duckdns.org, https://sharpen-ai.duckdns.org, http://www.sharpenscore.com, https://www.sharpenscore.com {
     redir https://sharpenscore.com{uri} permanent
 }

@@ -26,6 +26,11 @@ public interface UsageSessionRepository extends JpaRepository<UsageSession, Long
 
     long countByPersonIdAndSelfAssessedFalse(Long personId);
 
+    /** Distinct tools a person has logged, most minutes first: [tool, minutes, sessions]. */
+    @Query("select s.tool, sum(s.durationMinutes), count(s) from UsageSession s where s.person.id = :personId " +
+           "group by s.tool order by sum(s.durationMinutes) desc, count(s) desc, s.tool asc")
+    List<Object[]> toolTotals(Long personId);
+
     @Query("select min(s.occurredOn) from UsageSession s where s.person.id = :personId")
     Optional<LocalDate> firstSessionDate(Long personId);
 }

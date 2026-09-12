@@ -44,7 +44,7 @@
        th:href="@{/p/{h}(h=${p.handle})}"
        th:data-name="${#strings.toLowerCase(p.displayName)}"
        th:data-search="${l.searchText}"
-       th:data-tools="${p.primaryTools == null} ? '' : ${#strings.toLowerCase(p.primaryTools)}"
+       th:data-tools="${#strings.toLowerCase(#strings.listJoin(l.tools, ','))}"
        th:data-industry="${p.industry == null} ? '' : ${#strings.toLowerCase(p.industry)}"
        th:data-score="${s.hasScore()} ? ${s.composite} : -1"
        th:data-sessions="${l.sessions}">
@@ -59,8 +59,8 @@
           <span th:if="${p.location}" th:text="${p.location}">City</span>
           <span th:text="${l.sessions} + ' sessions'">12 sessions</span>
         </span>
-        <span class="person-tools" th:if="${p.primaryTools}">
-          <span class="chip" th:each="t : ${#strings.arraySplit(p.primaryTools, ',')}" th:text="${#strings.trim(t)}">Claude</span>
+        <span class="person-tools" th:if="${!#lists.isEmpty(l.tools)}">
+          <span class="chip" th:each="t : ${l.tools}" th:text="${t}">Claude</span>
         </span>
       </span>
       <span class="person-score" th:classappend="${s.hasScore()} ? '' : 'none'">

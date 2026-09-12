@@ -88,7 +88,7 @@ public class ProfileController {
     }
 
     /** One row of the public directory. */
-    public record Listed(Person person, AiScore score, long sessions, String searchText) {}
+    public record Listed(Person person, AiScore score, long sessions, String searchText, List<String> tools) {}
 
     private final PersonService people;
     private final PersonRepository repo;
@@ -175,7 +175,7 @@ public class ProfileController {
         model.addAttribute("reportCount", history.size());
         model.addAttribute("sessionCount", sessions.count(p));
         model.addAttribute("since", sessions.firstSessionDate(p).orElse(null));
-        model.addAttribute("tools", p.getPrimaryTools() == null ? List.of() : List.of(p.getPrimaryTools().split("\\s*,\\s*")));
+        model.addAttribute("tools", stats.tools(p));
         return "profile";
     }
 
@@ -187,15 +187,18 @@ public class ProfileController {
         LocalDate today = LocalDate.now();
         List<Person> all = repo.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL);
         List<Listed> list = all.stream()
-                .map(p -> new Listed(p, stats.rollingScore(p, today), sessions.count(p), haystack(p)))
+                .map(p -> {
+                    List<String> tools = stats.tools(p).stream().map(StatsService.ToolUse::name).toList();
+                    return new Listed(p, stats.rollingScore(p, today), sessions.count(p), haystack(p, tools), tools);
+                })
                 .sorted(Comparator.comparingInt((Listed l) -> l.score().hasScore() ? l.score().composite() : -1).reversed()
                         .thenComparing(l -> l.person().getDisplayName(), String.CASE_INSENSITIVE_ORDER))
                 .toList();
         Set<String> tools = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         Set<String> industries = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (Person p : all) {
-            if (p.getPrimaryTools() != null) for (String t : p.getPrimaryTools().split("\\s*,\\s*")) if (!t.isBlank()) tools.add(t.trim());
-            if (p.getIndustry() != null && !p.getIndustry().isBlank()) industries.add(p.getIndustry().trim());
+        for (Listed l : list) {
+            tools.addAll(l.tools());
+            if (l.person().getIndustry() != null && !l.person().getIndustry().isBlank()) industries.add(l.person().getIndustry().trim());
         }
         model.addAttribute("profiles", list);
         model.addAttribute("q", q == null ? "" : q.trim());
@@ -205,9 +208,9 @@ public class ProfileController {
     }
 
     /** Lower-cased text the browser-side search matches against. */
-    private static String haystack(Person p) {
+    private static String haystack(Person p, List<String> tools) {
         return String.join(" ", nz(p.getDisplayName()), nz(p.getHandle()), nz(p.getHeadline()), nz(p.getJobTitle()),
-                nz(p.getIndustry()), nz(p.getLocation()), nz(p.getPrimaryTools())).toLowerCase(Locale.ROOT);
+                nz(p.getIndustry()), nz(p.getLocation()), String.join(" ", tools)).toLowerCase(Locale.ROOT);
     }
 
     private static String nz(String s) { return s == null ? "" : s; }

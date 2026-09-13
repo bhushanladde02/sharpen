@@ -59,7 +59,7 @@
       </div>
       <div class="row" style="gap:.4rem">
         <form th:action="@{/logout}" method="post"><button class="btn small" type="submit">Sign out</button></form>
-        <a class="btn small" th:href="@{/feedback(from=${path})}">Feedback</a>
+        <a class="btn small" th:href="@{/feedback(from=${path})}">Contact</a>
       </div>
     </div>
   </aside>
@@ -72,11 +72,34 @@
       <span>
         <a href="https://github.com/bhushanladde02/sharpen" rel="author noopener" target="_blank">Source on GitHub</a>
         · <a th:href="@{/p}">Public profiles</a>
-        · <a th:href="@{/feedback(from=${path})}">Feedback</a>
+        · <a th:href="@{/(help=enroll)}" data-help-open>Help</a>
+        · <a th:href="@{/feedback(from=${path})}">Contact</a>
         <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>
       </span>
     </footer>
   </main>
+
+  <!-- Sharpen Help: a rule-based guide (no AI, no API, nothing leaves the browser). Logic in /js/help.js. -->
+  <div id="help-widget" class="help-widget" th:classappend="${me == null or me.company} ? 'no-tabbar'"
+       th:data-signed-in="${me != null}" th:data-company="${me != null and me.company}" th:data-handle="${me != null} ? ${me.handle} : ''">
+    <section class="help-panel card" hidden aria-label="Sharpen Help" role="dialog">
+      <header class="help-head">
+        <span><b>Sharpen Help</b><small>Automated guide · no live agents · nothing you type leaves this page</small></span>
+        <button type="button" class="help-close" aria-label="Close help">×</button>
+      </header>
+      <div class="help-log" aria-live="polite"></div>
+      <div class="help-chips" aria-label="Common questions"></div>
+      <form class="help-form" autocomplete="off">
+        <input type="text" name="q" maxlength="200" placeholder="Ask about enrolling, reports, your profile…" aria-label="Your question">
+        <button type="submit" class="btn primary small">Ask</button>
+      </form>
+      <footer class="help-foot">Not answered? <a th:href="@{/feedback(from=${path})}">Contact us</a> — a person reads every message.</footer>
+    </section>
+    <button type="button" class="help-launcher" aria-expanded="false" aria-controls="help-widget" aria-label="Open help">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg><span>Help</span>
+    </button>
+  </div>
+  <script th:src="@{/js/help.js}" defer></script>
 
   <!-- Phone tab bar: the four things people do most -->
   <nav class="tabbar" th:if="${me != null and !me.company}" th:with="p=${path ?: ''}" aria-label="Quick navigation">

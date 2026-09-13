@@ -342,7 +342,22 @@ Day 5 — Saturday 12 September: hands off the keyboard
    the rule "nothing reaches production without me" actually needs, and it is now recorded under
    ``private/evidence/`` with the run that proved it.
 
-Open items (as of day 5)
+Day 6 — Sunday 13 September: a guide in the corner
+--------------------------------------------------
+
+#. **Sharpen Help.** A *Help* button now sits in the corner of every page and opens a small guide that
+   explains how to enrol, how to get the PDF report, what the score is, and where profile, picture, tools,
+   import and privacy settings live — and says plainly that there is no customer-service team or live
+   representative, pointing everything else at the *Contact* form (the ``/feedback`` page, retitled
+   *Contact & feedback*; the sidebar and footer links now read *Contact*). It is deliberately not an AI
+   chatbot: a fixed list of topics matched by keywords in the browser (``static/js/help.js``), no model, no
+   API, no cost, nothing typed leaves the page. Verified with a headless browser at desktop and phone width,
+   light and dark, signed in and out: ten phrasings from "can I call you?" to "delete my account" each landed
+   on the intended answer, nonsense got the honest fallback. Two layout fixes on the way: the question chips
+   became one scrolling row (a wrapped cloud squeezed the answers out), and the panel sits above the phone
+   tab bar for members and in the corner for visitors and companies, who have no tab bar.
+
+Open items (as of day 6)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

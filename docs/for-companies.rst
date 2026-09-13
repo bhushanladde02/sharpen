@@ -95,5 +95,6 @@ Try it
 ------
 
 The pilot is free and needs no card: ``https://sharpenscore.com``. Register as a company, browse the
-candidates view, and use the *Feedback* link on any page to tell us what would make this useful in your hiring
+candidates view, and use the *Contact* link on any page (or the *Help* button, which answers the common
+questions and hands anything else to the same form) to tell us what would make this useful in your hiring
 process — that feedback is what decides what gets built next.

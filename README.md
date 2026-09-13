@@ -58,6 +58,16 @@ Tests: `mvn test` (scoring unit tests, import parsers, and an end-to-end MockMvc
 
 Only rated sessions count toward the score. Imports show volume immediately but cannot move the score until the person answers the four questions — that keeps the human in the loop and makes the score hard to game with automation.
 
+## Help and contact
+
+Every page has a **Help** button in the corner: **Sharpen Help**, a small rule-based guide (`static/js/help.js`) that
+explains how to enrol, how to get the PDF report, what the score is, how the public profile, picture, tools, import,
+privacy and company view work — and says plainly that there is no customer-service team or live representative.
+It is not an AI: no model, no API, nothing typed leaves the browser, no cookies or storage; it matches words against a
+fixed list of topics and otherwise points to the **Contact** form (`/feedback`), which the author reads. `/?help=pdf`
+opens it on a topic (ids: `enroll`, `pdf`, `human`, `score`, `public`, `picture`, `tools`, `import`, `privacy`, `cost`,
+`company`, `password`).
+
 ## The score
 
 Five dimensions, each 0–100, minute-weighted over rated sessions in the window (rolling 90 days on the dashboard and profile; calendar month in reports):
@@ -96,6 +106,7 @@ src/main/java/io/sharpen
 src/main/resources
   templates/   layout, nav, fragments (score ring, charts), one template per page, report-pdf (XHTML for the PDF)
   static/css/  sharpen.css — tokens, light/dark, no framework
+  static/js/   help.js — the rule-based Help guide shown on every page
   db/          schema-postgres.sql
 chrome-extension/   MV3 capture extension (background, content, popup)
 deploy/             production compose, Caddyfile, VM setup script, deployment guide
@@ -113,7 +124,7 @@ diagrams, and the CI/CD pipeline (GitHub Actions: test → smoke → docs, then 
 rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `deploy/README.md` is the
 one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
-a `/feedback` form open to everyone, and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
+a `/feedback` contact form open to everyone (linked as *Contact* and from the Help guide), and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
 `/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports).
 
 ## About this project
@@ -148,7 +159,7 @@ the tool did the typing, the person did the thinking and checked the result.
 
 What is deliberately left out of the prototype and what to add before a public release:
 
-- **Migrations** — add `flyway-core`, move `schema-postgres.sql` to `V1__init.sql` and the dated scripts in `db/migrations/` after it.
+- **Migrations** — done without Flyway: dated scripts in `db/migrations/` applied once each by `deploy/remote-deploy.sh` through a `schema_migration` ledger. Revisit only if scripts ever need more than "apply once, in order".
 - **Email** — verification on sign-up, password reset, and the monthly report as an email (the PDF service already exists).
 - **Rate limiting** on `/api/v1/**` and `/register`; put the app behind TLS.
 - **Auth for companies** — invite-only company accounts or domain verification, and an audit log of profile views.

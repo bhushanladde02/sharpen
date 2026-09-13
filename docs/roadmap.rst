@@ -13,7 +13,8 @@ Release 1
 
 Ordered by what unblocks a public launch.
 
-1. **Migrations** — Flyway, ``V1__init.sql`` from ``schema-postgres.sql`` (NFR-10).
+1. **Migrations** — done (NFR-10): dated scripts in ``db/migrations/`` applied by the deploy script through a
+   ``schema_migration`` ledger; Flyway only if the scripts ever need more than "apply once, in order".
 2. **Email** — verification, password reset, report delivery (FR-5, MR-6).
 3. **Edge hardening** — TLS, HSTS, rate limiting (SE-8, SE-9).
 4. **Company gating and audit** — invite / domain verification, profile-view log (CV-6, CV-7).

@@ -215,16 +215,28 @@ What we use from Spring Boot, and why it matters
      - ``WebFlowTest`` drives register → log → import → API → report → PDF → profile → candidates in-process
      - The full HTTP stack, security included, is tested without starting a server or a browser. Thirteen tests
        run in about twenty seconds.
-   * - **Actuator, Flyway, DevTools**
+   * - **Actuator, DevTools**
      - not yet
      - Deliberately left for Release 1 (see :doc:`../roadmap`) so the prototype stays small. Each is one
        dependency away.
+   * - **Flyway**
+     - not used
+     - Migrations are dated SQL scripts in ``db/migrations/`` applied once each by the deploy script through
+       a ``schema_migration`` ledger (see the deployment guide). Flyway would do the same with a dependency.
 
 What we chose not to use
 ------------------------
 
-* **No JavaScript framework.** Pages are server-rendered; the only client script is two slider labels and the
-  extension. The app is fast on a phone because there is nothing to download but HTML and one CSS file.
+* **No JavaScript framework.** Pages are server-rendered; the client scripts are two slider labels, the
+  directory's search filter, the live counter and the Help guide, all plain JavaScript. The app is fast on a
+  phone because there is nothing to download but HTML, one CSS file and one small script.
+* **No AI chatbot.** The *Help* button on every page is **Sharpen Help** (``static/js/help.js``): a fixed list of
+  topics — enrolling, the PDF report, the score, public profile, picture, tools, import, privacy, cost,
+  companies, passwords — matched by keywords in the browser. It explains that there is no customer-service
+  team or live representative and sends everything else to the *Contact* form. No model, no API call, no
+  cost, nothing typed leaves the page, no storage; the same answers are available signed in or out, with
+  links that fit the visitor's state. An LLM would cost money per question, need a privacy notice and could
+  invent features the product does not have; a rule list can be read, tested and corrected in one file.
 * **No Lombok.** Entities and forms have explicit accessors. It costs lines, saves a build-time dependency and an
   IDE plugin, and keeps stack traces honest.
 * **No microservices, no queue.** One process, three tables. The seams are already in the package structure

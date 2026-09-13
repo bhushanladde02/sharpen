@@ -70,6 +70,22 @@ class WebFlowTest {
     }
 
     @Test
+    void helpGuideIsOnEveryPageAndNeedsNoSignIn() throws Exception {
+        // The corner guide is plain markup + one static script; it must be there for visitors and members alike,
+        // and the script must be reachable without signing in (it is what answers "how do I enrol?").
+        mvc.perform(get("/")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("id=\"help-widget\"")))
+                .andExpect(content().string(containsString("data-signed-in=\"false\"")))
+                .andExpect(content().string(containsString("no live agents")));
+        mvc.perform(get("/dashboard").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-signed-in=\"true\"")))
+                .andExpect(content().string(containsString("data-handle=\"" + me.getHandle() + "\"")));
+        mvc.perform(get("/js/help.js")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("no customer-service team")))
+                .andExpect(content().string(containsString("/feedback?from=help")));
+    }
+
+    @Test
     void registerThroughTheForm() throws Exception {
         mvc.perform(post("/register").with(csrf())
                         .param("displayName", "New Person").param("email", "new@example.com")

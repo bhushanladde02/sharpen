@@ -43,7 +43,7 @@ Spring Boot does the work a team used to do by hand:
 
 1. **Reads configuration** from ``application.yml`` and, if ``--spring.profiles.active=postgres`` is set,
    layers ``application-postgres.yml`` on top. Environment variables such as ``SHARPEN_DB_URL`` override both.
-2. **Auto-configures** based on what is on the classpath. Because ``spring-boot-starter-web`` is present it
+2. **Auto-configures** based on what is on the classpath. Because ``spring-boot-starter-webmvc`` is present it
    creates an embedded Tomcat and a ``DispatcherServlet``; because ``spring-boot-starter-data-jpa`` is present it
    creates a ``DataSource``, an ``EntityManagerFactory`` and a transaction manager; the security and Thymeleaf
    starters do the same for their areas. We wrote none of that wiring.
@@ -161,7 +161,7 @@ What we use from Spring Boot, and why it matters
      - Where it shows up in Sharpen
      - What it buys us
    * - **Starters and auto-configuration**
-     - ``spring-boot-starter-web``, ``-thymeleaf``, ``-data-jpa``, ``-security``, ``-validation``
+     - ``spring-boot-starter-webmvc``, ``-thymeleaf``, ``-data-jpa``, ``-security``, ``-validation`` (plus the ``spring-boot-h2console`` module for the dev console)
      - Six dependencies wire the whole stack. No XML, no servlet container to install, no hand-written
        datasource or transaction manager. The ``pom.xml`` is 100 lines and the app is one ``main`` method.
    * - **Embedded Tomcat, single jar**

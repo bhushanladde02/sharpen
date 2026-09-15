@@ -1,7 +1,8 @@
 package io.sharpen.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import io.sharpen.domain.Enums.SessionSource;
 import io.sharpen.domain.Enums.TaskCategory;
 import io.sharpen.domain.Enums.UsageContext;
@@ -10,7 +11,6 @@ import io.sharpen.service.SessionService.SessionInput;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -76,7 +76,7 @@ public class ImportService {
             ExternalBatch batch = json.readValue(body, ExternalBatch.class);
             if (batch.sessions() == null) return new ImportResult(0, 0, 0, List.of("No \"sessions\" array in the file"));
             return importExternal(person, batch.sessions(), SessionSource.EXTENSION, defaultContext);
-        } catch (IOException e) {
+        } catch (JacksonException e) {   // Jackson 3 throws unchecked exceptions
             return new ImportResult(0, 0, 0, List.of("Not valid JSON: " + e.getMessage()));
         }
     }

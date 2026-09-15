@@ -1,16 +1,20 @@
 package io.sharpen.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.web.filter.UrlHandlerFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
- * {@code /sessions/} is served by the same handler as {@code /sessions}. Spring 6 stopped doing this by
- * default, so a typed or auto-completed trailing slash would 404. Matching the slash in the router (rather
- * than redirecting) means no {@code Location} header is ever built from request data — nothing to turn into
- * an open redirect. Spring Security resolves its path rules through the same parser, so the two agree.
+ * {@code /sessions/} is served by the same handler as {@code /sessions}. Spring 6 stopped matching a trailing
+ * slash by default and Spring Framework 7 removed the parser option that restored it, so the framework's own
+ * {@link UrlHandlerFilter} does the job now: it <em>wraps</em> the request with the slash trimmed — no redirect,
+ * no {@code Location} header built from request data, nothing to turn into an open redirect (the reason the
+ * hand-written filter was removed on day 4). It runs before Spring Security so the path rules see the same
+ * trimmed path the controllers do.
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -26,11 +30,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(pageViews);
     }
 
-    @Override
-    @SuppressWarnings("deprecation") // still supported in Spring 6.x; revisit if a later major removes it
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        PathPatternParser parser = new PathPatternParser();
-        parser.setMatchOptionalTrailingSeparator(true);
-        configurer.setPatternParser(parser);
+    @Bean
+    public FilterRegistrationBean<UrlHandlerFilter> trailingSlashFilter() {
+        UrlHandlerFilter filter = UrlHandlerFilter.trailingSlashHandler("/**").wrapRequest().build();
+        FilterRegistrationBean<UrlHandlerFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);   // ahead of the security filter chain (-100)
+        registration.addUrlPatterns("/*");
+        return registration;
     }
 }

@@ -357,13 +357,41 @@ Day 6 — Sunday 13 September: a guide in the corner
    became one scrolling row (a wrapped cloud squeezed the answers out), and the panel sits above the phone
    tab bar for members and in the corner for visitors and companies, who have no tab bar.
 
-Open items (as of day 6)
+Day 7 — Tuesday 15 September: Dependabot, and the jump to Spring Boot 4
+------------------------------------------------------------------------
+
+#. **Nine bot pull requests, three answers.** Dependabot had queued the GitHub Actions majors (checkout 7,
+   setup-java 6, setup-python 7, buildx 4, upload-artifact 7) — green, merged; the Java-25 and Java-26 base
+   images — closed, the runtime stays on the LTS the code is compiled for and any JDK move is one deliberate
+   change across ``pom.xml``, CI and both Dockerfiles; and *Spring Boot 3.3.5 → 4.1.1* — red, closed, because
+   a one-line ``pom.xml`` edit cannot carry a major migration. Merging five workflow bumps queues five Deploy
+   runs of the same image; approve the newest, reject the rest.
+
+#. **Why the upgrade could not wait.** Every 3.x line is out of open-source support (3.5 ended 30 June
+   2026); 3.3.5 had gone more than a year without fixes on a public site. Done on a branch, with the code
+   moved rather than just the version number: the ``web`` starter is ``webmvc``; the H2 console is its own
+   module (``spring-boot-h2console``, driver not included); MockMvc test support is ``spring-boot-starter-webmvc-test`` and ``@AutoConfigureMockMvc`` lives
+   in ``org.springframework.boot.webmvc.test.autoconfigure``; ``ErrorController`` moved to
+   ``org.springframework.boot.webmvc.error``; Jackson 3 is ``tools.jackson`` with unchecked exceptions (the
+   annotations keep their old package), and its ``java.time`` support is built in, so the ``jsr310``
+   module went; the unused Thymeleaf security dialect went with it. Spring Framework 7 removed the
+   trailing-slash parser option from day 4, so the framework's own ``UrlHandlerFilter`` now wraps
+   ``/sessions/`` as ``/sessions`` ahead of Spring Security — still no redirect, so still nothing for CodeQL
+   to flag. ``PageView.day`` became ``viewDay`` because ``day`` is an HQL keyword and Hibernate 7 parses more
+   strictly. The database schema is unchanged; ``validate`` proves it on the first deploy, and the rollout
+   rolls back by itself if it does not.
+
+#. **Where it was tested.** The cloud workspace that does the editing has no route to Maven Central, so the
+   build and the test suite ran on the Mac, against H2 and then against the production stack's PostgreSQL
+   image, before the pull request went up.
+
+Open items (as of day 7)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
-* Nine Dependabot PRs: merge the Actions bumps, close the Java-25 base-image bumps, review the Spring one.
+* Java 25 (LTS): move ``pom.xml``, CI and both Dockerfiles together when convenient — not via bot PRs.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).
 

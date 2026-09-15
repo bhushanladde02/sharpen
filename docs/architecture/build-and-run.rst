@@ -5,9 +5,9 @@ Prerequisites
 -------------
 
 * JDK 21 (the project compiles with ``--release 21``; a newer JDK such as 26 can run the build but the
-  IntelliJ project SDK should be a 21 for Spring Boot 3.3 tooling to behave — set it under *Project Structure*).
-* Maven 3.9 with a populated local repository (the dependency set is identical to the recovery-routes project,
-  so no new downloads are needed on the same machine).
+  IntelliJ project SDK should be a 21 for the Spring Boot 4.1 tooling to behave — set it under *Project Structure*).
+* Maven 3.9 and network access to Maven Central the first time (Spring Boot 4.1 pulls Spring Framework 7,
+  Spring Security 7, Hibernate 7 and Jackson 3; about 120 MB once, cached in ``~/.m2`` after that).
 * Optional: Docker for the PostgreSQL shape; Python 3 with Sphinx for these docs.
 
 IntelliJ IDEA
@@ -32,7 +32,7 @@ Open the ``sharpen`` folder. Shared run configurations in ``.run/`` appear in th
    * - All tests
      - JUnit run of ``io.sharpen``.
 
-If IntelliJ cannot resolve ``spring-boot-starter-parent:3.3.5``, point *Settings → Build Tools → Maven* at your
+If IntelliJ cannot resolve ``spring-boot-starter-parent:4.1.1``, point *Settings → Build Tools → Maven* at your
 own ``~/.m2/repository`` rather than a bundled Maven with an empty repository.
 
 Command line
@@ -73,6 +73,5 @@ Documentation
 
 .. code-block:: bash
 
-   ./docs/view.sh                     # build if needed and open in the browser
-   ./docs/view.sh --clean             # full rebuild
-   cd docs && make html               # manual alternative (needs pip install -r requirements.txt)
+   cd docs && pip install -r requirements.txt && make html
+   open _build/html/index.html

@@ -24,7 +24,7 @@ public class PageView {
     private Instant occurredAt = Instant.now();
 
     @Column(name = "view_day", nullable = false)
-    private LocalDate day;
+    private LocalDate viewDay;   // "day" is an HQL keyword; the property is named to stay clear of it
 
     @Column(nullable = false, length = 200)
     private String path;
@@ -46,7 +46,7 @@ public class PageView {
     protected PageView() {}
 
     public PageView(LocalDate day, String path, String referrer, String visitor, String lang, boolean signedIn) {
-        this.day = day;
+        this.viewDay = day;
         this.path = path;
         this.referrer = referrer;
         this.visitor = visitor;
@@ -56,7 +56,7 @@ public class PageView {
 
     public Long getId() { return id; }
     public Instant getOccurredAt() { return occurredAt; }
-    public LocalDate getDay() { return day; }
+    public LocalDate getDay() { return viewDay; }
     public String getPath() { return path; }
     public String getReferrer() { return referrer; }
     public String getVisitor() { return visitor; }

@@ -1,7 +1,7 @@
 package io.sharpen.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import io.sharpen.domain.Enums.AccountType;
 import io.sharpen.domain.MonthlyReport;
 import io.sharpen.domain.Person;
@@ -75,7 +75,7 @@ public class ReportService {
         report.setGeneratedAt(Instant.now());
         try {
             report.setPayload(json.writeValueAsString(model));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Could not serialise report", e);
         }
         return reports.save(report);
@@ -94,7 +94,7 @@ public class ReportService {
     public ReportModel read(MonthlyReport report) {
         try {
             return json.readValue(report.getPayload(), ReportModel.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Stored report is unreadable", e);
         }
     }

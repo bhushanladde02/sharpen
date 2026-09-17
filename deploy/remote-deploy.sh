@@ -59,6 +59,7 @@ rollout() {  # $1 = image
 
 if rollout "$APP_IMAGE"; then
   echo "healthy       : https://$DOMAIN/api/v1/health"
+  echo "running       : $(curl -fsS --max-time 5 -k --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/v1/health" 2>/dev/null)"
   docker image prune -f >/dev/null
   echo "OK"
 else

@@ -59,7 +59,9 @@ Looking at what is happening
    * - ``df -h /``
      - Disk usage. ``docker system prune -f`` reclaims old images after several updates.
    * - ``https://…/api/v1/health``
-     - ``{"status":"ok"}`` from the running app — handy for an uptime checker.
+     - ``{"status":"ok","version":"0.1.0-SNAPSHOT","built":"2026-09-16T17:02:11Z"}`` from the running app —
+       handy for an uptime checker, and the build time says which image is actually answering (the deploy
+       script prints it as ``running :`` after every rollout).
    * - ``https://…/admin/feedback``
      - Counters and the latest feedback messages (admin account only).
 

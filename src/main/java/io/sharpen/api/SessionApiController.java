@@ -9,10 +9,13 @@ import io.sharpen.service.ImportService.ExternalBatch;
 import io.sharpen.service.ImportService.ImportResult;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.StatsService;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,16 +30,29 @@ public class SessionApiController {
     private final PersonService people;
     private final ImportService imports;
     private final StatsService stats;
+    private final BuildProperties build;   // null when run from an IDE without the Maven build-info step
 
-    public SessionApiController(PersonService people, ImportService imports, StatsService stats) {
+    public SessionApiController(PersonService people, ImportService imports, StatsService stats,
+                                ObjectProvider<BuildProperties> build) {
         this.people = people;
         this.imports = imports;
         this.stats = stats;
+        this.build = build.getIfAvailable();
     }
 
+    /**
+     * Liveness for the deploy script and uptime checkers, plus which build is answering — the deploy log says
+     * what was rolled out, this says what is actually running. Open to everyone; contains nothing private.
+     */
     @GetMapping("/health")
     public Map<String, String> health() {
-        return Map.of("status", "ok");
+        Map<String, String> out = new LinkedHashMap<>();
+        out.put("status", "ok");
+        if (build != null) {
+            out.put("version", build.getVersion());
+            if (build.getTime() != null) out.put("built", build.getTime().toString());
+        }
+        return out;
     }
 
     @GetMapping("/me")

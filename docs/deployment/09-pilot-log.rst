@@ -382,10 +382,31 @@ Day 7 — Tuesday 15 September: Dependabot, and the jump to Spring Boot 4
    rolls back by itself if it does not.
 
 #. **Where it was tested.** The cloud workspace that does the editing has no route to Maven Central, so the
-   build and the test suite ran on the Mac, against H2 and then against the production stack's PostgreSQL
-   image, before the pull request went up.
+   build and the 15 tests ran on the Mac (green first time). The Mac has no Docker, so the PostgreSQL check
+   moved to the A1 and became a better one: with the Deploy run parked at *waiting for review*, the image CI
+   had just published was started against a throwaway ``postgres:16-alpine`` loaded with
+   ``schema-postgres.sql`` plus the migrations — the exact production schema — with ``validate`` on.
+   ``Started SharpenApplication in 19.2 s`` (about 15 s on 3.3.5; the health check allows far more), no
+   exception; production kept running its pinned image throughout. Only then was the deploy approved, and
+   the rollout came up healthy on the first attempt. A 90-second cap on the first try of that check killed
+   the container before it had finished booting and printed nothing either way — allow five minutes on one
+   core.
 
-Open items (as of day 7)
+Day 8 — Wednesday 16 September: which build is this?
+-----------------------------------------------------
+
+#. **Health says what is running.** After the Spring Boot 4 rollout the only proof that the A1 ran the new
+   image was the Actions log. Now ``/api/v1/health`` answers ``{"status":"ok","version":…,"built":…}`` —
+   the Maven ``build-info`` goal writes version and build time into the jar and ``BuildProperties`` reads
+   them back — and ``remote-deploy.sh`` prints that line as ``running :`` at the end of every rollout, so the
+   deploy log and the server agree in one place. Open, nothing private in it; a test pins the three fields.
+
+#. **Search Console, old property.** Google mailed "new reason prevents pages from being indexed: Page with
+   redirect" for ``sharpen-ai.duckdns.org`` — which is the hand-over working: every old URL 301s to the new
+   domain, so Google drops the old pages and follows. It also means Googlebot can fetch the old homepage
+   again, so the *Change of address* check that failed on day 5 can be retried.
+
+Open items (as of day 8)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
@@ -417,5 +438,8 @@ Things to remember from this log
 * A redirect that looks right from a laptop can still fail a checker: Caddy's http→https hop is a 308, and
   Google's change-of-address test wants a 301 from the very first hop.
 * Re-open a settings page after saving it; the day-4 *Required reviewers* tick had not survived.
+* A bot's major-version bump is a to-do item, not a pull request: close it and migrate on a branch.
+* Test a new image against a scratch copy of the production schema *on the server*, while the deploy is
+  parked at the approval gate — the gate is there precisely to make room for that.
 * Decide the license before the first outside user sees the site: AGPL-3.0 keeps it open and keeps the name
   on it; a ``LICENSE`` file, a ``NOTICE`` and a visible footer are all it takes.

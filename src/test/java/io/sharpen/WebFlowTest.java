@@ -70,6 +70,15 @@ class WebFlowTest {
     }
 
     @Test
+    void healthReportsTheBuild() throws Exception {
+        // Open endpoint: status plus the version and build time Maven wrote into the jar (build-info goal).
+        mvc.perform(get("/api/v1/health")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ok"))
+                .andExpect(jsonPath("$.version").isString())
+                .andExpect(jsonPath("$.built").isString());
+    }
+
+    @Test
     void helpGuideIsOnEveryPageAndNeedsNoSignIn() throws Exception {
         // The corner guide is plain markup + one static script; it must be there for visitors and members alike,
         // and the script must be reachable without signing in (it is what answers "how do I enrol?").

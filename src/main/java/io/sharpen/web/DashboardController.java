@@ -5,6 +5,8 @@ import io.sharpen.service.MonthSummary;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.SessionService;
 import io.sharpen.service.StatsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Controller
 public class DashboardController {
+
+    private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private final PersonService people;
     private final StatsService stats;
@@ -28,8 +32,8 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        System.out.println("In dashboard");
         Person me = people.requireCurrent();
+        log.debug("Dashboard opened by {}", me.getHandle());   // DEBUG: silent in production unless io.sharpen is raised
         if (me.isCompany()) return "redirect:/candidates";
 
         LocalDate today = LocalDate.now();

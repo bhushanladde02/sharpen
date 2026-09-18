@@ -406,6 +406,12 @@ Day 8 — Wednesday 16 September: which build is this?
    domain, so Google drops the old pages and follows. It also means Googlebot can fetch the old homepage
    again, so the *Change of address* check that failed on day 5 can be retried.
 
+#. **A print becomes a log line.** A ``System.out.println("In dashboard")`` added on day 7 to see the
+   dashboard being hit went out to stdout on every visit, level-less and nameless. It is now
+   ``log.debug("Dashboard opened by {}", handle)`` through SLF4J like the rest of the code: silent in
+   production at the configured ``INFO``, one ``logging.level.io.sharpen=DEBUG`` away when needed, and it
+   says who — which is the part that was missing. (Day 9, Thursday 18 September.)
+
 Open items (as of day 8)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

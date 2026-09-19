@@ -38,8 +38,17 @@ import java.util.regex.Pattern;
 public class TrafficService {
 
     private static final Logger log = LoggerFactory.getLogger(TrafficService.class);
+    /**
+     * User agents that are not a person: search and social crawlers ("bot", "spider", "preview"…), HTTP libraries
+     * and CLI tools (curl, okhttp, axios, node-fetch, Scrapy…), synthetic browsers (headless, PhantomJS, Lighthouse),
+     * uptime checkers and internet-wide port scanners (zgrab, masscan, Censys, Nmap). A visit is only counted
+     * when none of these match, so the traffic record errs on the side of under-counting.
+     */
     private static final Pattern BOT = Pattern.compile(
-            "bot|crawl|spider|slurp|curl|wget|python|java/|go-http|httpclient|headless|lighthouse|pingdom|uptime|monitor|preview|facebookexternalhit|whatsapp|telegram|discord",
+            "bot|crawl|spider|slurp|scrap|archiver|fetch|curl|wget|python|java/|go-http|httpclient|okhttp|axios|libwww|" +
+            "postman|insomnia|headless|phantom|lighthouse|pingdom|uptime|monitor|preview|validator|" +
+            "zgrab|masscan|censys|nmap|nuclei|nikto|sqlmap|" +
+            "facebookexternalhit|whatsapp|telegram|discord|embedly|vkshare|skypeuri",
             Pattern.CASE_INSENSITIVE);
     private static final int MAX_BUFFER = 5_000;
 

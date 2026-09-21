@@ -148,7 +148,10 @@ authenticated ``Person`` (or a 401). The second handles everything else with for
 CSRF protection, and leaves the landing page, login, registration, public profiles and static files open.
 Roles come from ``account_type``; ``/candidates`` requires ``COMPANY``. Beyond the URL rules, every repository
 query that returns a person's data takes the caller's id as a parameter (``findByIdAndPersonId``), so there is no
-code path where one account can read another's sessions by guessing an id.
+code path where one account can read another's sessions by guessing an id. The web chain also sets the
+browser-side headers: ``X-Frame-Options: SAMEORIGIN`` (no embedding by other sites), ``Referrer-Policy:
+strict-origin-when-cross-origin`` (an outbound click reveals the site, never the page), and a
+``Permissions-Policy`` that denies camera, microphone, geolocation, payment and USB outright.
 
 What we use from Spring Boot, and why it matters
 ------------------------------------------------

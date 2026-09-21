@@ -41,7 +41,10 @@ import java.util.concurrent.TimeUnit;
 public class ProfileController {
 
     public static class ProfileForm {
-        @NotBlank @Size(max = 120) private String displayName;
+        @Size(max = 120) private String displayName;      // company name (company accounts)
+        @Size(max = 60) private String firstName;         // individuals: first and last required, middle optional
+        @Size(max = 60) private String middleName;
+        @Size(max = 60) private String lastName;
         @NotBlank @Size(max = 60) @jakarta.validation.constraints.Pattern(regexp = "[a-z0-9-]+", message = "lower-case letters, digits and dashes only") private String handle;
         @Size(max = 160) private String headline;
         @Size(max = 120) private String jobTitle;
@@ -53,14 +56,24 @@ public class ProfileController {
 
         static ProfileForm from(Person p) {
             ProfileForm f = new ProfileForm();
-            f.displayName = p.getDisplayName(); f.handle = p.getHandle(); f.headline = p.getHeadline();
+            f.displayName = p.getDisplayName(); f.firstName = p.getFirstName(); f.middleName = p.getMiddleName();
+            f.lastName = p.getLastName(); f.handle = p.getHandle(); f.headline = p.getHeadline();
             f.jobTitle = p.getJobTitle(); f.industry = p.getIndustry(); f.yearsExperience = p.getYearsExperience();
             f.location = p.getLocation(); f.primaryTools = p.getPrimaryTools(); f.publicProfile = p.isPublicProfile();
             return f;
         }
 
+        /** Company: the name is required. Person: first and last are required. Returns the field in error, or null. */
+        String validateName(Person p) {
+            if (p.isCompany()) return displayName == null || displayName.isBlank() ? "displayName" : null;
+            if (firstName == null || firstName.isBlank()) return "firstName";
+            if (lastName == null || lastName.isBlank()) return "lastName";
+            return null;
+        }
+
         void applyTo(Person p) {
-            p.setDisplayName(displayName.trim()); p.setHandle(handle.trim()); p.setHeadline(blank(headline));
+            if (p.isCompany()) p.setDisplayName(displayName.trim()); else p.setNames(firstName, middleName, lastName);
+            p.setHandle(handle.trim()); p.setHeadline(blank(headline));
             p.setJobTitle(blank(jobTitle)); p.setIndustry(blank(industry)); p.setYearsExperience(yearsExperience);
             p.setLocation(blank(location)); p.setPrimaryTools(blank(primaryTools)); p.setPublicProfile(publicProfile);
         }
@@ -69,6 +82,12 @@ public class ProfileController {
 
         public String getDisplayName() { return displayName; }
         public void setDisplayName(String v) { displayName = v; }
+        public String getFirstName() { return firstName; }
+        public void setFirstName(String v) { firstName = v; }
+        public String getMiddleName() { return middleName; }
+        public void setMiddleName(String v) { middleName = v; }
+        public String getLastName() { return lastName; }
+        public void setLastName(String v) { lastName = v; }
         public String getHandle() { return handle; }
         public void setHandle(String v) { handle = v; }
         public String getHeadline() { return headline; }
@@ -234,6 +253,8 @@ public class ProfileController {
     @PostMapping("/settings")
     public String saveSettings(@Valid @ModelAttribute("form") ProfileForm form, BindingResult binding, RedirectAttributes redirect) {
         Person me = people.requireCurrent();
+        String missing = form.validateName(me);
+        if (missing != null) binding.rejectValue(missing, "required", "Required");
         if (!binding.hasErrors() && !form.getHandle().equals(me.getHandle())
                 && people.byHandle(form.getHandle()).isPresent()) {
             binding.rejectValue("handle", "taken", "That handle is taken");

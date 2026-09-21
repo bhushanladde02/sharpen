@@ -58,7 +58,10 @@ public class SessionApiController {
     @GetMapping("/me")
     public Map<String, Object> me() {
         Person p = people.requireCurrent();
-        return Map.of("handle", p.getHandle(), "displayName", p.getDisplayName(), "accountType", p.getAccountType().name());
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("handle", p.getHandle()); out.put("displayName", p.getDisplayName()); out.put("accountType", p.getAccountType().name());
+        if (!p.isCompany()) { out.put("firstName", p.getFirstName()); out.put("middleName", p.getMiddleName()); out.put("lastName", p.getLastName()); }
+        return out;
     }
 
     @GetMapping("/me/score")

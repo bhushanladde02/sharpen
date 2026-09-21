@@ -8,8 +8,15 @@
   <div class="grid two">
     <form th:action="@{/settings}" th:object="${form}" method="post" class="card stack">
       <h2>Profile</h2>
-      <div><label for="displayName">Name</label><input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
+      <div th:if="${me.company}"><label for="displayName">Company name</label><input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
         <div class="error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div></div>
+      <div class="grid names" th:unless="${me.company}">
+        <div><label for="firstName">First name</label><input type="text" id="firstName" th:field="*{firstName}" required maxlength="60" autocomplete="given-name">
+          <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div></div>
+        <div><label for="middleName">Middle name <span class="muted">(optional)</span></label><input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name"></div>
+        <div><label for="lastName">Last name</label><input type="text" id="lastName" th:field="*{lastName}" required maxlength="60" autocomplete="family-name">
+          <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
+      </div>
       <div th:unless="${me.company}"><label for="handle">Public URL handle</label><input type="text" id="handle" th:field="*{handle}" required maxlength="60" pattern="[a-z0-9-]+">
         <div class="help" th:text="${siteHost} + '/p/' + *{handle}">host/p/handle</div>
         <div class="error" th:if="${#fields.hasErrors('handle')}" th:errors="*{handle}"></div></div>

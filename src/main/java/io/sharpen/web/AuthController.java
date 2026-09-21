@@ -20,13 +20,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AuthController {
 
     public static class RegisterForm {
-        @NotBlank @Size(max = 120) private String displayName = "";
+        // A person gives first / middle (optional) / last; a company gives its name. Which set is required
+        // depends on accountType, so that check is done in the controller rather than by annotations.
+        @Size(max = 60) private String firstName = "";
+        @Size(max = 60) private String middleName = "";
+        @Size(max = 60) private String lastName = "";
+        @Size(max = 120) private String companyName = "";
         @NotBlank @Email @Size(max = 190) private String email = "";
         @NotBlank @Size(min = 8, max = 72) private String password = "";
         private AccountType accountType = AccountType.INDIVIDUAL;
 
-        public String getDisplayName() { return displayName; }
-        public void setDisplayName(String displayName) { this.displayName = displayName; }
+        public String getFirstName() { return firstName; }
+        public void setFirstName(String v) { firstName = v; }
+        public String getMiddleName() { return middleName; }
+        public void setMiddleName(String v) { middleName = v; }
+        public String getLastName() { return lastName; }
+        public void setLastName(String v) { lastName = v; }
+        public String getCompanyName() { return companyName; }
+        public void setCompanyName(String v) { companyName = v; }
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
         public String getPassword() { return password; }
@@ -90,10 +101,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding) {
+        AccountType type = form.getAccountType() == null ? AccountType.INDIVIDUAL : form.getAccountType();
+        if (type == AccountType.COMPANY) {
+            if (form.getCompanyName().isBlank()) binding.rejectValue("companyName", "required", "Company name is required");
+        } else {
+            if (form.getFirstName().isBlank()) binding.rejectValue("firstName", "required", "First name is required");
+            if (form.getLastName().isBlank()) binding.rejectValue("lastName", "required", "Last name is required");
+        }
         if (binding.hasErrors()) return "register";
         try {
-            people.register(form.getEmail(), form.getPassword(), form.getDisplayName(),
-                    form.getAccountType() == null ? AccountType.INDIVIDUAL : form.getAccountType());
+            String name = type == AccountType.COMPANY ? form.getCompanyName()
+                    : io.sharpen.domain.Person.joinName(form.getFirstName(), form.getMiddleName(), form.getLastName());
+            people.register(form.getEmail(), form.getPassword(), name, type);
         } catch (IllegalArgumentException e) {
             binding.rejectValue("email", "exists", e.getMessage());
             return "register";

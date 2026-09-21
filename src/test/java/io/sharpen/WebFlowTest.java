@@ -83,6 +83,8 @@ class WebFlowTest {
         // The corner guide is plain markup + one static script; it must be there for visitors and members alike,
         // and the script must be reachable without signing in (it is what answers "how do I enrol?").
         mvc.perform(get("/")).andExpect(status().isOk())
+                .andExpect(header().string("Referrer-Policy", "strict-origin-when-cross-origin"))
+                .andExpect(header().string("Permissions-Policy", containsString("camera=()")))
                 .andExpect(content().string(containsString("id=\"help-widget\"")))
                 .andExpect(content().string(containsString("data-signed-in=\"false\"")))
                 .andExpect(content().string(containsString("no live agents")));

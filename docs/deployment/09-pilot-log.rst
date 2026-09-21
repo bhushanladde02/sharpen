@@ -412,8 +412,21 @@ Day 8 — Wednesday 16 September: which build is this?
    production at the configured ``INFO``, one ``logging.level.io.sharpen=DEBUG`` away when needed, and it
    says who — which is the part that was missing. (Day 9, Thursday 18 September.)
 
-Open items (as of day 8)
-^^^^^^^^^^^^^^^^^^^^^^^^
+#. **Cleaner visitor counts.** (Day 10, Saturday 19 September.) With a real domain and a submitted sitemap
+   the scanners arrive: HTTP libraries (okhttp, axios, node-fetch, Scrapy), API clients (Postman), headless
+   browsers (PhantomJS), and internet-wide probes (zgrab, masscan, Censys, Nmap, Nuclei, sqlmap) — none of
+   which say "bot". The traffic filter now names them, along with archivers and link-preview fetchers,
+   checked against fourteen real browser user agents (none flagged) and thirty bot strings (all caught). A
+   record that will be cited should under-count people rather than over-count.
+
+#. **Two headers.** (Day 11, Monday 21 September.) ``Referrer-Policy: strict-origin-when-cross-origin`` so
+   a click from a profile or report page to an outside site carries only ``https://sharpenscore.com`` as the
+   referrer, never the page path; ``Permissions-Policy`` denying camera, microphone, geolocation, payment and
+   USB, which Sharpen never asks for, so a third-party script could not either. Both set in Spring
+   Security's headers block next to the frame option; the tests assert them on the landing page.
+
+Open items (as of day 11)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.

@@ -25,7 +25,12 @@ person
      - BCrypt
    * - display_name
      - varchar(120)
-     -
+     - what every page shows: "First [Middle] Last" for a person, the company name for a company
+   * - first_name, middle_name, last_name
+     - varchar(60), nullable
+     - individuals only (null on company accounts); middle optional. Entered separately on registration and
+       in Settings; ``display_name`` is rebuilt from them. Accounts created with a whole name (API, demo
+       data, before 21 Sept 2026) are split on save: first word, last word, the rest as middle.
    * - handle
      - varchar(60)
      - unique; public URL slug

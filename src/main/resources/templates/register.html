@@ -8,10 +8,20 @@
     <h1>Create your account</h1>
     <p class="muted" style="margin-top:.25rem">Individuals get a dashboard, monthly reports and a public AI profile. Companies get the candidate view.</p>
     <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
-      <div>
-        <label for="displayName">Name (or company name)</label>
-        <input type="text" id="displayName" th:field="*{displayName}" required maxlength="120">
-        <div class="error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+      <div id="person-names" class="grid names">
+        <div><label for="firstName">First name</label>
+          <input type="text" id="firstName" th:field="*{firstName}" maxlength="60" autocomplete="given-name">
+          <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div></div>
+        <div><label for="middleName">Middle name <span class="muted">(optional)</span></label>
+          <input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name"></div>
+        <div><label for="lastName">Last name</label>
+          <input type="text" id="lastName" th:field="*{lastName}" maxlength="60" autocomplete="family-name">
+          <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
+      </div>
+      <div id="company-name" hidden>
+        <label for="companyName">Company name</label>
+        <input type="text" id="companyName" th:field="*{companyName}" maxlength="120" autocomplete="organization">
+        <div class="error" th:if="${#fields.hasErrors('companyName')}" th:errors="*{companyName}"></div>
       </div>
       <div>
         <label for="email">Email</label>
@@ -35,6 +45,15 @@
         <a th:href="@{/login}">I already have one</a>
       </div>
     </form>
+    <script>
+      // Show the name fields that match the account type; the server checks the same rule.
+      (function () {
+        var type = document.getElementById('accountType'), person = document.getElementById('person-names'),
+            company = document.getElementById('company-name');
+        function sync() { var c = type.value === 'COMPANY'; person.hidden = c; company.hidden = !c; }
+        type.addEventListener('change', sync); sync();
+      })();
+    </script>
   </div>
 </main>
 </body>

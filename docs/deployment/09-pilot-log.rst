@@ -425,7 +425,19 @@ Day 8 — Wednesday 16 September: which build is this?
    USB, which Sharpen never asks for, so a third-party script could not either. Both set in Spring
    Security's headers block next to the frame option; the tests assert them on the landing page.
 
-Open items (as of day 11)
+#. **A name in three parts.** (Day 12, Tuesday 22 September.) "Name (or company name)" was one box, which
+   is fine for a company and wrong for a person: exports, sorting by surname and a proper greeting all need
+   the parts. ``person`` gained ``first_name``, ``middle_name`` (optional) and ``last_name``; registration
+   and Settings ask for them when the account is an individual and for one company name otherwise (the
+   form switches with the account type, and the server checks the same rule). ``display_name`` stays the
+   shown name and is rebuilt from the parts, so profiles, the directory, PDFs and the API are untouched;
+   existing accounts are split by the migration — first word, last word, the rest as middle — and a whole
+   name arriving through the API or demo data is split the same way in code. Greetings use the first name
+   rather than "the text before the first space"; initials come from first and last. Migration
+   ``2026-09-21-person-names.sql``, applied by the deploy script. Tests cover split/join edge cases (one
+   word, four words, extra spaces), both registration paths, and Settings.
+
+Open items (as of day 12)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

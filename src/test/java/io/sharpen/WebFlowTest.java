@@ -99,15 +99,67 @@ class WebFlowTest {
     @Test
     void registerThroughTheForm() throws Exception {
         mvc.perform(post("/register").with(csrf())
-                        .param("displayName", "New Person").param("email", "new@example.com")
-                        .param("password", "password123").param("accountType", "INDIVIDUAL"))
+                        .param("firstName", "New").param("middleName", "Q.").param("lastName", "Person")
+                        .param("email", "new@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?registered"));
+        Person created = people.byEmail("new@example.com").orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("New Q. Person", created.getDisplayName());
+        org.junit.jupiter.api.Assertions.assertEquals("Person", created.getLastName());
+        org.junit.jupiter.api.Assertions.assertEquals("NP", created.getInitials());
+        // Same email again → "already exists"; a person without a last name → validation error, no account
         mvc.perform(post("/register").with(csrf())
-                        .param("displayName", "Dup").param("email", "new@example.com")
+                        .param("firstName", "Dup").param("lastName", "Licate").param("email", "new@example.com")
                         .param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("already exists")));
+        mvc.perform(post("/register").with(csrf())
+                        .param("firstName", "Only").param("email", "only@example.com")
+                        .param("password", "password123").param("accountType", "INDIVIDUAL"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Last name is required")));
+        // A company gives one name and gets no parts
+        mvc.perform(post("/register").with(csrf())
+                        .param("companyName", "Acme Talent").param("email", "acme@example.com")
+                        .param("password", "password123").param("accountType", "COMPANY"))
+                .andExpect(status().is3xxRedirection());
+        Person acme = people.byEmail("acme@example.com").orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("Acme Talent", acme.getDisplayName());
+        org.junit.jupiter.api.Assertions.assertNull(acme.getFirstName());
+    }
+
+    @Test
+    void settingsSaveNameParts() throws Exception {
+        var asMe = user(me.getEmail()).roles("INDIVIDUAL");
+        mvc.perform(post("/settings").with(csrf()).with(asMe)
+                        .param("firstName", "Flow").param("middleName", "M").param("lastName", "Tester-Two")
+                        .param("handle", me.getHandle()).param("publicProfile", "true"))
+                .andExpect(status().is3xxRedirection());
+        Person saved = people.byEmail(me.getEmail()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("Flow M Tester-Two", saved.getDisplayName());
+        org.junit.jupiter.api.Assertions.assertEquals("M", saved.getMiddleName());
+        // Missing last name is rejected and nothing changes
+        mvc.perform(post("/settings").with(csrf()).with(asMe)
+                        .param("firstName", "Flow").param("lastName", "").param("handle", me.getHandle()))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("Required")));
+        org.junit.jupiter.api.Assertions.assertEquals("Flow M Tester-Two", people.byEmail(me.getEmail()).orElseThrow().getDisplayName());
+        // Put the test account back for the other tests
+        mvc.perform(post("/settings").with(csrf()).with(asMe)
+                        .param("firstName", "Flow").param("lastName", "Tester").param("handle", me.getHandle()).param("publicProfile", "true"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    void namesSplitAndJoin() {
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Priya", null, "Natarajan"}, Person.splitName("  Priya   Natarajan "));
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Cher", null, null}, Person.splitName("Cher"));
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Ana", "Maria de la", "Cruz"}, Person.splitName("Ana Maria de la Cruz"));
+        org.junit.jupiter.api.Assertions.assertEquals("Ana Cruz", Person.joinName("Ana", "  ", "Cruz"));
+        // Registered with a whole name (API, demo data, older accounts): parts are derived, greeting uses the first
+        org.junit.jupiter.api.Assertions.assertEquals("Flow", me.getFirstName());
+        org.junit.jupiter.api.Assertions.assertEquals("Tester", me.getLastName());
+        org.junit.jupiter.api.Assertions.assertEquals("Flow", me.getGivenName());
     }
 
     @Test

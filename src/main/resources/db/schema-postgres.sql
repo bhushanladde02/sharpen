@@ -6,6 +6,9 @@ create table person (
     email            varchar(190) not null,
     password_hash    varchar(100) not null,
     display_name     varchar(120) not null,
+    first_name       varchar(60),          -- individuals only: display_name = first [middle] last
+    middle_name      varchar(60),
+    last_name        varchar(60),
     handle           varchar(60)  not null,
     account_type     varchar(20)  not null,
     headline         varchar(160),

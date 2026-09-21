@@ -427,3 +427,7 @@ a.filter-chip { text-decoration: none; display: inline-block; }
 .help-form input { flex: 1; min-width: 0; min-height: 40px; }
 .help-foot { padding: .45rem .9rem .7rem; font-size: .75rem; color: var(--ink-3); }
 @media print { .help-widget { display: none; } }
+
+/* first / middle / last name fields side by side when there is room */
+.grid.names { display: grid; gap: .75rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .grid.names { grid-template-columns: 1fr 1fr 1fr; } }

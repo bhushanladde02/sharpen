@@ -6,7 +6,7 @@
   <div class="page-head">
     <div>
       <p class="eyebrow">Rolling 90 days</p>
-      <h1 th:text="'Hello, ' + ${#strings.substringBefore(me.displayName, ' ')}">Hello</h1>
+      <h1 th:text="'Hello, ' + ${me.givenName}">Hello</h1>
       <p th:text="${month.label()} + ' so far: ' + ${month.sessions} + ' sessions, ' + ${month.hours()} + ' h, ' + ${month.prompts} + ' prompts'">This month</p>
     </div>
     <div class="row actions">

@@ -35,7 +35,7 @@
         }
         return '<p>Enrolling is free and takes under a minute:</p>' +
                '<ol><li>Click <a href="/register">Create account</a>.</li>' +
-               '<li>Enter your name, email and a password (8 or more characters). Choose <b>Individual</b> (you track your own AI use) ' +
+               '<li>Enter your first and last name (middle is optional), email and a password (8 or more characters). Choose <b>Individual</b> (you track your own AI use) ' +
                'or <b>Company</b> (you hire and want the candidates view).</li>' +
                '<li><a href="/login">Sign in</a> — your dashboard opens.</li>' +
                '<li>Log your first AI session with the <b>+</b> button: tool, what you did, how long, how much of the thinking was yours.</li></ol>' +
@@ -82,10 +82,12 @@
     },
     {
       id: 'public', chip: 'Public profile',
-      keys: ['public', 'profile', 'handle', 'url', 'my link', 'share', 'linkedin', 'visible', 'hide', 'private', 'directory', 'listed', 'employer', 'employers'],
+      keys: ['public', 'profile', 'handle', 'url', 'my link', 'share', 'linkedin', 'visible', 'hide', 'private', 'directory', 'listed', 'employer', 'employers',
+             'my name', 'change name', 'change my name', 'rename', 'first name', 'last name', 'middle name', 'surname', 'spelling'],
       answer: function () {
         if (company) return '<p>Company accounts have no public profile; you see everyone else\'s in <a href="/candidates">Candidates</a>.</p>';
-        return '<p>Your profile is private until you switch it on: <a href="/settings">Settings</a> → tick <b>Public profile</b> → Save. ' +
+        return '<p>Your name (first, middle, last), headline, title and everything else on the profile is edited under <a href="/settings">Settings</a>.</p>' +
+               '<p>Your profile is private until you switch it on: <a href="/settings">Settings</a> → tick <b>Public profile</b> → Save. ' +
                'It then appears at <code>/p/' + handle + '</code> and in the <a href="/p">public directory</a>, and companies can find you. ' +
                'Untick it any time to make it private again.</p>' +
                '<p>Only AI-related facts you chose are shown — score, trend, tools, headline, title, industry, location. Never your sessions or email.</p>';
@@ -115,18 +117,21 @@
         return '<p>Three ways to bring sessions in, all on <a href="/import">Import</a>:</p>' +
                '<ul><li><b>Browser extension</b> (in <code>chrome-extension/</code> of the source): times your visits to ChatGPT, Claude, Gemini, Copilot and Perplexity and posts them once a day with your API key from <a href="/settings">Settings</a>. Nothing you type is captured.</li>' +
                '<li><b>Provider usage export</b> — upload the file your AI provider gives you.</li>' +
-               '<li><b>Sharpen CSV</b> — a spreadsheet in the format shown on the page.</li></ul>' +
+               '<li><b>Sharpen CSV</b> — a spreadsheet in the format shown on the page; the CSV from Settings → Your data is already in it.</li></ul>' +
                '<p>Imported sessions show as <i>needs rating</i> until you answer the four questions about them.</p>';
       }
     },
     {
       id: 'privacy', chip: 'Privacy & my data',
       keys: ['privacy', 'private data', 'my data', 'cookie', 'cookies', 'tracking', 'track me', 'gdpr', 'delete account', 'delete my account',
-             'remove account', 'remove my data', 'sell', 'who can see', 'secure', 'security'],
+             'remove account', 'remove my data', 'sell', 'who can see', 'secure', 'security',
+             'export', 'download my data', 'backup', 'back up', 'take my data', 'get my data', 'leave'],
       answer: function () {
         return '<p>Sharpen stores only what you log or type. No third-party analytics, no advertising, no cookies beyond the one that keeps you signed in; ' +
                'page views are counted server-side without identifying anyone.</p>' +
                '<p>Your sessions, email and reports are never public. The public profile, if you switch it on, shows only the AI-related facts you chose.</p>' +
+               '<p><b>Taking your data out:</b> <a href="/settings">Settings</a> → <b>Your data</b> → <b>Sessions (CSV)</b> (opens in a spreadsheet and ' +
+               'imports into another Sharpen account) or <b>Everything (JSON)</b> (profile, sessions, reports). Instant, no request needed.</p>' +
                '<p>To delete your account and everything in it, send a message from the ' + contact + ' using the email you registered with; ' +
                'it is done by hand within a few days.</p>';
       }

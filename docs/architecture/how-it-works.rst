@@ -233,6 +233,9 @@ What we chose not to use
 * **No JavaScript framework.** Pages are server-rendered; the client scripts are two slider labels, the
   directory's search filter, the live counter and the Help guide, all plain JavaScript. The app is fast on a
   phone because there is nothing to download but HTML, one CSS file and one small script.
+* **No "request your data" form.** ``ExportService`` writes a person's sessions as CSV in the importer's own
+  layout and the whole account as JSON, on demand from Settings; the CSV round-trips through
+  ``ImportService`` in the tests, so the two cannot drift apart unnoticed.
 * **No AI chatbot.** The *Help* button on every page is **Sharpen Help** (``static/js/help.js``): a fixed list of
   topics — enrolling, the PDF report, the score, public profile, picture, tools, import, privacy, cost,
   companies, passwords — matched by keywords in the browser. It explains that there is no customer-service

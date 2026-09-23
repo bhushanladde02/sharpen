@@ -58,6 +58,13 @@ Tests: `mvn test` (scoring unit tests, import parsers, and an end-to-end MockMvc
 
 Only rated sessions count toward the score. Imports show volume immediately but cannot move the score until the person answers the four questions — that keeps the human in the loop and makes the score hard to game with automation.
 
+## Getting it out again
+
+Settings → **Your data**: every session as CSV in Sharpen's own import layout (opens in a spreadsheet, imports
+into another account — the exporter and importer are tested against each other), or the whole account as one
+JSON document (profile, sessions, every generated report with its full content). Instant, self-service, nothing
+secret in it (no password hash, no API key). Endpoints: `/settings/export/sessions.csv`, `/settings/export/sharpen-data.json`.
+
 ## Help and contact
 
 Every page has a **Help** button in the corner: **Sharpen Help**, a small rule-based guide (`static/js/help.js`) that

@@ -24,6 +24,9 @@ public interface UsageSessionRepository extends JpaRepository<UsageSession, Long
 
     long countByPersonId(Long personId);
 
+    /** Every session, oldest first — the export. */
+    List<UsageSession> findByPersonIdOrderByOccurredOnAscIdAsc(Long personId);
+
     long countByPersonIdAndSelfAssessedFalse(Long personId);
 
     /** Distinct tools a person has logged, most minutes first: [tool, minutes, sessions]. */

@@ -51,6 +51,16 @@
         </div>
       </div>
       <div class="card">
+        <h2>Your data</h2>
+        <p>Everything you have put in, back out — no request needed, no waiting.</p>
+        <div class="row" style="gap:.5rem;flex-wrap:wrap">
+          <a class="btn" th:href="@{/settings/export/sessions.csv}">Sessions (CSV)</a>
+          <a class="btn" th:href="@{/settings/export/sharpen-data.json}">Everything (JSON)</a>
+        </div>
+        <p class="help">The CSV is in Sharpen's own import layout, so it opens in a spreadsheet and can be imported into another account.
+          The JSON has your profile, every session and every generated report. To delete your account, use <a th:href="@{/feedback(from='/settings')}">Contact</a>.</p>
+      </div>
+      <div class="card">
         <h2>API key</h2>
         <p>Used by the browser extension and import scripts. Treat it like a password.</p>
         <pre th:text="${me.apiKey}">shp_…</pre>

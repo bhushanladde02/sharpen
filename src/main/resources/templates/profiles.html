@@ -24,7 +24,7 @@
       <label class="dir-sort">Sort
         <select id="dir-sort">
           <option value="score">AI score</option>
-          <option value="name">Name</option>
+          <option value="name">Last name</option>
           <option value="sessions">Sessions logged</option>
         </select>
       </label>
@@ -42,7 +42,7 @@
   <div class="stack" id="dir-list">
     <a class="card person-card" th:each="l : ${profiles}" th:with="s=${l.score}, p=${l.person}"
        th:href="@{/p/{h}(h=${p.handle})}"
-       th:data-name="${#strings.toLowerCase(p.displayName)}"
+       th:data-name="${p.lastName != null} ? ${#strings.toLowerCase(p.lastName + ' ' + p.firstName)} : ${#strings.toLowerCase(p.displayName)}"
        th:data-search="${l.searchText}"
        th:data-tools="${#strings.toLowerCase(#strings.listJoin(l.tools, ','))}"
        th:data-industry="${p.industry == null} ? '' : ${#strings.toLowerCase(p.industry)}"

@@ -437,7 +437,21 @@ Day 8 — Wednesday 16 September: which build is this?
    ``2026-09-21-person-names.sql``, applied by the deploy script. Tests cover split/join edge cases (one
    word, four words, extra spaces), both registration paths, and Settings.
 
-Open items (as of day 12)
+#. **Sorting by surname.** (Day 13, Wednesday 23 September.) The first thing the name split makes
+   possible: the directory's *Name* sort is now *Last name* — surname then first name — which is how any
+   list of people is expected to read; company accounts, which have no parts, fall back to their one name.
+   The Help guide learned "change my name" and tells new visitors that registration asks for first and
+   last separately.
+
+#. **Your data, back out.** Same day. Until now the only answer to "can I get my data out?" was "ask by
+   e-mail". Settings has a *Your data* card with two downloads: every session as CSV in Sharpen's own import
+   layout — the test exports an account, imports the file into a second one and checks a note containing
+   a comma and quotes survives — and the whole account as one JSON document (profile, sessions, every
+   generated report with its full content). Nothing secret in either. Self-service export is the half of
+   data portability that costs nothing to give; self-service deletion stays a Contact request for now
+   because it has to cascade through reports and avatars and deserves its own careful change.
+
+Open items (as of day 13)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

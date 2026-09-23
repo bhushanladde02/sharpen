@@ -9,6 +9,10 @@
     <p class="muted" style="margin-top:.25rem">Questions, problems, account requests (password reset, deletion) and opinions all come here — there is no support line or live chat. Every message is read and answered by the person building Sharpen; leave an email if you want a reply.</p>
     <form th:action="@{/feedback}" th:object="${form}" method="post" class="stack">
       <input type="hidden" th:field="*{page}">
+      <input type="hidden" th:field="*{t}">
+      <!-- Honeypot: people never see this field; automated posters fill every field they find. -->
+      <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" th:field="*{website}" tabindex="-1" autocomplete="off"></div>
+      <div class="error" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</div>
       <div>
         <label>Would you use this?</label>
         <div class="row" role="radiogroup" style="gap:.4rem">

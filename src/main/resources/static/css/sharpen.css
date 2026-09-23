@@ -431,3 +431,6 @@ a.filter-chip { text-decoration: none; display: inline-block; }
 /* first / middle / last name fields side by side when there is room */
 .grid.names { display: grid; gap: .75rem; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .grid.names { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* honeypot field on the contact form: off-screen, not display:none (some bots skip hidden inputs) */
+.hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }

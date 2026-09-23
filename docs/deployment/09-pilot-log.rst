@@ -451,7 +451,20 @@ Day 8 — Wednesday 16 September: which build is this?
    data portability that costs nothing to give; self-service deletion stays a Contact request for now
    because it has to cascade through reports and avatars and deserves its own careful change.
 
-Open items (as of day 13)
+#. **The inbox fills with pitches.** (Day 14, Thursday 24 September.) Nine days after the domain went
+   live, the contact form had seven unsolicited vendor messages and one real one — web-design agencies,
+   "explainer video from $195", and three copies of the *add sharpenscore.com to Google's Search Index*
+   scam (the site is in Search Console already; those ``.pro`` links are the fraud). The form had no bot
+   protection at all. It now has three invisible ones, no captcha and no third party: a honeypot field
+   people never see and bots fill, a signed timestamp that proves the form was open at least four seconds
+   (bots post within milliseconds; a token older than a day is refused too), and five messages per address
+   per hour. A refused post is never stored — the honeypot case pretends to succeed so the bot learns
+   nothing; the others re-show the form with a polite line and a fresh token. What still gets through is
+   classified, not dropped: two marketing phrases in one message (or a ``domains@search-…`` sender) fold it
+   under *Likely spam* at the bottom of the inbox, where it stays readable. Checked against the seven real
+   pitches — all folded — and against real-sounding messages that mention Google or SEO once, which stay.
+
+Open items (as of day 14)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

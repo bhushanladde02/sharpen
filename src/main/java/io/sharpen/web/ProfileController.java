@@ -7,6 +7,7 @@ import io.sharpen.repo.PersonRepository;
 import io.sharpen.scoring.AiScore;
 import io.sharpen.domain.PersonAvatar;
 import io.sharpen.service.AvatarService;
+import io.sharpen.service.ExportService;
 import io.sharpen.service.MonthSummary;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.ReportService;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -117,13 +119,37 @@ public class ProfileController {
     private final AvatarService avatars;
 
     public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports,
-                             SessionService sessions, AvatarService avatars) {
+                             SessionService sessions, AvatarService avatars, ExportService exports) {
         this.people = people;
         this.repo = repo;
         this.stats = stats;
         this.reports = reports;
         this.sessions = sessions;
         this.avatars = avatars;
+        this.exports = exports;
+    }
+
+    private final ExportService exports;
+
+    /** Sessions in the Sharpen CSV layout — importable again on the Import page, or opened in a spreadsheet. */
+    @GetMapping(value = "/settings/export/sessions.csv", produces = "text/csv")
+    public ResponseEntity<byte[]> exportSessionsCsv() {
+        Person me = people.requireCurrent();
+        byte[] body = exports.sessionsCsv(me).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"sharpen-" + me.getHandle() + "-sessions.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(body);
+    }
+
+    /** The whole account as one JSON document: profile, every session, every generated report. */
+    @GetMapping(value = "/settings/export/sharpen-data.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<java.util.Map<String, Object>> exportEverything() {
+        Person me = people.requireCurrent();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"sharpen-" + me.getHandle() + "-data.json\"")
+                .body(exports.everything(me));
     }
 
     /** True when {@code viewer} may see {@code p}'s profile: public, or the owner looking at their own. */

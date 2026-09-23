@@ -150,6 +150,49 @@ class WebFlowTest {
     }
 
     @Test
+    void exportsRoundTrip() throws Exception {
+        var asMe = user(me.getEmail()).roles("INDIVIDUAL");
+        // A session with a comma and a quote in the notes: the CSV must quote it and the importer must read it back
+        mvc.perform(post("/sessions").with(csrf()).with(asMe)
+                        .param("occurredOn", LocalDate.now().toString()).param("context", "PROFESSIONAL").param("tool", "Claude")
+                        .param("taskCategory", "CODING").param("durationMinutes", "30").param("promptCount", "4")
+                        .param("humanContributionPct", "70").param("verifiedOutput", "true").param("outcome", "4")
+                        .param("notes", "Refactored the \"export\" path, twice"))
+                .andExpect(status().is3xxRedirection());
+        String csv = mvc.perform(get("/settings/export/sessions.csv").with(asMe)).andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", containsString("sharpen-" + me.getHandle() + "-sessions.csv")))
+                .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(csv.startsWith("date,context,tool,task,minutes,prompts,human_pct,"), csv.substring(0, 60));
+        org.junit.jupiter.api.Assertions.assertTrue(csv.contains("\"Refactored the \"\"export\"\" path, twice\""), csv);
+        long before = people.byEmail(me.getEmail()).map(p -> p.getId()).map(id -> countSessions(id)).orElseThrow();
+
+        // Import the export into the company-less second account: every row lands, notes intact
+        Person other = people.byEmail("rt@example.com").orElseGet(() ->
+                people.register("rt@example.com", "password123", "Round Trip", AccountType.INDIVIDUAL));
+        var asOther = user(other.getEmail()).roles("INDIVIDUAL");
+        mvc.perform(multipart("/import").file(new MockMultipartFile("file", "sessions.csv", "text/csv", csv.getBytes(StandardCharsets.UTF_8)))
+                        .param("context", "PERSONAL").with(csrf()).with(asOther))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("Imported " + before + " new")));
+        org.junit.jupiter.api.Assertions.assertEquals(before, countSessions(other.getId()));
+        String otherCsv = mvc.perform(get("/settings/export/sessions.csv").with(asOther)).andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(otherCsv.contains("\"Refactored the \"\"export\"\" path, twice\""), "notes survived the round trip");
+
+        // JSON: profile + sessions + reports, and nothing secret
+        String json = mvc.perform(get("/settings/export/sharpen-data.json").with(asMe)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.format").value("sharpen-export/1"))
+                .andExpect(jsonPath("$.profile.email").value(me.getEmail()))
+                .andExpect(jsonPath("$.sessions").isArray())
+                .andExpect(jsonPath("$.reports").isArray())
+                .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertFalse(json.contains("passwordHash") || json.contains("apiKey") || json.contains("shp_"), "secrets in export");
+        // Visitors get nothing
+        mvc.perform(get("/settings/export/sessions.csv")).andExpect(status().is3xxRedirection());
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired io.sharpen.repo.UsageSessionRepository sessionRepo;
+    private long countSessions(Long personId) { return sessionRepo.countByPersonId(personId); }
+
+    @Test
     void namesSplitAndJoin() {
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Priya", null, "Natarajan"}, Person.splitName("  Priya   Natarajan "));

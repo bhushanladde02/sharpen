@@ -233,6 +233,11 @@ What we chose not to use
 * **No JavaScript framework.** Pages are server-rendered; the client scripts are two slider labels, the
   directory's search filter, the live counter and the Help guide, all plain JavaScript. The app is fast on a
   phone because there is nothing to download but HTML, one CSS file and one small script.
+* **No captcha.** The contact form is guarded by ``SpamGuard``: a honeypot field, an HMAC-signed timestamp
+  (a post younger than four seconds or older than a day is refused) and a per-address hourly limit —
+  invisible to a person, and enough for the automated pitches a public form attracts. Messages that pass
+  are stored; a narrow phrase classifier only decides whether the inbox shows them at the top or folded
+  under *Likely spam*, never whether they are kept.
 * **No "request your data" form.** ``ExportService`` writes a person's sessions as CSV in the importer's own
   layout and the whole account as JSON, on demand from Settings; the CSV round-trips through
   ``ImportService`` in the tests, so the two cannot drift apart unnoticed.

@@ -4,7 +4,7 @@
 <body>
 <main>
   <div class="page-head">
-    <div><p class="eyebrow">Owner only</p><h1>Feedback inbox</h1><p>Latest 200 messages, newest first.</p></div>
+    <div><p class="eyebrow">Owner only</p><h1>Feedback inbox</h1><p>Latest 200 messages, newest first. Unsolicited vendor pitches are folded away at the bottom.</p></div>
   </div>
   <div class="grid four" style="margin-bottom:1rem">
     <div class="card stat"><span class="label">Members</span><span class="value num" th:text="${stats.members}">0</span></div>
@@ -29,6 +29,22 @@
       </table>
     </div>
   </div>
+  <details class="card" th:if="${!#lists.isEmpty(spam)}" style="margin-top:1rem">
+    <summary style="cursor:pointer;font-weight:700">Likely spam — <span th:text="${#lists.size(spam)}">0</span> message(s) that read as SEO, web-design or "add you to Google" pitches</summary>
+    <p class="help" style="margin-top:.5rem">Kept, not deleted — the filter labels, it never drops. New bot posts are refused before they are stored (honeypot, timing, rate limit); these arrived before that.</p>
+    <div class="table-wrap">
+      <table class="stackable">
+        <thead><tr><th>Date</th><th>Message</th><th>From</th></tr></thead>
+        <tbody>
+        <tr th:each="f : ${spam}">
+          <td class="num" data-label="Date" th:text="${f.createdOn}">2026-09-07</td>
+          <td data-label="Message" class="muted" th:text="${#strings.abbreviate(f.message, 160)}">Message</td>
+          <td data-label="From" th:text="${f.email} ?: 'anonymous'">who</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
 </main>
 </body>
 </html>

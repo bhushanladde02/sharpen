@@ -131,7 +131,7 @@ diagrams, and the CI/CD pipeline (GitHub Actions: test → smoke → docs, then 
 rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `deploy/README.md` is the
 one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
-a `/feedback` contact form open to everyone (linked as *Contact* and from the Help guide), and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
+a `/feedback` contact form open to everyone (linked as *Contact* and from the Help guide; honeypot, signed-timestamp and rate-limit protection, no captcha), and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
 `/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports).
 
 ## About this project

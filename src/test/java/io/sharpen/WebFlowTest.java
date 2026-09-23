@@ -61,12 +61,56 @@ class WebFlowTest {
     void publicStatsFeedbackAndAdminInbox() throws Exception {
         mvc.perform(get("/api/v1/public/stats")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.members").isNumber());
-        mvc.perform(get("/feedback")).andExpect(status().isOk());
-        mvc.perform(post("/feedback").with(csrf()).param("message", "Nice idea").param("rating", "4").param("page", "/"))
+        mvc.perform(get("/feedback")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("name=\"t\"")))          // signed timestamp
+                .andExpect(content().string(containsString("id=\"website\"")));     // honeypot
+        // A person: the form was open a few seconds, the honeypot is empty → stored
+        String ok = guard.tokenIssuedAgo(10);
+        mvc.perform(post("/feedback").with(csrf()).param("message", "Nice idea").param("rating", "4").param("page", "/").param("t", ok))
                 .andExpect(status().is3xxRedirection());
+        // A bot: honeypot filled → looks accepted, nothing stored
+        mvc.perform(post("/feedback").with(csrf()).param("message", "BOT ONE").param("t", ok).param("website", "http://x"))
+                .andExpect(status().is3xxRedirection());
+        // Too fast, expired or forged token → form again with a message, nothing stored
+        mvc.perform(post("/feedback").with(csrf()).param("message", "BOT TWO").param("t", guard.tokenIssuedAgo(1)))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("That was quick")));
+        mvc.perform(post("/feedback").with(csrf()).param("message", "BOT THREE").param("t", guard.tokenIssuedAgo(90_000)))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
+        mvc.perform(post("/feedback").with(csrf()).param("message", "BOT FOUR").param("t", "1700000000.deadbeefdeadbeefdeadbeef"))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
+        // Rate limit: the sixth message from one address inside an hour is refused
+        for (int i = 0; i < 5; i++)
+            mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("203.0.113.9"); return r; })
+                    .param("message", "burst " + i).param("t", ok)).andExpect(status().is3xxRedirection());
+        mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("203.0.113.9"); return r; })
+                        .param("message", "burst 6").param("t", ok)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("a lot of messages")));
+        // A vendor pitch that passes the checks is stored but folded under "Likely spam" in the inbox
+        mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("198.51.100.4"); return r; })
+                .param("message", "Hi sharpenscore.com, we can place your website on Google 1st page. May I send you a quote & price list?")
+                .param("email", "ananya@rocketseo.example").param("t", ok)).andExpect(status().is3xxRedirection());
+
         mvc.perform(get("/admin/feedback").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isNotFound());
-        mvc.perform(get("/admin/feedback").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Nice idea")));
+        String inbox = mvc.perform(get("/admin/feedback").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Nice idea")))
+                .andExpect(content().string(not(containsString("BOT "))))
+                .andExpect(content().string(containsString("Likely spam")))
+                .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(inbox.indexOf("Google 1st page") > inbox.indexOf("Likely spam"), "pitch is in the folded section");
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired io.sharpen.service.SpamGuard guard;
+
+    @Test
+    void spamClassifierIsNarrow() {
+        org.junit.jupiter.api.Assertions.assertTrue(guard.looksLikeSpam("Dear Sir/Madam, list sharpenscore.com in Google's Search Index! Add it here: searchindex.pro", "domains@search-sharpenscore.com"));
+        org.junit.jupiter.api.Assertions.assertTrue(guard.looksLikeSpam("Our team provides Website Design & Development, SEO & Search Engine Optimization, Digital Marketing. Would you like a brief proposal?", "edward@example.com"));
+        org.junit.jupiter.api.Assertions.assertTrue(guard.looksLikeSpam("I just visited sharpenscore.com and wondered if you'd ever thought about having an engaging video? Our prices start from $195. Let me know if you're interested in seeing samples.", "joanna@example.com"));
+        // Real messages, including ones that mention Google or SEO once, stay in the inbox
+        org.junit.jupiter.api.Assertions.assertFalse(guard.looksLikeSpam("Good", "bhushan@example.com"));
+        org.junit.jupiter.api.Assertions.assertFalse(guard.looksLikeSpam("I could not find the site on Google — is it indexed yet? Also the PDF download button does nothing on Safari.", null));
+        org.junit.jupiter.api.Assertions.assertFalse(guard.looksLikeSpam("Love the score idea. Could the report show which tool I used most? Would you consider a dark mode toggle?", "user@example.com"));
+        org.junit.jupiter.api.Assertions.assertFalse(guard.looksLikeSpam("Please delete my account, email is x@example.com", "x@example.com"));
     }
 
     @Test

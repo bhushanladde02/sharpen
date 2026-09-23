@@ -464,6 +464,16 @@ Day 8 — Wednesday 16 September: which build is this?
    under *Likely spam* at the bottom of the inbox, where it stays readable. Checked against the seven real
    pitches — all folded — and against real-sounding messages that mention Google or SEO once, which stay.
 
+#. **A 500 on the traffic page, found with a real database.** Same day. ``/admin/traffic?month=2026-09``
+   — the link every month chip produces — returned *Something went wrong* in production while the 30-day
+   default worked. Reproduced in minutes against a scratch PostgreSQL 16 loaded with the production
+   schema: a ``NullPointerException`` from one line, ``cond ? 30 : days``. With a bare ``30`` on one side
+   Java unboxes the ``Integer`` on the other, and a month-only request has no ``days``. The fix is
+   ``Integer.valueOf(30)``; the lesson is that the test had covered ``?days=`` and the PDF with a month but
+   never the dashboard with a month, which is now the first thing it asks for. The scratch database stays
+   as part of the routine: every change is now tested here against both H2 and PostgreSQL before it is
+   handed over.
+
 Open items (as of day 14)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

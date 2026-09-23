@@ -387,6 +387,10 @@ class WebFlowTest {
         mvc.perform(get("/admin/traffic").with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("news.ycombinator.com")))
                 .andExpect(content().string(containsString("Evidence PDF")));
+        // A month on its own (the link every month chip produces) — days is null on that path
+        mvc.perform(get("/admin/traffic").param("month", YearMonth.from(LocalDate.now()).toString()).with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Evidence PDF")));
+        mvc.perform(get("/admin/traffic").param("days", "0").with(asMe)).andExpect(status().isOk());   // "All time"
         mvc.perform(get("/admin/traffic.csv").param("days", "7").with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("day,page_views,visitors,signups,sessions_logged,reports_generated")));
         mvc.perform(get("/admin/traffic.pdf").param("month", YearMonth.from(LocalDate.now()).toString()).with(asMe)).andExpect(status().isOk())

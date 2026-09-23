@@ -62,11 +62,14 @@ public class TrafficController {
     @GetMapping("/admin/traffic")
     public String dashboard(@RequestParam(required = false) String month, @RequestParam(required = false) Integer days, Model model) {
         requireAdmin();
-        LocalDate[] r = range(month, days == null && (month == null || month.isBlank()) ? 30 : days);
+        // Default to the last 30 days when neither a month nor a day count is given. Both branches must stay
+        // Integer: with a bare "30" the ternary unboxes "days" and a month-only request throws an NPE.
+        Integer effectiveDays = days == null && (month == null || month.isBlank()) ? Integer.valueOf(30) : days;
+        LocalDate[] r = range(month, effectiveDays);
         TrafficService.Summary s = traffic.summary(r[0], r[1]);
         model.addAttribute("s", s);
         model.addAttribute("month", month == null ? "" : month);
-        model.addAttribute("days", days == null && (month == null || month.isBlank()) ? 30 : days);
+        model.addAttribute("days", effectiveDays);
         int max = (int) Math.max(1, s.days().stream().mapToLong(TrafficService.Day::views).max().orElse(1));
         model.addAttribute("viewsPath", Charts.linePath(s.days().stream().map(d -> (int) d.views()).toList(), max, 640, 160));
         model.addAttribute("visitorsPath", Charts.linePath(s.days().stream().map(d -> (int) d.visitors()).toList(), max, 640, 160));

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     List<Feedback> findTop200ByOrderByCreatedAtDesc();
+    List<Feedback> findByPersonId(Long personId);
 }

@@ -240,7 +240,10 @@ What we chose not to use
   under *Likely spam*, never whether they are kept.
 * **No "request your data" form.** ``ExportService`` writes a person's sessions as CSV in the importer's own
   layout and the whole account as JSON, on demand from Settings; the CSV round-trips through
-  ``ImportService`` in the tests, so the two cannot drift apart unnoticed.
+  ``ImportService`` in the tests, so the two cannot drift apart unnoticed. ``AccountDeletionService`` is the
+  other half: password re-entered, then account, sessions, reports and picture go in one transaction and the
+  session is invalidated — explicit deletes rather than relying on the database's cascades, so H2 and
+  PostgreSQL behave the same and the test can count what is left.
 * **No AI chatbot.** The *Help* button on every page is **Sharpen Help** (``static/js/help.js``): a fixed list of
   topics — enrolling, the PDF report, the score, public profile, picture, tools, import, privacy, cost,
   companies, passwords — matched by keywords in the browser. It explains that there is no customer-service

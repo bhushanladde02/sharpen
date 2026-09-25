@@ -58,7 +58,7 @@
           <a class="btn" th:href="@{/settings/export/sharpen-data.json}">Everything (JSON)</a>
         </div>
         <p class="help">The CSV is in Sharpen's own import layout, so it opens in a spreadsheet and can be imported into another account.
-          The JSON has your profile, every session and every generated report. To delete your account, use <a th:href="@{/feedback(from='/settings')}">Contact</a>.</p>
+          The JSON has your profile, every session and every generated report. Deleting the account is at the bottom of this page.</p>
       </div>
       <div class="card">
         <h2>API key</h2>
@@ -74,6 +74,17 @@
   "date":"2026-09-02","tool":"Claude","task":"coding",
   "minutes":42,"prompts":7}]}</pre>
         <p style="font-size:.85rem"><code>GET /api/v1/me/score</code> returns your rolling score as JSON.</p>
+      </div>
+      <div class="card danger" id="delete">
+        <h2>Delete account</h2>
+        <p>Removes your account, every session, every generated report and your picture — immediately and for good.
+          Your public profile address stops working. Download your data above first if you want to keep it.</p>
+        <form th:action="@{/settings/delete}" method="post" class="stack"
+              onsubmit="return confirm('Delete your Sharpen account and all its data? This cannot be undone.')">
+          <div><label for="delete-password">Your password, to confirm</label>
+            <input type="password" id="delete-password" name="password" required autocomplete="current-password"></div>
+          <button class="btn danger" type="submit">Delete my account</button>
+        </form>
       </div>
     </div>
   </div>

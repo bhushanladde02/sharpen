@@ -474,7 +474,17 @@ Day 8 — Wednesday 16 September: which build is this?
    as part of the routine: every change is now tested here against both H2 and PostgreSQL before it is
    handed over.
 
-Open items (as of day 14)
+#. **Delete account.** (Day 15, Friday 25 September.) The half of data portability left on day 13. A
+   *Delete account* card at the foot of Settings: re-enter the password, confirm, and the account, every
+   session, every generated report and the picture are removed in one transaction; the browser is signed
+   out; the public profile URL answers with the directory's "no public profile" notice; feedback the person
+   left stays in the inbox, unlinked. Deletes are explicit rather than left to the database's cascades so H2
+   and PostgreSQL behave identically and the test can count the rows that remain. Verified twice: the suite
+   on H2 (21 green), and the full register → log → generate → wrong password → delete flow against the
+   scratch PostgreSQL 16, watching the tables empty. The Help guide's privacy answer now points at the card
+   instead of the Contact form.
+
+Open items (as of day 15)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

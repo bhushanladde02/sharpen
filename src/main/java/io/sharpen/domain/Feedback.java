@@ -35,6 +35,9 @@ public class Feedback {
 
     protected Feedback() {}
 
+    /** When the account is deleted the message stays but no longer points at anyone. */
+    public void detachPerson() { this.personId = null; }
+
     public Feedback(Long personId, String email, Integer rating, String message, String page) {
         this.personId = personId;
         this.email = email;

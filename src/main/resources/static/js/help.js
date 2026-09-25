@@ -132,8 +132,9 @@
                '<p>Your sessions, email and reports are never public. The public profile, if you switch it on, shows only the AI-related facts you chose.</p>' +
                '<p><b>Taking your data out:</b> <a href="/settings">Settings</a> → <b>Your data</b> → <b>Sessions (CSV)</b> (opens in a spreadsheet and ' +
                'imports into another Sharpen account) or <b>Everything (JSON)</b> (profile, sessions, reports). Instant, no request needed.</p>' +
-               '<p>To delete your account and everything in it, send a message from the ' + contact + ' using the email you registered with; ' +
-               'it is done by hand within a few days.</p>';
+               '<p><b>Deleting your account:</b> <a href="/settings#delete">Settings</a> → <b>Delete account</b> → enter your password. ' +
+               'Your account, sessions, reports and picture are removed immediately and for good; the public profile address stops working. ' +
+               'Download your data first if you want to keep it.</p>';
       }
     },
     {

@@ -434,3 +434,10 @@ a.filter-chip { text-decoration: none; display: inline-block; }
 
 /* honeypot field on the contact form: off-screen, not display:none (some bots skip hidden inputs) */
 .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+/* the one destructive action on the site */
+.card.danger { border-color: color-mix(in srgb, #c0392b 45%, var(--line)); }
+.card.danger h2 { color: #c0392b; }
+.btn.danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+.btn.danger:hover { background: #a93226; }
+@media (prefers-color-scheme: dark) { .card.danger h2 { color: #f1948a; } .card.danger { border-color: color-mix(in srgb, #f1948a 35%, var(--line)); } }

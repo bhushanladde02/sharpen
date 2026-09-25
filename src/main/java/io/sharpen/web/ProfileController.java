@@ -6,6 +6,7 @@ import io.sharpen.domain.Person;
 import io.sharpen.repo.PersonRepository;
 import io.sharpen.scoring.AiScore;
 import io.sharpen.domain.PersonAvatar;
+import io.sharpen.service.AccountDeletionService;
 import io.sharpen.service.AvatarService;
 import io.sharpen.service.ExportService;
 import io.sharpen.service.MonthSummary;
@@ -119,7 +120,9 @@ public class ProfileController {
     private final AvatarService avatars;
 
     public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports,
-                             SessionService sessions, AvatarService avatars, ExportService exports) {
+                             SessionService sessions, AvatarService avatars, ExportService exports,
+                             AccountDeletionService deletion) {
+        this.deletion = deletion;
         this.people = people;
         this.repo = repo;
         this.stats = stats;
@@ -130,6 +133,26 @@ public class ProfileController {
     }
 
     private final ExportService exports;
+    private final AccountDeletionService deletion;
+
+    /**
+     * Deletes the signed-in account after the password is re-entered. Everything goes in one transaction; the
+     * session is invalidated so the browser is signed out, and the landing page says goodbye once.
+     */
+    @PostMapping("/settings/delete")
+    public String deleteAccount(@RequestParam(required = false) String password, RedirectAttributes redirect,
+                                jakarta.servlet.http.HttpServletRequest request) {
+        Person me = people.requireCurrent();
+        if (!deletion.confirms(me, password)) {
+            redirect.addFlashAttribute("flash", "Account not deleted — the password did not match.");
+            return "redirect:/settings#delete";
+        }
+        AccountDeletionService.Removed gone = deletion.delete(me);
+        try { request.logout(); } catch (jakarta.servlet.ServletException ignored) {}
+        redirect.addFlashAttribute("flash", "Your account, " + gone.sessions() + " sessions and " + gone.reports()
+                + " reports are deleted. Thank you for trying Sharpen.");
+        return "redirect:/";
+    }
 
     /** Sessions in the Sharpen CSV layout — importable again on the Import page, or opened in a spreadsheet. */
     @GetMapping(value = "/settings/export/sessions.csv", produces = "text/csv")

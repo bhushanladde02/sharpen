@@ -12,5 +12,8 @@ public interface MonthlyReportRepository extends JpaRepository<MonthlyReport, Lo
 
     List<MonthlyReport> findByPersonIdOrderByYearMonthDesc(Long personId);
 
+    /** Account deletion; returns the number removed. */
+    long deleteByPersonId(Long personId);
+
     List<MonthlyReport> findByGeneratedAtBetween(java.time.Instant from, java.time.Instant to);
 }

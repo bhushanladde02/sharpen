@@ -237,6 +237,42 @@ class WebFlowTest {
     private long countSessions(Long personId) { return sessionRepo.countByPersonId(personId); }
 
     @Test
+    void deleteAccountRemovesEverythingButKeepsFeedback() throws Exception {
+        Person gone = people.byEmail("gone@example.com").orElseGet(() ->
+                people.register("gone@example.com", "password123", "Going Away", AccountType.INDIVIDUAL));
+        var asGone = user(gone.getEmail()).roles("INDIVIDUAL");
+        mvc.perform(post("/sessions").with(csrf()).with(asGone)
+                        .param("occurredOn", LocalDate.now().toString()).param("context", "PERSONAL").param("tool", "Claude")
+                        .param("taskCategory", "WRITING").param("durationMinutes", "10").param("promptCount", "2")
+                        .param("humanContributionPct", "50").param("outcome", "3"))
+                .andExpect(status().is3xxRedirection());
+        mvc.perform(post("/reports/" + YearMonth.from(LocalDate.now()) + "/generate").with(csrf()).with(asGone)).andExpect(status().is3xxRedirection());
+        mvc.perform(multipart("/settings/avatar").file(new MockMultipartFile("picture", "me.png", "image/png", testPng(64, 64))).with(csrf()).with(asGone))
+                .andExpect(status().is3xxRedirection());
+        mvc.perform(post("/feedback").with(csrf()).with(asGone).param("message", "Leaving, but it was fun").param("t", guard.tokenIssuedAgo(10)))
+                .andExpect(status().is3xxRedirection());
+        org.junit.jupiter.api.Assertions.assertEquals(1, countSessions(gone.getId()));
+        mvc.perform(get("/p/" + gone.getHandle())).andExpect(status().isOk());
+
+        // Wrong password: nothing happens
+        mvc.perform(post("/settings/delete").with(csrf()).with(asGone).param("password", "nope-nope"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/settings#delete"));
+        org.junit.jupiter.api.Assertions.assertTrue(people.byEmail("gone@example.com").isPresent());
+
+        // Right password: account, session, report and picture are gone; the feedback stays, unlinked
+        mvc.perform(post("/settings/delete").with(csrf()).with(asGone).param("password", "password123"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/"));
+        org.junit.jupiter.api.Assertions.assertTrue(people.byEmail("gone@example.com").isEmpty());
+        org.junit.jupiter.api.Assertions.assertEquals(0, countSessions(gone.getId()));
+        mvc.perform(get("/p/" + gone.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(containsString("No public profile")));   // the directory page with the notice
+        mvc.perform(get("/p/" + gone.getHandle() + "/avatar")).andExpect(status().isNotFound());
+        String inbox = mvc.perform(get("/admin/feedback").with(user(me.getEmail()).roles("INDIVIDUAL"))).andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(inbox.contains("Leaving, but it was fun"), "feedback kept");
+        org.junit.jupiter.api.Assertions.assertTrue(inbox.contains("anonymous") || !inbox.contains("member #" + gone.getId()), "feedback unlinked");
+    }
+
+    @Test
     void namesSplitAndJoin() {
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Priya", null, "Natarajan"}, Person.splitName("  Priya   Natarajan "));

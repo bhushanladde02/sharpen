@@ -24,6 +24,9 @@ public interface UsageSessionRepository extends JpaRepository<UsageSession, Long
 
     long countByPersonId(Long personId);
 
+    /** Account deletion; returns the number removed. */
+    long deleteByPersonId(Long personId);
+
     /** Every session, oldest first — the export. */
     List<UsageSession> findByPersonIdOrderByOccurredOnAscIdAsc(Long personId);
 

@@ -64,6 +64,9 @@ Settings → **Your data**: every session as CSV in Sharpen's own import layout 
 into another account — the exporter and importer are tested against each other), or the whole account as one
 JSON document (profile, sessions, every generated report with its full content). Instant, self-service, nothing
 secret in it (no password hash, no API key). Endpoints: `/settings/export/sessions.csv`, `/settings/export/sharpen-data.json`.
+**Delete account** (same page, password re-entered) removes the account, its sessions, reports and picture in one
+transaction and signs the browser out; feedback the person left stays but is unlinked. No grace period, no e-mail
+to send.
 
 ## Help and contact
 

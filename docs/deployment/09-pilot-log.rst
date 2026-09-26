@@ -484,7 +484,15 @@ Day 8 — Wednesday 16 September: which build is this?
    scratch PostgreSQL 16, watching the tables empty. The Help guide's privacy answer now points at the card
    instead of the Contact form.
 
-Open items (as of day 15)
+#. **A promise the guide made.** (Day 16, Saturday 26 September.) The Help guide's *forgot password*
+   answer ended with "to change a password you still know: Settings" — and Settings could not. Now it can:
+   a *Password* card, current password once and the new one twice, checked in ``PersonService`` (right
+   current password, 8–72 characters, both copies equal, actually different) and refused with a plain
+   sentence otherwise. The test tries every wrong way and confirms the hash is untouched, then the right
+   way and confirms the new password signs in and the old one does not. Reading one's own help text as a
+   list of claims to verify turns out to be a good source of small, real changes.
+
+Open items (as of day 16)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

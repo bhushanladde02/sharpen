@@ -66,6 +66,17 @@ public class PersonService {
         return current().orElseThrow(() -> new IllegalStateException("Not signed in"));
     }
 
+    /** Why a password change was refused, or null when it went through. */
+    public String changePassword(Person person, String current, String next, String repeat) {
+        if (current == null || !passwordEncoder.matches(current, person.getPasswordHash())) return "The current password is not right.";
+        if (next == null || next.length() < 8 || next.length() > 72) return "The new password needs 8 to 72 characters.";
+        if (!next.equals(repeat)) return "The two copies of the new password do not match.";
+        if (next.equals(current)) return "That is already your password.";
+        person.setPasswordHash(passwordEncoder.encode(next));
+        people.save(person);
+        return null;
+    }
+
     public String rotateApiKey(Person person) {
         person.setApiKey(newApiKey());
         people.save(person);

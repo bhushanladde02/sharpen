@@ -60,6 +60,20 @@
         <p class="help">The CSV is in Sharpen's own import layout, so it opens in a spreadsheet and can be imported into another account.
           The JSON has your profile, every session and every generated report. Deleting the account is at the bottom of this page.</p>
       </div>
+      <div class="card" id="password">
+        <h2>Password</h2>
+        <form th:action="@{/settings/password}" method="post" class="stack">
+          <div><label for="pw-current">Current password</label>
+            <input type="password" id="pw-current" name="current" required autocomplete="current-password"></div>
+          <div class="grid two">
+            <div><label for="pw-next">New password (8+ characters)</label>
+              <input type="password" id="pw-next" name="next" required minlength="8" maxlength="72" autocomplete="new-password"></div>
+            <div><label for="pw-repeat">New password again</label>
+              <input type="password" id="pw-repeat" name="repeat" required minlength="8" maxlength="72" autocomplete="new-password"></div>
+          </div>
+          <div><button class="btn" type="submit">Change password</button></div>
+        </form>
+      </div>
       <div class="card">
         <h2>API key</h2>
         <p>Used by the browser extension and import scripts. Treat it like a password.</p>

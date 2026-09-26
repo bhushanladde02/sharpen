@@ -492,6 +492,14 @@ Day 8 — Wednesday 16 September: which build is this?
    way and confirms the new password signs in and the old one does not. Reading one's own help text as a
    list of claims to verify turns out to be a good source of small, real changes.
 
+#. **The registration form, looked at.** Same day, from a screenshot of the live page: "Middle name
+   (optional)" wrapped to two lines and pushed its box below the other two, and First/Last name were not
+   marked required in the browser, so an empty submit skipped to *Email* and a person who filled only
+   email and password got a server-side error afterwards. Now the label is "Middle name" with *optional*
+   as the placeholder, and the required flags follow the account type — first and last for a person, the
+   company name for a company — so the browser's own check points at the right box first. Measured in a
+   headless browser at 1400 and 400 px: all three labels one line high, first invalid field ``firstName``.
+
 Open items (as of day 16)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

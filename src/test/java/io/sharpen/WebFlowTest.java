@@ -273,6 +273,29 @@ class WebFlowTest {
     }
 
     @Test
+    void changePasswordNeedsTheOldOne() throws Exception {
+        Person pw = people.byEmail("pw@example.com").orElseGet(() ->
+                people.register("pw@example.com", "password123", "Pass Word", AccountType.INDIVIDUAL));
+        var asPw = user(pw.getEmail()).roles("INDIVIDUAL");
+        mvc.perform(get("/settings").with(asPw)).andExpect(status().isOk()).andExpect(content().string(containsString("id=\"password\"")));
+        // wrong current, mismatched repeat, too short, unchanged → all refused, hash untouched
+        String before = people.byEmail(pw.getEmail()).orElseThrow().getPasswordHash();
+        for (String[] bad : new String[][] {{"nope", "newpassword1", "newpassword1"}, {"password123", "newpassword1", "newpassword2"},
+                                             {"password123", "short", "short"}, {"password123", "password123", "password123"}}) {
+            mvc.perform(post("/settings/password").with(csrf()).with(asPw).param("current", bad[0]).param("next", bad[1]).param("repeat", bad[2]))
+                    .andExpect(status().is3xxRedirection()).andExpect(flash().attribute("flash", containsString("not changed")));
+        }
+        org.junit.jupiter.api.Assertions.assertEquals(before, people.byEmail(pw.getEmail()).orElseThrow().getPasswordHash());
+        // the right way: the new password signs in, the old one does not
+        mvc.perform(post("/settings/password").with(csrf()).with(asPw).param("current", "password123").param("next", "newpassword1").param("repeat", "newpassword1"))
+                .andExpect(status().is3xxRedirection()).andExpect(flash().attribute("flash", "Password changed."));
+        mvc.perform(post("/login").with(csrf()).param("username", pw.getEmail()).param("password", "newpassword1"))
+                .andExpect(redirectedUrl("/dashboard"));
+        mvc.perform(post("/login").with(csrf()).param("username", pw.getEmail()).param("password", "password123"))
+                .andExpect(redirectedUrl("/login?error"));
+    }
+
+    @Test
     void namesSplitAndJoin() {
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Priya", null, "Natarajan"}, Person.splitName("  Priya   Natarajan "));

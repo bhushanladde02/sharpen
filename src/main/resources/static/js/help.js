@@ -159,7 +159,7 @@
       answer: function () {
         return '<p>Password reset by email is not built yet. Send a message from the ' + contact + ' with the email you registered under and the author ' +
                'resets it by hand, usually the same day.</p>' +
-               '<p>To change a password you still know: <a href="/settings">Settings</a>.</p>';
+               '<p>To change a password you still know: <a href="/settings#password">Settings → Password</a> — current password once, the new one twice.</p>';
       }
     },
     {

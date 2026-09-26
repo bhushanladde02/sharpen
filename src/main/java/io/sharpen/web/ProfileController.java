@@ -315,6 +315,15 @@ public class ProfileController {
         return "redirect:/settings";
     }
 
+    /** Change the password: the current one is re-entered, the new one typed twice. Other sessions stay signed in. */
+    @PostMapping("/settings/password")
+    public String changePassword(@RequestParam(required = false) String current, @RequestParam(required = false) String next,
+                                 @RequestParam(required = false) String repeat, RedirectAttributes redirect) {
+        String problem = people.changePassword(people.requireCurrent(), current, next, repeat);
+        redirect.addFlashAttribute("flash", problem != null ? "Password not changed — " + problem.toLowerCase(java.util.Locale.ROOT) : "Password changed.");
+        return "redirect:/settings#password";
+    }
+
     @PostMapping("/settings/api-key")
     public String rotateKey(RedirectAttributes redirect) {
         people.rotateApiKey(people.requireCurrent());

@@ -13,7 +13,7 @@
       <div class="grid names" th:unless="${me.company}">
         <div><label for="firstName">First name</label><input type="text" id="firstName" th:field="*{firstName}" required maxlength="60" autocomplete="given-name">
           <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div></div>
-        <div><label for="middleName">Middle name <span class="muted">(optional)</span></label><input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name"></div>
+        <div><label for="middleName">Middle name</label><input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name" placeholder="optional"></div>
         <div><label for="lastName">Last name</label><input type="text" id="lastName" th:field="*{lastName}" required maxlength="60" autocomplete="family-name">
           <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
       </div>

@@ -10,12 +10,12 @@
     <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
       <div id="person-names" class="grid names">
         <div><label for="firstName">First name</label>
-          <input type="text" id="firstName" th:field="*{firstName}" maxlength="60" autocomplete="given-name">
+          <input type="text" id="firstName" th:field="*{firstName}" maxlength="60" autocomplete="given-name" required>
           <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div></div>
-        <div><label for="middleName">Middle name <span class="muted">(optional)</span></label>
-          <input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name"></div>
+        <div><label for="middleName">Middle name</label>
+          <input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name" placeholder="optional"></div>
         <div><label for="lastName">Last name</label>
-          <input type="text" id="lastName" th:field="*{lastName}" maxlength="60" autocomplete="family-name">
+          <input type="text" id="lastName" th:field="*{lastName}" maxlength="60" autocomplete="family-name" required>
           <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
       </div>
       <div id="company-name" hidden>
@@ -50,7 +50,12 @@
       (function () {
         var type = document.getElementById('accountType'), person = document.getElementById('person-names'),
             company = document.getElementById('company-name');
-        function sync() { var c = type.value === 'COMPANY'; person.hidden = c; company.hidden = !c; }
+        function sync() {
+          var c = type.value === 'COMPANY'; person.hidden = c; company.hidden = !c;
+          // only the visible fields are required, so the browser's own check points at the right box
+          document.getElementById('firstName').required = !c; document.getElementById('lastName').required = !c;
+          document.getElementById('companyName').required = c;
+        }
         type.addEventListener('change', sync); sync();
       })();
     </script>

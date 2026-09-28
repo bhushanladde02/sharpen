@@ -500,7 +500,16 @@ Day 8 — Wednesday 16 September: which build is this?
    company name for a company — so the browser's own check points at the right box first. Measured in a
    headless browser at 1400 and 400 px: all three labels one line high, first invalid field ``firstName``.
 
-Open items (as of day 16)
+#. **Before the first of the month.** (Day 17, Monday 28 September.) The monthly report job fires once,
+   at 02:00 UTC on the 1st. A cron that fires once has no memory: if the A1 were mid-rollout or rebooting
+   at that minute — the pending "system restart required" made that a real possibility for 1 October —
+   September would never be frozen for anyone. Now there is a catch-up: on every start-up and daily at
+   02:10 UTC, any individual with sessions in the previous month and no stored report for it gets one.
+   It only fills gaps, never rewrites, so it can run as often as it likes; the test proves one run
+   creates the missing report, a second run does nothing and leaves the timestamp alone, and a person
+   with no sessions gets nothing. First real monthly run is in three days.
+
+Open items (as of day 17)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

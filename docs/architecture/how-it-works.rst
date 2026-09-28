@@ -200,8 +200,10 @@ What we use from Spring Boot, and why it matters
      - Authentication, CSRF, session handling and role rules in one class; the API-key scheme is a
        fifteen-line filter plugged into the standard chain.
    * - **Scheduling**
-     - ``@EnableScheduling`` + ``@Scheduled(cron = "0 0 2 1 * *", zone = "UTC")``
-     - The monthly job needs no external cron or queue. (Release 1 adds a lock for multi-instance runs.)
+     - ``@EnableScheduling`` + ``@Scheduled(cron = "0 0 2 1 * *", zone = "UTC")``, plus a daily and
+       start-up catch-up that only fills months with sessions but no report
+     - The monthly job needs no external cron or queue, and a missed 02:00 (deploy, reboot) costs nothing:
+       the catch-up generates the gap the next time the app is up. (Release 1 adds a lock for multi-instance runs.)
    * - **Profiles and externalised config**
      - ``application.yml`` (dev, H2, demo data) and ``application-postgres.yml`` with ``${SHARPEN_DB_*}``
        placeholders

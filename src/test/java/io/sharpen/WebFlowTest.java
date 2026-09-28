@@ -295,6 +295,34 @@ class WebFlowTest {
                 .andExpect(redirectedUrl("/login?error"));
     }
 
+    @org.springframework.beans.factory.annotation.Autowired io.sharpen.service.ReportService reportService;
+    @org.springframework.beans.factory.annotation.Autowired io.sharpen.repo.MonthlyReportRepository reportRepo;
+
+    @Test
+    void monthlyCatchUpFillsGapsOnly() throws Exception {
+        YearMonth last = YearMonth.from(LocalDate.now()).minusMonths(1);
+        Person late = people.byEmail("late@example.com").orElseGet(() ->
+                people.register("late@example.com", "password123", "Late Report", AccountType.INDIVIDUAL));
+        var asLate = user(late.getEmail()).roles("INDIVIDUAL");
+        // one session last month, no report → the catch-up creates exactly one
+        mvc.perform(post("/sessions").with(csrf()).with(asLate)
+                        .param("occurredOn", last.atDay(10).toString()).param("context", "PROFESSIONAL").param("tool", "Claude")
+                        .param("taskCategory", "CODING").param("durationMinutes", "25").param("promptCount", "3")
+                        .param("humanContributionPct", "60").param("outcome", "4"))
+                .andExpect(status().is3xxRedirection());
+        org.junit.jupiter.api.Assertions.assertTrue(reportRepo.findByPersonIdAndYearMonth(late.getId(), last.toString()).isEmpty());
+        org.junit.jupiter.api.Assertions.assertEquals(1, reportService.catchUp(last));
+        var made = reportRepo.findByPersonIdAndYearMonth(late.getId(), last.toString()).orElseThrow();
+        // second run: nothing to do, and the existing report is untouched
+        org.junit.jupiter.api.Assertions.assertEquals(0, reportService.catchUp(last));
+        org.junit.jupiter.api.Assertions.assertEquals(made.getGeneratedAt(), reportRepo.findByPersonIdAndYearMonth(late.getId(), last.toString()).orElseThrow().getGeneratedAt());
+        // someone with no sessions that month gets nothing
+        Person idle = people.byEmail("idle@example.com").orElseGet(() ->
+                people.register("idle@example.com", "password123", "Idle Person", AccountType.INDIVIDUAL));
+        org.junit.jupiter.api.Assertions.assertEquals(0, reportService.catchUp(last));
+        org.junit.jupiter.api.Assertions.assertTrue(reportRepo.findByPersonIdAndYearMonth(idle.getId(), last.toString()).isEmpty());
+    }
+
     @Test
     void namesSplitAndJoin() {
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));

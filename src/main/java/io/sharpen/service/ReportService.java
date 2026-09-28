@@ -14,6 +14,8 @@ import io.sharpen.service.ReportModel.Delta;
 import io.sharpen.service.ReportModel.Insight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +50,10 @@ public class ReportService {
         this.json = json;
     }
 
-    /** Runs at 02:00 UTC on the first of each month and freezes the month that just ended for every individual. */
+    /**
+     * Runs at 02:00 UTC on the first of each month and freezes the month that just ended for every individual
+     * who logged something in it. A report the person generated themselves is refreshed with the final numbers.
+     */
     @Scheduled(cron = "0 0 2 1 * *", zone = "UTC")
     public void generateLastMonthForEveryone() {
         YearMonth last = YearMonth.now(ZoneOffset.UTC).minusMonths(1);
@@ -57,6 +62,31 @@ public class ReportService {
             if (!sessions.inMonth(p, last).isEmpty()) { generate(p, last); n++; }
         }
         log.info("Generated {} monthly reports for {}", n, last);
+    }
+
+    /**
+     * The safety net for the run above. A cron fires once; if the server was mid-deploy or rebooting at 02:00 on
+     * the 1st, that month would never be frozen. So on every start-up and once a day, any individual who has
+     * sessions in the previous month but no stored report for it gets one. Existing reports are left alone —
+     * this only fills gaps, it never rewrites — so it is safe to run as often as it likes.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "0 10 2 * * *", zone = "UTC")
+    public void catchUpLastMonth() {
+        YearMonth last = YearMonth.now(ZoneOffset.UTC).minusMonths(1);
+        int n = catchUp(last);
+        if (n > 0) log.info("Catch-up generated {} missing monthly reports for {}", n, last);
+    }
+
+    /** Generates {@code month} for everyone who logged sessions in it and has no report yet; returns how many. */
+    public int catchUp(YearMonth month) {
+        int n = 0;
+        for (Person p : people.findByAccountType(AccountType.INDIVIDUAL)) {
+            if (reports.findByPersonIdAndYearMonth(p.getId(), month.toString()).isPresent()) continue;
+            if (sessions.inMonth(p, month).isEmpty()) continue;
+            generate(p, month); n++;
+        }
+        return n;
     }
 
     public MonthlyReport generate(Person person, YearMonth month) {

@@ -8,6 +8,9 @@
     <h1>Create your account</h1>
     <p class="muted" style="margin-top:.25rem">Individuals get a dashboard, monthly reports and a public AI profile. Companies get the candidate view.</p>
     <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
+      <input type="hidden" th:field="*{t}">
+      <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" th:field="*{website}" tabindex="-1" autocomplete="off"></div>
+      <div class="error" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</div>
       <div id="person-names" class="grid names">
         <div><label for="firstName">First name</label>
           <input type="text" id="firstName" th:field="*{firstName}" maxlength="60" autocomplete="given-name" required>

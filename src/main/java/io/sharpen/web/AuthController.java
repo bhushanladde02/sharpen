@@ -3,6 +3,8 @@ package io.sharpen.web;
 import io.sharpen.domain.Enums.AccountType;
 import io.sharpen.scoring.AiScore;
 import io.sharpen.service.PersonService;
+import io.sharpen.service.SpamGuard;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import jakarta.validation.Valid;
@@ -29,7 +31,13 @@ public class AuthController {
         @NotBlank @Email @Size(max = 190) private String email = "";
         @NotBlank @Size(min = 8, max = 72) private String password = "";
         private AccountType accountType = AccountType.INDIVIDUAL;
+        private String website = "";   // honeypot — see SpamGuard
+        private String t = "";         // signed timestamp — see SpamGuard
 
+        public String getWebsite() { return website; }
+        public void setWebsite(String v) { website = v; }
+        public String getT() { return t; }
+        public void setT(String v) { t = v; }
         public String getFirstName() { return firstName; }
         public void setFirstName(String v) { firstName = v; }
         public String getMiddleName() { return middleName; }
@@ -47,10 +55,12 @@ public class AuthController {
     }
 
     private final PersonService people;
+    private final SpamGuard spam;
 
-    public AuthController(PersonService people,
+    public AuthController(PersonService people, SpamGuard spam,
                           @org.springframework.beans.factory.annotation.Value("${sharpen.site-host:localhost:8080}") String siteHost) {
         this.people = people;
+        this.spam = spam;
         String base = (siteHost.startsWith("localhost") ? "http://" : "https://") + siteHost;
         this.structuredData = STRUCTURED_DATA_TEMPLATE.formatted(base, GlobalModelAttributes.DEFAULT_DESCRIPTION);
     }
@@ -95,12 +105,27 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        model.addAttribute("form", new RegisterForm());
+        RegisterForm f = new RegisterForm();
+        f.setT(spam.token());
+        model.addAttribute("form", f);
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding) {
+    public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding, HttpServletRequest request) {
+        // Same three checks as the contact form: honeypot, signed timestamp, per-address limit. A bot that filled
+        // the invisible field is shown the "registered" page and gets no account; the rest re-show the form.
+        SpamGuard.Refusal refusal = spam.check(form.getWebsite(), form.getT(), clientAddress(request), "register");
+        if (refusal == SpamGuard.Refusal.HONEYPOT) return "redirect:/login?registered";
+        if (refusal != null) {
+            binding.reject("spam", switch (refusal) {
+                case TOO_FAST -> "That was quick — please take a moment and press Create account again.";
+                case RATE_LIMITED -> "Several accounts were created from your connection in the last hour — please try again later.";
+                default -> "This form had been open too long — please press Create account again.";
+            });
+            form.setT(spam.token());
+            return "register";
+        }
         AccountType type = form.getAccountType() == null ? AccountType.INDIVIDUAL : form.getAccountType();
         if (type == AccountType.COMPANY) {
             if (form.getCompanyName().isBlank()) binding.rejectValue("companyName", "required", "Company name is required");
@@ -108,15 +133,22 @@ public class AuthController {
             if (form.getFirstName().isBlank()) binding.rejectValue("firstName", "required", "First name is required");
             if (form.getLastName().isBlank()) binding.rejectValue("lastName", "required", "Last name is required");
         }
-        if (binding.hasErrors()) return "register";
+        if (binding.hasErrors()) { form.setT(spam.token()); return "register"; }
         try {
             String name = type == AccountType.COMPANY ? form.getCompanyName()
                     : io.sharpen.domain.Person.joinName(form.getFirstName(), form.getMiddleName(), form.getLastName());
             people.register(form.getEmail(), form.getPassword(), name, type);
         } catch (IllegalArgumentException e) {
             binding.rejectValue("email", "exists", e.getMessage());
+            form.setT(spam.token());
             return "register";
         }
         return "redirect:/login?registered";
+    }
+
+    private static String clientAddress(HttpServletRequest req) {
+        String xff = req.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
+        return req.getRemoteAddr();
     }
 }

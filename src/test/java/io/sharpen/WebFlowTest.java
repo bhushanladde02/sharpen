@@ -141,8 +141,36 @@ class WebFlowTest {
     }
 
     @Test
+    void registerIsGuardedLikeTheContactForm() throws Exception {
+        mvc.perform(get("/register")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("name=\"t\""))).andExpect(content().string(containsString("id=\"website\"")));
+        // honeypot filled: looks registered, no account
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10)).param("website", "http://x")
+                        .param("firstName", "Bot").param("lastName", "One").param("email", "bot1@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
+                .andExpect(redirectedUrl("/login?registered"));
+        org.junit.jupiter.api.Assertions.assertTrue(people.byEmail("bot1@example.com").isEmpty());
+        // too fast / forged token: the form again, no account
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(1))
+                        .param("firstName", "Bot").param("lastName", "Two").param("email", "bot2@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("That was quick")));
+        mvc.perform(post("/register").with(csrf()).param("t", "1700000000.deadbeefdeadbeefdeadbeef")
+                        .param("firstName", "Bot").param("lastName", "Three").param("email", "bot3@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
+        org.junit.jupiter.api.Assertions.assertTrue(people.byEmail("bot2@example.com").isEmpty() && people.byEmail("bot3@example.com").isEmpty());
+        // sixth sign-up from one address in an hour is refused (its own counter, separate from the contact form)
+        for (int i = 0; i < 5; i++)
+            mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10)).with(r -> { r.setRemoteAddr("203.0.113.77"); return r; })
+                    .param("firstName", "Burst").param("lastName", "N" + i).param("email", "burst" + i + "@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
+                    .andExpect(status().is3xxRedirection());
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10)).with(r -> { r.setRemoteAddr("203.0.113.77"); return r; })
+                        .param("firstName", "Burst").param("lastName", "Six").param("email", "burst6@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("Several accounts")));
+        org.junit.jupiter.api.Assertions.assertTrue(people.byEmail("burst6@example.com").isEmpty());
+    }
+
+    @Test
     void registerThroughTheForm() throws Exception {
-        mvc.perform(post("/register").with(csrf())
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10))
                         .param("firstName", "New").param("middleName", "Q.").param("lastName", "Person")
                         .param("email", "new@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().is3xxRedirection())
@@ -152,18 +180,18 @@ class WebFlowTest {
         org.junit.jupiter.api.Assertions.assertEquals("Person", created.getLastName());
         org.junit.jupiter.api.Assertions.assertEquals("NP", created.getInitials());
         // Same email again → "already exists"; a person without a last name → validation error, no account
-        mvc.perform(post("/register").with(csrf())
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10))
                         .param("firstName", "Dup").param("lastName", "Licate").param("email", "new@example.com")
                         .param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("already exists")));
-        mvc.perform(post("/register").with(csrf())
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10))
                         .param("firstName", "Only").param("email", "only@example.com")
                         .param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Last name is required")));
         // A company gives one name and gets no parts
-        mvc.perform(post("/register").with(csrf())
+        mvc.perform(post("/register").with(csrf()).param("t", guard.tokenIssuedAgo(10))
                         .param("companyName", "Acme Talent").param("email", "acme@example.com")
                         .param("password", "password123").param("accountType", "COMPANY"))
                 .andExpect(status().is3xxRedirection());

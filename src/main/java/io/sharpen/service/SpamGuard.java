@@ -57,13 +57,18 @@ public class SpamGuard {
     public enum Refusal { HONEYPOT, TOO_FAST, EXPIRED, RATE_LIMITED }
 
     public Refusal check(String honeypot, String token, String address) {
+        return check(honeypot, token, address, "feedback");
+    }
+
+    /** {@code form} keeps the per-address counters apart: five contact messages and five sign-ups an hour, not five in total. */
+    public Refusal check(String honeypot, String token, String address, String form) {
         if (honeypot != null && !honeypot.isBlank()) return Refusal.HONEYPOT;
         long issued = issuedAt(token);
         if (issued < 0) return Refusal.EXPIRED;
         long age = System.currentTimeMillis() / 1000 - issued;
         if (age < MIN_SECONDS) return Refusal.TOO_FAST;
         if (age > MAX_SECONDS) return Refusal.EXPIRED;
-        if (address != null && !allow(address)) return Refusal.RATE_LIMITED;
+        if (address != null && !allow(form + "|" + address)) return Refusal.RATE_LIMITED;
         return null;
     }
 

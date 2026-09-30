@@ -509,7 +509,15 @@ Day 8 — Wednesday 16 September: which build is this?
    creates the missing report, a second run does nothing and leaves the timestamp alone, and a person
    with no sessions gets nothing. First real monthly run is in three days.
 
-Open items (as of day 17)
+#. **Sign-up gets the same guard.** (Day 18, Wednesday 30 September.) The contact form has been quiet
+   since day 14; registration was the next open door, and a bot account would sit in the public directory
+   and inflate the member counter that is part of the record. ``SpamGuard`` now covers ``/register`` too —
+   honeypot, signed timestamp, five sign-ups per address per hour — with its own counter so five contact
+   messages do not use up the sign-up allowance. A honeypot hit is shown the "registered" page and gets no
+   account. Verified on H2 (24 tests, one new) and on PostgreSQL: instant submit refused, honeypot submit
+   swallowed, a person after five seconds registered, nothing else in the ``person`` table.
+
+Open items (as of day 18)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

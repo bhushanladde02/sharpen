@@ -55,6 +55,20 @@
         <p class="muted" th:if="${#lists.isEmpty(score.flags)}">No flags. The score is based on enough rated sessions to be reliable.</p>
       </div>
     </div>
+    <div class="card share-card" th:if="${owner}" id="share">
+      <h2>Share your score</h2>
+      <p th:if="${!person.publicProfile}" class="muted">Switch on <a th:href="@{/settings}">Public profile</a> first — the badge only works for public profiles.</p>
+      <div th:if="${person.publicProfile}" th:with="base='https://' + ${siteHost}, url=${base} + '/p/' + ${person.handle}, img=${base} + '/p/' + ${person.handle} + '/badge.svg'">
+        <p>A live picture of your score that links back here. Paste it in a GitHub README, a LinkedIn post, or an email signature — it updates itself.</p>
+        <p><img th:src="@{/p/{h}/badge.svg(h=${person.handle})}" width="300" height="64" alt="Sharpen AI score badge" style="border-radius:12px"></p>
+        <div class="stack" style="gap:.5rem">
+          <label>Markdown (GitHub README)<textarea class="code" rows="1" readonly onclick="this.select()" th:text="'[![Sharpen AI score](' + ${img} + ')](' + ${url} + ')'"></textarea></label>
+          <label>HTML<textarea class="code" rows="1" readonly onclick="this.select()" th:text="'&lt;a href=&quot;' + ${url} + '&quot;&gt;&lt;img src=&quot;' + ${img} + '&quot; width=&quot;300&quot; height=&quot;64&quot; alt=&quot;Sharpen AI score&quot;&gt;&lt;/a&gt;'"></textarea></label>
+          <label>Link<textarea class="code" rows="1" readonly onclick="this.select()" th:text="${url}"></textarea></label>
+        </div>
+        <p class="help">Click a box to select it, then copy. LinkedIn does not embed images from links, so there post the link — LinkedIn shows the profile's preview card.</p>
+      </div>
+    </div>
 
     <div class="card">
       <h2>Month by month</h2>

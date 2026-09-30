@@ -352,6 +352,37 @@ class WebFlowTest {
     }
 
     @Test
+    void scoreBadgeIsPublicOnlyForPublicProfiles() throws Exception {
+        var asMe = user(me.getEmail()).roles("INDIVIDUAL");
+        // public profile (the default): anyone can fetch the badge, it carries the score and the name, and caches an hour
+        String svg = mvc.perform(get("/p/" + me.getHandle() + "/badge.svg")).andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", containsString("image/svg+xml")))
+                .andExpect(header().string("Cache-Control", containsString("max-age=3600")))
+                .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(svg.startsWith("<svg") && svg.contains("SHARPEN AI SCORE") && svg.contains("Flow Tester"), svg);
+        // the owner's profile page offers the copy-ready snippets, pointing at the same image
+        mvc.perform(get("/p/" + me.getHandle()).with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Share your score")))
+                .andExpect(content().string(containsString("/p/" + me.getHandle() + "/badge.svg")))
+                .andExpect(content().string(containsString("[![Sharpen AI score](")));
+        // a visitor sees no share card
+        mvc.perform(get("/p/" + me.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Share your score"))));
+        // private profile → 404 for the badge, and the share card explains
+        mvc.perform(post("/settings").with(csrf()).with(asMe).param("firstName", "Flow").param("lastName", "Tester")
+                        .param("handle", me.getHandle()).param("publicProfile", "false")).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/p/" + me.getHandle() + "/badge.svg")).andExpect(status().isNotFound());
+        mvc.perform(get("/p/" + me.getHandle()).with(asMe)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("the badge only works for public profiles")));
+        mvc.perform(post("/settings").with(csrf()).with(asMe).param("firstName", "Flow").param("lastName", "Tester")
+                        .param("handle", me.getHandle()).param("publicProfile", "true")).andExpect(status().is3xxRedirection());
+        // a company has no badge
+        mvc.perform(get("/p/" + company.getHandle() + "/badge.svg")).andExpect(status().isNotFound());
+        // the SVG is well-formed XML, so browsers and GitHub's image proxy accept it
+        javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new java.io.ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
     void namesSplitAndJoin() {
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Bhushan", "Arun", "Ladde"}, Person.splitName("Bhushan Arun Ladde"));
         org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {"Priya", null, "Natarajan"}, Person.splitName("  Priya   Natarajan "));

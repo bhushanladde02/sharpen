@@ -435,6 +435,10 @@ a.filter-chip { text-decoration: none; display: inline-block; }
 /* honeypot field on the contact form: off-screen, not display:none (some bots skip hidden inputs) */
 .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
+/* share card: copy-ready snippets */
+textarea.code { width: 100%; font-family: var(--mono); font-size: .8rem; resize: none; white-space: pre; overflow-x: auto; padding: .5rem .6rem; }
+.card.share-card label { display: block; font-size: .8rem; color: var(--ink-2); }
+
 /* the one destructive action on the site */
 .card.danger { border-color: color-mix(in srgb, #c0392b 45%, var(--line)); }
 .card.danger h2 { color: #c0392b; }

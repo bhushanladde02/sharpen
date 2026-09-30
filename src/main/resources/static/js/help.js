@@ -94,6 +94,18 @@
       }
     },
     {
+      id: 'badge', chip: 'Share my score',
+      keys: ['badge', 'share my score', 'embed', 'readme', 'github readme', 'signature', 'linkedin post', 'widget', 'image of my score', 'svg'],
+      answer: function () {
+        if (!signedIn) return '<p>Every public profile has a live score badge at <code>/p/handle/badge.svg</code> — a small picture that links back to the profile. ' +
+                              'Members find copy-ready Markdown and HTML under <b>Share your score</b> on their own profile page.</p>';
+        if (company) return '<p>Badges belong to individual profiles; company accounts do not have one.</p>';
+        return '<p>Open <a href="/p/' + handle + '#share">your profile</a> → <b>Share your score</b>. Copy the Markdown for a GitHub README, the HTML for a website ' +
+               'or email signature, or the plain link for LinkedIn. The badge is a live picture of your current score and links back to your profile; ' +
+               'it only works while your profile is public.</p>';
+      }
+    },
+    {
       id: 'picture', chip: 'Profile picture',
       keys: ['picture', 'photo', 'avatar', 'image', 'upload picture', 'initials'],
       answer: function () {

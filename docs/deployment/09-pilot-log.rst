@@ -517,6 +517,21 @@ Day 8 — Wednesday 16 September: which build is this?
    account. Verified on H2 (24 tests, one new) and on PostgreSQL: instant submit refused, honeypot submit
    swallowed, a person after five seconds registered, nothing else in the ``person`` table.
 
+#. **The share loop, and a line not crossed.** Same day. The ask was for something that brings people in
+   by itself, and one suggestion was to read visitors' browser history and start capturing before they
+   quite know it. That was declined and will stay declined: Chrome's store rejects extensions that read
+   history without prominent disclosure and a single clear purpose, and a site whose first story is
+   "captured my history quietly" does not get a second one. The honest mechanism for growth is a share
+   loop, so that is what was built: ``/p/<handle>/badge.svg``, a live 300×64 picture of the score and
+   band that links back to the profile, with copy-ready Markdown, HTML and link snippets under *Share your
+   score* on the owner's profile page. Public profiles only — a private profile's badge is a 404, so a
+   hotlinked image can never leak a score — and cached an hour. Verified: 25 tests (public badge, owner
+   card, visitor sees no card, private → 404 with an explanation, company → 404, SVG parses as XML), and
+   rendered in a headless browser on a white page after one re-layout for a number that collided with the
+   label. The *consented* version of the history idea — "import my last 90 days of AI use from Chrome
+   history", a permission screen listing exactly which AI domains would be read, a preview before anything
+   is sent — is a good onboarding step for the extension and is on the list.
+
 Open items (as of day 18)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -524,6 +539,7 @@ Open items (as of day 18)
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
 * Java 25 (LTS): move ``pom.xml``, CI and both Dockerfiles together when convenient — not via bot PRs.
+* Extension: consented "import my AI history" (fixed list of AI domains, preview, then send) as the first-run step.
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).
 

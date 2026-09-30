@@ -58,6 +58,14 @@ Tests: `mvn test` (scoring unit tests, import parsers, and an end-to-end MockMvc
 
 Only rated sessions count toward the score. Imports show volume immediately but cannot move the score until the person answers the four questions — that keeps the human in the loop and makes the score hard to game with automation.
 
+## The share loop
+
+Every public profile has a live **score badge** at `/p/<handle>/badge.svg` — a 300×64 picture of the current
+score and band that links back to the profile — and the owner's profile page has copy-ready Markdown (GitHub
+README), HTML (website, email signature) and the plain link (LinkedIn). It shows only what the public profile
+shows, is a 404 for private profiles and company accounts, and is cached for an hour. This is how Sharpen is
+meant to spread: a member puts their score where people already look, and every badge is a link here.
+
 ## Getting it out again
 
 Settings → **Your data**: every session as CSV in Sharpen's own import layout (opens in a spreadsheet, imports

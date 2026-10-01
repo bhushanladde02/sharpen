@@ -103,8 +103,8 @@ From a session to a score
    :alt: Ingestion routes feeding usage_session, the rating loop, and AiScoreService
    :width: 100%
 
-Every route — the fifteen-second form, a Sharpen CSV, a provider usage export, the extension, or a raw API
-call — ends as a row in ``usage_session``. Two rules in ``SessionService`` make the routes safe to mix:
+Every route — the fifteen-second form, a Sharpen CSV, a provider usage export, the extension (live capture or
+its opt-in history import), or a raw API call — ends as a row in ``usage_session``. Two rules in ``SessionService`` make the routes safe to mix:
 
 * **Idempotency by external id.** External rows carry an ``externalId``; ``(person, externalId)`` is unique, so
   re-sending the same day from the extension updates the row instead of creating a twin.
@@ -240,6 +240,17 @@ What we chose not to use
   invisible to a person, and enough for the automated pitches a public form attracts. Messages that pass
   are stored; a narrow phrase classifier only decides whether the inbox shows them at the top or folded
   under *Likely spam*, never whether they are kept.
+* **No tracker in the extension.** The Chrome extension watches a fixed list of AI sites and sends minutes and
+  prompt counts, never text. Its one look beyond the live capture — the **history import** in
+  ``chrome-extension/history.js`` — is built the way a measurement panel recruits: the popup names the exact
+  sites it will read, Chrome asks for the ``history`` permission only when the person presses *Preview* (it is
+  an ``optional_permission``, not granted at install), every row is shown before *Send*, and the permission is
+  released as soon as the import ends. It reads visit times for those sites in the 90 days before the install
+  day and nothing else — no URLs, titles or searches leave the browser — and estimates one session per day and
+  tool (each sitting is its span plus one minute; prompt counts are not known and not claimed). Rows carry
+  ``externalId = hist:<date>:<tool>`` and the note *Estimated from browser history*, land as *needs rating*,
+  and stop the day before the live capture started, so no day is counted twice. ``history.js`` is pure
+  functions, so the whole rule set is readable and unit-testable in Node without a browser.
 * **No "request your data" form.** ``ExportService`` writes a person's sessions as CSV in the importer's own
   layout and the whole account as JSON, on demand from Settings; the CSV round-trips through
   ``ImportService`` in the tests, so the two cannot drift apart unnoticed. ``AccountDeletionService`` is the

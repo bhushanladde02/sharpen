@@ -52,11 +52,19 @@ Tests: `mvn test` (scoring unit tests, import parsers, and an end-to-end MockMvc
 |---|---|---|
 | **Log a session** form | everything, in ~15 seconds | yes |
 | **Browser extension** (`chrome-extension/`) | minutes and prompt count per AI site per day; never the text | no — lands as "needs rating" |
+| **History import** (in the extension, opt-in) | the 90 days *before* you installed it, estimated from visit times to the same AI sites only; never URLs, titles or prompts | no — lands as "needs rating" |
 | **Provider usage export** (OpenAI/Anthropic dashboard CSV) | requests and tokens per model per day | no — lands as "needs rating" |
 | **Sharpen CSV** (`docs/samples/sessions.csv`) | everything, from a spreadsheet | yes |
 | **REST API** `POST /api/v1/sessions` with `X-Api-Key` | whatever the client sends | if all four assessment fields are present |
 
 Only rated sessions count toward the score. Imports show volume immediately but cannot move the score until the person answers the four questions — that keeps the human in the loop and makes the score hard to game with automation.
+
+The history import is the one place the extension touches anything it did not watch live, so it is built like a
+panel agreement rather than a tracker: it lists the exact sites it reads, Chrome asks for the `history` permission
+only when the person presses *Preview*, the person sees every row before pressing *Send*, and the permission is
+handed back the moment the import ends. Each sitting counts as its span plus one minute; prompt counts are not
+known from history and are not claimed. Days from the install day onwards belong to the live capture, so no day is
+counted twice.
 
 ## The share loop
 
@@ -126,7 +134,7 @@ src/main/resources
   static/css/  sharpen.css — tokens, light/dark, no framework
   static/js/   help.js — the rule-based Help guide shown on every page
   db/          schema-postgres.sql
-chrome-extension/   MV3 capture extension (background, content, popup)
+chrome-extension/   MV3 capture extension (background, content, popup, history import)
 deploy/             production compose, Caddyfile, VM setup script, deployment guide
 docs/               Sphinx (RST) requirements and design docs — `./docs/view.sh`
 docs/samples/       import examples for each route

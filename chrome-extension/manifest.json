@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Sharpen — AI usage capture",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Times your AI chat sessions and counts prompts, then syncs them to your Sharpen profile. Never captures what you type.",
   "permissions": ["storage", "alarms", "tabs"],
+  "optional_permissions": ["history"],
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
@@ -11,7 +12,9 @@
     "https://gemini.google.com/*",
     "https://copilot.microsoft.com/*",
     "https://www.perplexity.ai/*",
-    "https://github.com/copilot/*"
+    "https://github.com/copilot/*",
+    "https://sharpenscore.com/*",
+    "http://localhost/*"
   ],
   "background": { "service_worker": "background.js" },
   "content_scripts": [

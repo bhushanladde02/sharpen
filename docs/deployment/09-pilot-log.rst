@@ -532,14 +532,34 @@ Day 8 — Wednesday 16 September: which build is this?
    history", a permission screen listing exactly which AI domains would be read, a preview before anything
    is sent — is a good onboarding step for the extension and is on the list.
 
-Open items (as of day 18)
+#. **The consented history import.** (Day 19, Thursday 1 October.) The question that followed was fair: Nielsen
+   and the ad-measurement companies collect browsing data, so why not Sharpen? The answer is that they collect
+   it from recruited, paid, signed-up panels with the meter disclosed, or under contract from the TV and
+   set-top-box makers who got consent on the setup screen — and have paid settlements when they did not. So the
+   extension got the panel version: a *Before you installed Sharpen* section in the popup that names the seven
+   sites it will read, asks Chrome for the ``history`` permission only when *Preview* is pressed (an optional
+   permission, not an install-time one), shows every row — date, tool, estimated minutes, visits — before
+   *Send*, and gives the permission back the moment it is done. It reads visit times for those sites in the
+   90 days before the install day and nothing else; no URL or title leaves the browser, and prompt counts are
+   not invented. Rows land as *needs rating* with the note "Estimated from browser history". Along the way
+   two scaffold bugs went: the portal host was missing from ``host_permissions`` (a service worker cannot
+   post cross-origin without it), and *Sync now* overwrote its own result line. Verified in a headless
+   Chromium with the extension loaded: history seeded on three AI sites plus two unrelated ones, preview
+   showed exactly three rows, *Send* produced three unrated sessions on the H2 portal with the note intact
+   and no unrelated host anywhere, a live sync of one record still works, and the estimation rules pass a
+   Node unit test (sittings, the ten-minute gap, the install-day cut-off, the 90-day window, unwatched
+   hosts ignored). 25 Java tests unchanged and green. The first scheduled monthly catch-up was due this
+   morning at 02:00 UTC; confirming it on the A1 is on the list below.
+
+Open items (as of day 19)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
 * Java 25 (LTS): move ``pom.xml``, CI and both Dockerfiles together when convenient — not via bot PRs.
-* Extension: consented "import my AI history" (fixed list of AI domains, preview, then send) as the first-run step.
+* Extension: icons and a store listing; the history import's disclosure text is written, the privacy policy page is not.
+* Confirm on the A1 that September reports exist for everyone with September sessions (the catch-up log line).
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).
 

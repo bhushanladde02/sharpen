@@ -124,10 +124,11 @@
     },
     {
       id: 'import', chip: 'Import / extension',
-      keys: ['import', 'csv', 'spreadsheet', 'extension', 'chrome', 'browser extension', 'api', 'api key', 'automatic', 'automatically', 'json', 'usage export'],
+      keys: ['import', 'csv', 'spreadsheet', 'extension', 'chrome', 'browser extension', 'api', 'api key', 'automatic', 'automatically', 'json', 'usage export', 'history', 'browser history', 'before i installed', 'last 90 days'],
       answer: function () {
         return '<p>Three ways to bring sessions in, all on <a href="/import">Import</a>:</p>' +
-               '<ul><li><b>Browser extension</b> (in <code>chrome-extension/</code> of the source): times your visits to ChatGPT, Claude, Gemini, Copilot and Perplexity and posts them once a day with your API key from <a href="/settings">Settings</a>. Nothing you type is captured.</li>' +
+               '<ul><li><b>Browser extension</b> (in <code>chrome-extension/</code> of the source): times your visits to ChatGPT, Claude, Gemini, Copilot and Perplexity and posts them once a day with your API key from <a href="/settings">Settings</a>. Nothing you type is captured. ' +
+               'Its <i>Before you installed Sharpen</i> button can estimate the 90 days before you installed it from your browser history — only visit times to those same AI sites, shown to you in full before anything is sent, and the history permission is given back right after. No URLs, titles or prompts ever leave your browser.</li>' +
                '<li><b>Provider usage export</b> — upload the file your AI provider gives you.</li>' +
                '<li><b>Sharpen CSV</b> — a spreadsheet in the format shown on the page; the CSV from Settings → Your data is already in it.</li></ul>' +
                '<p>Imported sessions show as <i>needs rating</i> until you answer the four questions about them.</p>';

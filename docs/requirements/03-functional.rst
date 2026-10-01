@@ -175,6 +175,13 @@ See :doc:`06-data-ingestion`.
        to the API with the user's key.
      - Done (scaffold)
      - ``chrome-extension/``
+   * - FR-43a
+     - The extension may offer, as an explicit opt-in, an estimate of AI use from browser history for the period
+       before installation: a fixed list of AI sites, the ``history`` permission requested only at that moment,
+       a preview of every row before anything is sent, the permission released afterwards; never URLs, titles or
+       prompts.
+     - Done
+     - ``chrome-extension/history.js``, ``popup.js``
    * - FR-44
      - Re-importing the same data must update, never duplicate (idempotent by ``externalId``).
      - Done

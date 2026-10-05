@@ -551,7 +551,21 @@ Day 8 — Wednesday 16 September: which build is this?
    hosts ignored). 25 Java tests unchanged and green. The first scheduled monthly catch-up was due this
    morning at 02:00 UTC; confirming it on the A1 is on the list below.
 
-Open items (as of day 19)
+#. **Insights: the panel's report.** (Day 20, Monday 5 October.) The history import was the panel side of the
+   Nielsen comparison; this is the publishing side. ``/insights`` is one public page of what the community's
+   rated sessions add up to over the last 90 days: people, rated hours, output-checked rate, human share, work
+   versus personal, minutes by task, minutes by tool with hours and people per row. The protections come before
+   the figures: nothing is shown until ten people have rated sessions in the window (the page then says how many
+   are in and how many to go — the pilot's three demo accounts mean it is in that state today), a tool gets its
+   own row only once three people have used it, unrated imports are excluded exactly as they are from the score,
+   and the aggregate forgets a deleted account immediately. Linked from the public nav, the footer and the
+   sitemap; a Help topic answers "how do others use AI". Verified: 26 tests (one new — below the threshold the
+   page is open and says so; ten seeded people flip it; a one-person tool never gets a row; an unrated 500-minute
+   import moves nothing; no member's name appears), the same page on PostgreSQL 16 in both states — three demo
+   people pending, then ten seeded panelists with six rated sessions each (and one unrated) published, with the people count matching a
+   direct ``count(distinct person_id)`` — and renders at desktop and phone width in light and dark.
+
+Open items (as of day 20)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

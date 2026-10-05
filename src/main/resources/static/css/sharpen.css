@@ -445,3 +445,19 @@ textarea.code { width: 100%; font-family: var(--mono); font-size: .8rem; resize:
 .btn.danger { background: #c0392b; color: #fff; border-color: #c0392b; }
 .btn.danger:hover { background: #a93226; }
 @media (prefers-color-scheme: dark) { .card.danger h2 { color: #f1948a; } .card.danger { border-color: color-mix(in srgb, #f1948a 35%, var(--line)); } }
+
+/* Insights: stat tiles and single-hue bars. Text stays in ink tokens; the bar carries the value, the number repeats it. */
+.insights-kpis .kpi { display: flex; flex-direction: column; gap: .25rem; }
+.insights-kpis .kpi .num { font-family: var(--display); font-size: 2rem; letter-spacing: -.03em; line-height: 1; }
+.insights-kpis .kpi span { font-size: .8rem; }
+table.insight-bars { width: 100%; border-collapse: collapse; }
+table.insight-bars th, table.insight-bars td { padding: .3rem .4rem .3rem 0; text-align: left; font-weight: 500; border: 0; vertical-align: middle; }
+table.insight-bars th[scope=row] { width: 34%; color: var(--ink); font-size: .86rem; text-transform: none; letter-spacing: 0; font-weight: 600; white-space: normal; }
+table.insight-bars thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; padding-bottom: .5rem; }
+table.insight-bars td.bar { width: 100%; }
+table.insight-bars td.bar .fill { display: block; height: 10px; border-radius: 4px; background: var(--accent); min-width: 2px; }
+table.insight-bars td.bar .fill.pro { background: var(--pro); }
+table.insight-bars td.bar .fill.personal { background: var(--personal); }
+table.insight-bars .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; padding-left: .6rem; }
+table.insight-bars thead th.num { text-align: right; }
+@media (max-width: 639px) { table.insight-bars .wide-col { display: none; } }

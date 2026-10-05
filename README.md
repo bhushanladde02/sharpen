@@ -74,6 +74,13 @@ README), HTML (website, email signature) and the plain link (LinkedIn). It shows
 shows, is a 404 for private profiles and company accounts, and is cached for an hour. This is how Sharpen is
 meant to spread: a member puts their score where people already look, and every badge is a link here.
 
+The other half of the loop is **[/insights](https://sharpenscore.com/insights)**: what the community's rated
+sessions add up to over the last 90 days — hours per tool, work versus personal, how often output is checked,
+how much of the work stayed human. It is the thing a measurement company publishes about its panel, published
+here about the people who chose to be measured, with the panel's protections: nothing is shown until 10 people
+are in the numbers, a tool gets a row only once 3 people have used it, unrated imports do not count, and no line
+is ever about a person. Below the threshold the page says so and shows the count to go.
+
 ## Getting it out again
 
 Settings → **Your data**: every session as CSV in Sharpen's own import layout (opens in a spreadsheet, imports

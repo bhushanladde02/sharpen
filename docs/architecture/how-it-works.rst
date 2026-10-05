@@ -257,6 +257,13 @@ What we chose not to use
   other half: password re-entered, then account, sessions, reports and picture go in one transaction and the
   session is invalidated — explicit deletes rather than relying on the database's cascades, so H2 and
   PostgreSQL behave the same and the test can count what is left.
+* **Aggregates, never profiles.** ``/insights`` (``InsightsService``) is the only page that computes across
+  accounts. It runs four ``GROUP BY`` queries over rated sessions in the last 90 days — totals, by tool, by
+  context, by task — caches the result for fifteen minutes, and applies two thresholds before anything is
+  rendered: ten people in the window, three people per tool row (smaller tools fold into *Other tools*). Only
+  ``self_assessed`` rows count, so the community numbers obey the same rule as the score and an import cannot
+  move them. Private and public profiles contribute alike, because nothing on the page can be traced to either;
+  ``AccountDeletionService`` invalidates the cache so a deleted account leaves the aggregate at once.
 * **No AI chatbot.** The *Help* button on every page is **Sharpen Help** (``static/js/help.js``): a fixed list of
   topics — enrolling, the PDF report, the score, public profile, picture, tools, import, privacy, cost,
   companies, passwords — matched by keywords in the browser. It explains that there is no customer-service

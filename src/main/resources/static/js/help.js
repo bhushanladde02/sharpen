@@ -159,6 +159,14 @@
       }
     },
     {
+      id: 'insights', chip: 'Community insights',
+      keys: ['insights', 'community', 'statistics', 'stats', 'average', 'averages', 'benchmark', 'how do others', 'everyone', 'aggregate', 'anonymous', 'panel'],
+      answer: function () {
+        return '<p><a href="/insights">Insights</a> shows what everyone\'s <b>rated</b> sessions add up to over the last 90 days — hours per tool, work versus personal, how often output is checked, how much of the work stayed human.</p>' +
+               '<p>It is about the community, never a person: nothing is shown until 10 people have rated sessions in the window, a tool gets its own row only once 3 people have used it, and unrated imports do not count — the same rule as the score. Refreshed every 15 minutes.</p>';
+      }
+    },
+    {
       id: 'company', chip: 'For companies',
       keys: ['company', 'companies', 'hire', 'hiring', 'recruit', 'recruiter', 'candidates', 'candidate', 'team'],
       answer: function () {

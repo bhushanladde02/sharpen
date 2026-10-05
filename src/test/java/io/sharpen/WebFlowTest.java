@@ -1,6 +1,8 @@
 package io.sharpen;
 
 import io.sharpen.domain.Enums.AccountType;
+import io.sharpen.domain.Enums.TaskCategory;
+import io.sharpen.domain.Enums.UsageContext;
 import io.sharpen.domain.Person;
 import io.sharpen.service.PersonService;
 import org.junit.jupiter.api.BeforeEach;
@@ -546,6 +548,48 @@ class WebFlowTest {
         mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Flow Tester")));
         mvc.perform(get("/candidates").with(asMe)).andExpect(status().isForbidden());
+    }
+
+    @Autowired io.sharpen.service.SessionService sessionService;
+    @Autowired io.sharpen.service.InsightsService insightsService;
+
+    @Test
+    void insightsPublishOnlyAboveTheThreshold() throws Exception {
+        // Below the threshold the page is open but says so, and shows no figure beyond the people count.
+        insightsService.invalidate();
+        mvc.perform(get("/insights")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Not yet published")))
+                .andExpect(content().string(not(containsString("Rated hours"))));
+        mvc.perform(get("/sitemap.xml")).andExpect(status().isOk()).andExpect(content().string(containsString("/insights</loc>")));
+
+        // Ten people with rated sessions: nine on Claude at work (checked), one of them also on a niche tool.
+        LocalDate day = LocalDate.now().minusDays(3);
+        for (int i = 0; i < 10; i++) {
+            Person p = people.register("panel" + i + "@example.com", "password123", "Panel Person" + i, AccountType.INDIVIDUAL);
+            sessionService.logManual(p, new io.sharpen.service.SessionService.SessionInput(day, UsageContext.PROFESSIONAL, "Claude",
+                    TaskCategory.CODING, 60, 10, 70, true, true, 4, null, null, null, null));
+            if (i == 0) sessionService.logManual(p, new io.sharpen.service.SessionService.SessionInput(day, UsageContext.PERSONAL, "NicheTool",
+                    TaskCategory.WRITING, 30, 5, 40, false, false, 3, null, null, null, null));
+            // An unrated import must not count — same rule as the score.
+            sessionService.upsertExternal(p, new io.sharpen.service.SessionService.SessionInput(day, UsageContext.PERSONAL, "Gemini",
+                    TaskCategory.OTHER, 500, null, null, null, null, null, null, "ins:" + i, null, null), io.sharpen.domain.Enums.SessionSource.EXTENSION);
+        }
+        insightsService.invalidate();
+        var in = insightsService.current();
+        org.junit.jupiter.api.Assertions.assertTrue(in.published());
+        org.junit.jupiter.api.Assertions.assertTrue(in.people() >= 10);
+        org.junit.jupiter.api.Assertions.assertTrue(in.tools().stream().anyMatch(t -> t.name().equals("Claude") && t.people() >= 9));
+        org.junit.jupiter.api.Assertions.assertTrue(in.tools().stream().noneMatch(t -> t.name().equals("NicheTool")), "one user never gets a row");
+        org.junit.jupiter.api.Assertions.assertTrue(in.tools().stream().anyMatch(t -> t.name().equals("Other tools")));
+        org.junit.jupiter.api.Assertions.assertTrue(in.tools().stream().noneMatch(t -> t.name().equals("Gemini")), "unrated sessions do not count");
+        org.junit.jupiter.api.Assertions.assertTrue(in.verifiedPercent() > 50 && in.professionalPercent() > 50);
+
+        mvc.perform(get("/insights")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Rated hours")))
+                .andExpect(content().string(containsString("Other tools")))
+                .andExpect(content().string(not(containsString("NicheTool"))))
+                .andExpect(content().string(not(containsString("Panel Person"))))
+                .andExpect(content().string(containsString("Refreshed every 15 minutes")));
     }
 
     /** A small solid PNG, wider than tall, so the crop path is exercised. */

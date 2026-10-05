@@ -32,10 +32,11 @@ public class AccountDeletionService {
     private final FeedbackRepository feedback;
     private final PasswordEncoder passwordEncoder;
     private final CommunityService community;
+    private final InsightsService insights;
 
     public AccountDeletionService(PersonRepository people, UsageSessionRepository sessions, MonthlyReportRepository reports,
                                   PersonAvatarRepository avatars, FeedbackRepository feedback, PasswordEncoder passwordEncoder,
-                                  CommunityService community) {
+                                  CommunityService community, InsightsService insights) {
         this.people = people;
         this.sessions = sessions;
         this.reports = reports;
@@ -43,6 +44,7 @@ public class AccountDeletionService {
         this.feedback = feedback;
         this.passwordEncoder = passwordEncoder;
         this.community = community;
+        this.insights = insights;
     }
 
     /** True when the password matches — the only key that unlocks deletion. */
@@ -60,6 +62,7 @@ public class AccountDeletionService {
         for (var f : feedback.findByPersonId(id)) f.detachPerson();   // keep the message, drop the link
         people.deleteById(id);
         community.invalidate();
+        insights.invalidate();
         log.info("Account deleted: handle={} sessions={} reports={}", person.getHandle(), s, r);
         return new Removed(s, r);
     }

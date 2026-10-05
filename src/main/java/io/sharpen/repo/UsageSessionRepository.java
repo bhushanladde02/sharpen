@@ -43,4 +43,28 @@ public interface UsageSessionRepository extends JpaRepository<UsageSession, Long
 
     @Query("select min(s.occurredOn) from UsageSession s where s.person.id = :personId")
     Optional<LocalDate> firstSessionDate(Long personId);
+
+    // ---- Community insights: aggregates over everyone's *rated* sessions since a date; no row names a person. ----
+
+    /** [people, sessions, minutes, verified, learned, avg human %, avg outcome] over rated sessions since {@code from}. */
+    @Query("select count(distinct s.person.id), count(s), coalesce(sum(s.durationMinutes), 0L), " +
+           "coalesce(sum(case when s.verifiedOutput = true then 1 else 0 end), 0L), " +
+           "coalesce(sum(case when s.learnedSomething = true then 1 else 0 end), 0L), " +
+           "avg(s.humanContributionPct), avg(s.outcome) " +
+           "from UsageSession s where s.selfAssessed = true and s.occurredOn >= :from")
+    List<Object[]> insightTotals(LocalDate from);   // one row; a list avoids the single-row Object[] unwrapping quirk
+
+    /** [tool, minutes, sessions, people] for rated sessions since {@code from}, most minutes first. */
+    @Query("select s.tool, sum(s.durationMinutes), count(s), count(distinct s.person.id) from UsageSession s " +
+           "where s.selfAssessed = true and s.occurredOn >= :from group by s.tool order by sum(s.durationMinutes) desc, s.tool asc")
+    List<Object[]> insightTools(LocalDate from);
+
+    /** [context, minutes] for rated sessions since {@code from}. */
+    @Query("select s.context, sum(s.durationMinutes) from UsageSession s where s.selfAssessed = true and s.occurredOn >= :from group by s.context")
+    List<Object[]> insightContexts(LocalDate from);
+
+    /** [task category, minutes] for rated sessions since {@code from}, most minutes first. */
+    @Query("select s.taskCategory, sum(s.durationMinutes) from UsageSession s where s.selfAssessed = true and s.occurredOn >= :from " +
+           "group by s.taskCategory order by sum(s.durationMinutes) desc")
+    List<Object[]> insightTasks(LocalDate from);
 }

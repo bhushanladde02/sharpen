@@ -291,3 +291,11 @@ Community and feedback
        at ``/admin/feedback``; everyone else gets 404.
      - Done
      - ``CommunityController``
+   * - FR-74
+     - A public *Insights* page must show what the community's **rated** sessions add up to over the last 90 days —
+       people, hours, share of minutes by tool, task and context, verification and learning rates, average human
+       share and outcome — and never anything about one person: no figure until 10 people are in the window, no
+       tool row until 3 people have used the tool (otherwise folded into *Other tools*), unrated imports excluded.
+       Cached 15 minutes; invalidated when an account is deleted.
+     - Done
+     - ``InsightsService``, ``InsightsController``, ``insights.html``

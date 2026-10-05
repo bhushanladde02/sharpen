@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>AI usage insights — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><h1>AI usage insights</h1>
+      <p>What the community's <b>rated</b> sessions add up to over the last 90 days
+        (<span th:text="${#temporals.format(in.from, 'd MMM')}">7 Jul</span> – <span th:text="${#temporals.format(in.to, 'd MMM yyyy')}">5 Oct 2026</span>).
+        Only sessions a person has rated count — the same rule as the score — and nothing here is about any one person.</p></div>
+  </div>
+
+  <!-- Below the threshold: say so plainly, show the one number that is safe to show, and explain the rule. -->
+  <section class="card" id="insights-pending" th:if="${!in.published()}">
+    <p class="eyebrow">Not yet published</p>
+    <h2>Insights appear once <span th:text="${minPeople}">10</span> people have rated sessions in the window.</h2>
+    <p class="muted">
+      <b th:text="${in.people}">0</b> <span th:text="${in.people == 1} ? 'person has' : 'people have'">people have</span> so far —
+      <b th:text="${in.peopleToGo}">10</b> to go. The threshold is there so no individual can be read out of a community average.
+      <a th:href="@{/register}">Create a profile</a>, rate a few sessions, and you move the counter.
+    </p>
+  </section>
+
+  <th:block th:if="${in.published()}">
+    <!-- Headline figures: four stat tiles, one number each. -->
+    <section class="grid four insights-kpis" aria-label="Headline figures">
+      <div class="card kpi"><p class="eyebrow">People</p><b class="num" th:text="${#numbers.formatInteger(in.people, 1, 'COMMA')}">12</b><span class="muted-3">with rated sessions</span></div>
+      <div class="card kpi"><p class="eyebrow">Rated hours</p><b class="num" th:text="${#numbers.formatInteger(in.hours(), 1, 'COMMA')}">480</b><span class="muted-3" th:text="${#numbers.formatInteger(in.sessions, 1, 'COMMA')} + ' sessions'">1,200 sessions</span></div>
+      <div class="card kpi"><p class="eyebrow">Output checked</p><b class="num" th:text="${in.verifiedPercent} + '%'">64%</b><span class="muted-3">of sessions verified against a source, test or judgement</span></div>
+      <div class="card kpi"><p class="eyebrow">Human share</p><b class="num" th:text="${in.humanPercent} + '%'">58%</b><span class="muted-3">of the finished work came from the person</span></div>
+    </section>
+
+    <section class="grid two" style="margin-top:.9rem">
+      <div class="card">
+        <h2>Work or personal</h2>
+        <p class="muted" style="margin-top:-.4rem;margin-bottom:.8rem">Share of rated minutes by context.</p>
+        <table class="insight-bars" aria-label="Minutes by context">
+          <tr><th scope="row">Professional</th><td class="bar"><span class="fill pro" th:style="'width:' + ${in.professionalPercent} + '%'"></span></td><td class="num" th:text="${in.professionalPercent} + '%'">71%</td></tr>
+          <tr><th scope="row">Personal</th><td class="bar"><span class="fill personal" th:style="'width:' + ${in.personalPercent} + '%'"></span></td><td class="num" th:text="${in.personalPercent} + '%'">29%</td></tr>
+        </table>
+        <h2 style="margin-top:1.25rem">Did they learn something?</h2>
+        <p class="muted" style="margin-top:-.4rem;margin-bottom:.8rem">Sessions after which the person could do something new.</p>
+        <table class="insight-bars" aria-label="Learning rate">
+          <tr><th scope="row">Learned</th><td class="bar"><span class="fill" th:style="'width:' + ${in.learnedPercent} + '%'"></span></td><td class="num" th:text="${in.learnedPercent} + '%'">41%</td></tr>
+        </table>
+        <p class="muted-3" style="font-size:.85rem;margin-top:.8rem">Average outcome rating <b th:text="${in.outcome}">3.8</b> / 5.</p>
+      </div>
+
+      <div class="card">
+        <h2>What the time went on</h2>
+        <p class="muted" style="margin-top:-.4rem;margin-bottom:.8rem">Share of rated minutes by task.</p>
+        <table class="insight-bars" aria-label="Minutes by task">
+          <tr th:each="t : ${in.tasks}">
+            <th scope="row" th:text="${t.name}">Coding</th>
+            <td class="bar"><span class="fill" th:style="'width:' + ${t.percent} + '%'"></span></td>
+            <td class="num" th:text="${t.percent} + '%'">34%</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:.9rem">
+      <h2>Tools</h2>
+      <p class="muted" style="margin-top:-.4rem;margin-bottom:.8rem">Share of rated minutes by tool. A tool gets its own row once
+        <span th:text="${minPeoplePerTool}">3</span> people have used it; until then it is counted under <i>Other tools</i>.</p>
+      <table class="insight-bars" aria-label="Minutes by tool">
+        <thead><tr><th scope="col">Tool</th><th scope="col"><span class="sr-only">Share bar</span></th><th scope="col" class="num">Share</th><th scope="col" class="num wide-col">Hours</th><th scope="col" class="num wide-col">People</th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${in.tools}">
+            <th scope="row" th:text="${t.name}">Claude</th>
+            <td class="bar"><span class="fill" th:style="'width:' + ${t.percent} + '%'"></span></td>
+            <td class="num" th:text="${t.percent} + '%'">40%</td>
+            <td class="num wide-col" th:text="${#numbers.formatInteger(t.hours(), 1, 'COMMA')}">190</td>
+            <td class="num wide-col" th:text="${t.people}">7</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="muted-3" style="font-size:.85rem;margin-top:1rem">
+      Refreshed every 15 minutes. Figures are over everyone's rated sessions, public profile or not, and no figure is shown for fewer than
+      <span th:text="${minPeople}">10</span> people (<span th:text="${minPeoplePerTool}">3</span> for a tool row). Imported and extension sessions join
+      the numbers only after the person has rated them. The method is in the <a href="https://github.com/bhushanladde02/sharpen/blob/main/src/main/java/io/sharpen/service/InsightsService.java" target="_blank" rel="noopener">source</a>.
+    </p>
+  </th:block>
+</main>
+</body>
+</html>

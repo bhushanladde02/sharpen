@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * What search engines ask for: {@code /robots.txt} (crawl the public pages, stay out of the personal ones)
- * and {@code /sitemap.xml} (the landing page, the directory, and every public profile).
+ * and {@code /sitemap.xml} (the landing page, the directory, the insights page, and every public profile).
  */
 @Controller
 public class SeoController {
@@ -61,6 +61,7 @@ public class SeoController {
                 .append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
         url(sb, base + "/", today, "weekly", "1.0");
         url(sb, base + "/p", today, "daily", "0.8");
+        url(sb, base + "/insights", today, "daily", "0.7");
         for (Person p : people.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL)) {
             url(sb, base + "/p/" + p.getHandle(), today, "weekly", "0.6");
         }

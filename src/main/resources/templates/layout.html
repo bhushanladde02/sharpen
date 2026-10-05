@@ -38,7 +38,7 @@
   <header class="topbar">
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <span class="grow"></span>
-    <nav class="nav" th:if="${me == null}"><a th:href="@{/p}" class="wide-only">Public profiles</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
+    <nav class="nav" th:if="${me == null}"><a th:href="@{/p}" class="wide-only">Public profiles</a><a th:href="@{/insights}" class="wide-only">Insights</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
     <label class="menu-toggle" for="nav-open" aria-label="Menu" th:if="${me != null}"><span></span></label>
   </header>
   <input type="checkbox" id="nav-open" aria-hidden="true">
@@ -72,6 +72,7 @@
       <span>
         <a href="https://github.com/bhushanladde02/sharpen" rel="author noopener" target="_blank">Source on GitHub</a>
         · <a th:href="@{/p}">Public profiles</a>
+        · <a th:href="@{/insights}">Insights</a>
         · <a th:href="@{/(help=enroll)}" data-help-open>Help</a>
         · <a th:href="@{/feedback(from=${path})}">Contact</a>
         <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>

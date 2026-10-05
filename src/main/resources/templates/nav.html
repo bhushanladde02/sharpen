@@ -5,6 +5,7 @@
 <nav class="nav" th:fragment="navlinks" th:with="path=${path ?: ''}">
   <th:block th:if="${me == null}">
     <a th:href="@{/p}" th:classappend="${path == '/p'} ? 'active'">Public profiles</a>
+    <a th:href="@{/insights}" th:classappend="${path == '/insights'} ? 'active'">Insights</a>
     <a th:href="@{/login}">Sign in</a>
     <a th:href="@{/register}">Create account</a>
   </th:block>
@@ -17,6 +18,7 @@
     <a th:href="@{/reports}" th:classappend="${#strings.startsWith(path, '/reports')} ? 'active'">Monthly reports</a>
     <a th:href="@{/p/{h}(h=${me.handle})}" th:classappend="${path == '/p/' + me.handle} ? 'active'">My AI profile</a>
     <a th:href="@{/p}" th:classappend="${path == '/p'} ? 'active'">Public profiles</a>
+    <a th:href="@{/insights}" th:classappend="${path == '/insights'} ? 'active'">Insights</a>
     <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
     <a th:if="${isAdmin}" th:href="@{/admin/traffic}" th:classappend="${#strings.startsWith(path, '/admin/traffic')} ? 'active'">Traffic</a>
     <a th:if="${isAdmin}" th:href="@{/admin/feedback}" th:classappend="${path == '/admin/feedback'} ? 'active'">Inbox</a>

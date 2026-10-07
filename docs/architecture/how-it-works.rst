@@ -264,6 +264,13 @@ What we chose not to use
   ``self_assessed`` rows count, so the community numbers obey the same rule as the score and an import cannot
   move them. Private and public profiles contribute alike, because nothing on the page can be traced to either;
   ``AccountDeletionService`` invalidates the cache so a deleted account leaves the aggregate at once.
+* **No third party in the page.** Every page is built from Sharpen's own HTML, one CSS file, one small script
+  and three self-hosted font families (``static/fonts``, latin and latin-ext subsets, about 130 KB for a first
+  visit, cached for a year under content-hashed names like every other static file — the resource chain rewrites
+  the ``url()`` references inside ``fonts.css`` too). The browser contacts no other host, so there is no
+  visitor IP going to a font CDN, nothing to disclose on the privacy page and nothing to block in a content
+  policy later. ``/privacy`` (``PrivacyController``) is written from this code and quotes the insights
+  thresholds from ``InsightsService`` directly.
 * **No AI chatbot.** The *Help* button on every page is **Sharpen Help** (``static/js/help.js``): a fixed list of
   topics — enrolling, the PDF report, the score, public profile, picture, tools, import, privacy, cost,
   companies, passwords — matched by keywords in the browser. It explains that there is no customer-service

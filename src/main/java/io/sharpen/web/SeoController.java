@@ -62,6 +62,7 @@ public class SeoController {
         url(sb, base + "/", today, "weekly", "1.0");
         url(sb, base + "/p", today, "daily", "0.8");
         url(sb, base + "/insights", today, "daily", "0.7");
+        url(sb, base + "/privacy", today, "monthly", "0.3");
         for (Person p : people.findByAccountTypeAndPublicProfileTrue(AccountType.INDIVIDUAL)) {
             url(sb, base + "/p/" + p.getHandle(), today, "weekly", "0.6");
         }

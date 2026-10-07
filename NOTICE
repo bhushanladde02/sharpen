@@ -15,3 +15,8 @@ later version. See LICENSE for the full text.
 Attribution: any copy, fork or derivative, and any service built from this
 code, must keep this notice and the copyright line, and must make its own
 source available under the same license (AGPL-3.0, sections 5 and 13).
+
+Third-party material: the web fonts in src/main/resources/static/fonts (Manrope,
+Bricolage Grotesque, IBM Plex Mono) are by their respective authors and are
+distributed under the SIL Open Font License 1.1; see
+src/main/resources/static/fonts/OFL.txt.

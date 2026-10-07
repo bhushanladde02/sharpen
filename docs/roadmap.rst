@@ -21,8 +21,8 @@ Ordered by what unblocks a public launch.
 5. **Score caching** — rolling score on ``person``, refreshed on session change (CV-4).
 6. **Scheduler lock** — ShedLock or a database lease so the monthly job runs once per cluster.
 7. **Export and delete** — full data export and account deletion (PR-5).
-8. **Extension store listing** — icons, privacy policy, review submission (FR-43, FR-43a; the history import's
-   disclosure text is already in the popup).
+8. **Extension store listing** — icons and review submission (FR-43, FR-43a). The privacy policy the store asks
+   for is ``https://sharpenscore.com/privacy`` (PR-6); the history import's disclosure text is in the popup.
 9. **Observability** — Actuator behind auth, structured logs (NFR-9).
 
 Release 2 candidates

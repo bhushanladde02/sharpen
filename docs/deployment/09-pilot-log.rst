@@ -565,14 +565,36 @@ Day 8 — Wednesday 16 September: which build is this?
    people pending, then ten seeded panelists with six rated sessions each (and one unrated) published, with the people count matching a
    direct ``count(distinct person_id)`` — and renders at desktop and phone width in light and dark.
 
-Open items (as of day 20)
+#. **A privacy page, and no third party in any page.** (Day 21, Wednesday 7 October.) The extension's store listing
+   needs a privacy-policy URL, and a site that takes sign-ups needs one anyway. ``/privacy`` is written from the
+   code rather than a template: what is stored (account, profile, sessions, messages, cookieless page views and
+   how the visitor hash works), what is never collected, what a public profile shows — and that it is **on by
+   default** for individuals, which the Help guide had described the other way round and now says correctly —
+   the one session cookie (checked on a running server: set only by ``/login`` and ``/register``, ``HttpOnly``,
+   none on the landing page, directory, insights or the policy itself), the extension and its opt-in history
+   import, the server's location, retention, rights and children. Writing it surfaced one thing the page could
+   not truthfully say: every page loaded its fonts from Google, so every visitor's address went to Google. The
+   three families are now self-hosted (latin and latin-ext, SIL OFL 1.1, attribution in ``NOTICE``), and a
+   headless browser opening the landing page, the policy, insights and sign-up contacted no host but the site.
+   The page commits to backups kept at most 14 days; the backup procedure in the day-two guide now says the
+   ``-mtime +14`` clean-up is mandatory and applies to copies on the Mac too. Linked from the footer, sign-up,
+   the Help guide and the sitemap. Verified: 27 tests (one new — the page is public and says the key things,
+   six pages reference ``/fonts`` and neither ``googleapis`` nor ``gstatic``, the font files and licence are
+   served), cookie headers and font caching checked on the running jar, rendered at desktop and phone width.
+   No database change, so no PostgreSQL step.
+
+Open items (as of day 21)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
 * Java 25 (LTS): move ``pom.xml``, CI and both Dockerfiles together when convenient — not via bot PRs.
-* Extension: icons and a store listing; the history import's disclosure text is written, the privacy policy page is not.
+* Extension: icons and a store listing; the privacy policy URL is ``https://sharpenscore.com/privacy``.
+* On the A1, ``crontab -l``: confirm the nightly backup line exists and ends in ``find ~/backups -mtime +14 -delete``
+  — ``/privacy`` promises it. Delete any backup copies on the Mac older than 14 days.
+* The repository has a stray gitlink ``sharpen`` (an embedded clone committed by accident in the directory change);
+  ``git rm --cached sharpen`` removes it from Git without touching any file on disk.
 * Confirm on the A1 that September reports exist for everyone with September sessions (the catch-up log line).
 * Regenerate the DuckDNS token (it appeared in screenshots) and change the admin password from Settings.
 * Terminate the Micro once the A1 has run quietly for a week (or keep it as a spare — it is free).

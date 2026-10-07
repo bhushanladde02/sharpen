@@ -25,6 +25,15 @@ Privacy principles
    * - PR-5
      - **Export and delete.** Release 1 must offer a full export (CSV + JSON) and account deletion that removes
        every session and report.
+   * - PR-6
+     - **Say it in public, from the code.** ``/privacy`` states what is stored, what is public (profiles are public
+       by default for individuals), what is never collected, the one cookie, the extension, where the data lives,
+       retention (deletion immediate; backups at most 14 days) and the person's rights. The thresholds it quotes
+       are read from ``InsightsService``; ``PrivacyController.EFFECTIVE`` is bumped with any change to a promise.
+   * - PR-7
+     - **No third-party requests.** Rendering a page contacts no host but Sharpen's own: no analytics, no
+       advertising, no CDN — the three font families are self-hosted under ``static/fonts`` (SIL OFL 1.1). A test
+       asserts that no page references ``googleapis``/``gstatic``.
 
 Security controls (prototype)
 -----------------------------
@@ -61,4 +70,5 @@ Release 1 additions
 * Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9).
 * Email verification and password reset with expiring tokens (SE-10).
 * Company account gating and profile-view audit log (SE-11, see CV-6 / CV-7).
-* Dependency scanning in CI and a documented data-retention policy (SE-12).
+* Dependency scanning in CI and a documented data-retention policy (SE-12) — retention is now documented on
+  ``/privacy`` (PR-6); dependency scanning is Dependabot.

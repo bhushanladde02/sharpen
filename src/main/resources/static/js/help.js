@@ -138,16 +138,17 @@
       id: 'privacy', chip: 'Privacy & my data',
       keys: ['privacy', 'private data', 'my data', 'cookie', 'cookies', 'tracking', 'track me', 'gdpr', 'delete account', 'delete my account',
              'remove account', 'remove my data', 'sell', 'who can see', 'secure', 'security',
-             'export', 'download my data', 'backup', 'back up', 'take my data', 'get my data', 'leave'],
+             'export', 'download my data', 'backup', 'back up', 'take my data', 'get my data', 'leave', 'privacy policy', 'policy', 'ccpa', 'data protection'],
       answer: function () {
-        return '<p>Sharpen stores only what you log or type. No third-party analytics, no advertising, no cookies beyond the one that keeps you signed in; ' +
-               'page views are counted server-side without identifying anyone.</p>' +
-               '<p>Your sessions, email and reports are never public. The public profile, if you switch it on, shows only the AI-related facts you chose.</p>' +
+        return '<p>Sharpen stores only what you log or type. No third-party analytics, no advertising, no cookies beyond the one that keeps you signed in, ' +
+               'and no requests to anyone else — even the fonts are served by Sharpen; page views are counted server-side without identifying anyone.</p>' +
+               '<p>Your sessions, email and reports are never public. The public profile — on by default, off in <a href="/settings">Settings</a> in one click — shows only the AI-related facts you chose.</p>' +
                '<p><b>Taking your data out:</b> <a href="/settings">Settings</a> → <b>Your data</b> → <b>Sessions (CSV)</b> (opens in a spreadsheet and ' +
                'imports into another Sharpen account) or <b>Everything (JSON)</b> (profile, sessions, reports). Instant, no request needed.</p>' +
                '<p><b>Deleting your account:</b> <a href="/settings#delete">Settings</a> → <b>Delete account</b> → enter your password. ' +
                'Your account, sessions, reports and picture are removed immediately and for good; the public profile address stops working. ' +
-               'Download your data first if you want to keep it.</p>';
+               'Download your data first if you want to keep it.</p>' +
+               '<p>The full policy, written from the code: <a href="/privacy">Privacy</a>.</p>';
       }
     },
     {

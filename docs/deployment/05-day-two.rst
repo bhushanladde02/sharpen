@@ -91,7 +91,12 @@ Make it automatic with ``cron``, the server's scheduler. ``crontab -e`` opens a 
 
    0 3 * * * mkdir -p ~/backups && cd ~/sharpen && docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +\%F).sql.gz && find ~/backups -mtime +14 -delete
 
-And copy the latest dump somewhere off the server now and then — from your Mac:
+The ``find … -mtime +14 -delete`` at the end is not optional: ``/privacy`` promises that backups are kept for
+no more than 14 days, so a deleted account is gone from every copy within 14 days. Check the line is in place
+with ``crontab -l``.
+
+And copy the latest dump somewhere off the server now and then — from your Mac (the same 14-day rule applies to
+these copies: delete them once they are two weeks old):
 
 .. code-block:: bash
 

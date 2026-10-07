@@ -592,6 +592,29 @@ class WebFlowTest {
                 .andExpect(content().string(containsString("Refreshed every 15 minutes")));
     }
 
+    @Test
+    void privacyPageIsPublicAndPagesCallNoOneElse() throws Exception {
+        mvc.perform(get("/privacy")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("What is never collected")))
+                .andExpect(content().string(containsString("Anything you type into ChatGPT")))
+                .andExpect(content().string(containsString("on by default for individuals")))
+                .andExpect(content().string(containsString("no more than 14 days")));
+        mvc.perform(get("/sitemap.xml")).andExpect(content().string(containsString("/privacy</loc>")));
+        mvc.perform(get("/register")).andExpect(content().string(containsString("href=\"/privacy\"")));
+        // No page asks a third party for anything: fonts come from /fonts, under the OFL.
+        for (String page : new String[] {"/", "/p", "/insights", "/privacy", "/register", "/login"}) {
+            mvc.perform(get(page)).andExpect(status().isOk())
+                    .andExpect(content().string(not(containsString("googleapis"))))
+                    .andExpect(content().string(not(containsString("gstatic"))))
+                    .andExpect(content().string(containsString("/fonts/fonts")));
+        }
+        mvc.perform(get("/fonts/fonts.css")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("font-family: 'Manrope'")));
+        mvc.perform(get("/fonts/manrope-latin-wght-normal.woff2")).andExpect(status().isOk());
+        mvc.perform(get("/fonts/OFL.txt")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("SIL Open Font License")));
+    }
+
     /** A small solid PNG, wider than tall, so the crop path is exercised. */
     private static byte[] testPng(int w, int h) throws Exception {
         var img = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB);

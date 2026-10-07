@@ -461,3 +461,15 @@ table.insight-bars td.bar .fill.personal { background: var(--personal); }
 table.insight-bars .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; padding-left: .6rem; }
 table.insight-bars thead th.num { text-align: right; }
 @media (max-width: 639px) { table.insight-bars .wide-col { display: none; } }
+
+/* Privacy page: long-form text in one card, readable line length, a definition list for "what is stored". */
+.card.prose { max-width: 72ch; padding: 1.25rem 1.4rem; }
+.card.prose section + section { margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.card.prose h2 { font-size: 1.1rem; margin-bottom: .5rem; }
+.card.prose p { color: var(--ink-2); line-height: 1.6; }
+.card.prose p + p { margin-top: .7rem; }
+.card.prose b { color: var(--ink); }
+dl.facts { margin: 0; display: grid; gap: .2rem; }
+dl.facts dt { font-weight: 700; color: var(--ink); margin-top: .6rem; }
+dl.facts dt:first-child { margin-top: 0; }
+dl.facts dd { margin: 0; color: var(--ink-2); line-height: 1.6; }

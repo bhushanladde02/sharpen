@@ -91,6 +91,12 @@ secret in it (no password hash, no API key). Endpoints: `/settings/export/sessio
 transaction and signs the browser out; feedback the person left stays but is unlinked. No grace period, no e-mail
 to send.
 
+**[/privacy](https://sharpenscore.com/privacy)** says all of this in plain language, written from the code: what is
+stored, what a public profile shows (profiles are public by default for individuals), what is never collected, the
+single session cookie, the extension and its opt-in history import, where the server is, retention (deletion is
+immediate; backups are kept at most 14 days) and the person's rights. No page contacts any host but Sharpen's own —
+even the fonts (Manrope, Bricolage Grotesque, IBM Plex Mono, SIL OFL 1.1) are self-hosted under `static/fonts`.
+
 ## Help and contact
 
 Every page has a **Help** button in the corner: **Sharpen Help**, a small rule-based guide (`static/js/help.js`) that

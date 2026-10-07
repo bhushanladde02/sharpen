@@ -27,9 +27,9 @@
   <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
   <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" th:href="@{/img/favicon.ico}">
   <link rel="apple-touch-icon" sizes="180x180" th:href="@{/img/apple-touch-icon.png}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <!-- Fonts are self-hosted (static/fonts, SIL OFL 1.1): rendering a page makes no request to anyone but this site. -->
+  <link rel="preload" th:href="@{/fonts/manrope-latin-wght-normal.woff2}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" th:href="@{/fonts/fonts.css}">
   <link rel="stylesheet" th:href="@{/css/sharpen.css}">
 </head>
 <body>
@@ -73,6 +73,7 @@
         <a href="https://github.com/bhushanladde02/sharpen" rel="author noopener" target="_blank">Source on GitHub</a>
         · <a th:href="@{/p}">Public profiles</a>
         · <a th:href="@{/insights}">Insights</a>
+        · <a th:href="@{/privacy}">Privacy</a>
         · <a th:href="@{/(help=enroll)}" data-help-open>Help</a>
         · <a th:href="@{/feedback(from=${path})}">Contact</a>
         <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>

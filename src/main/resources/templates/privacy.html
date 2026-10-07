@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Privacy — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><h1>Privacy</h1>
+      <p>Effective <span th:text="${effective}">7 October 2026</span>. Plain language, written from what the code does —
+        and the code is <a href="https://github.com/bhushanladde02/sharpen" target="_blank" rel="noopener">public</a>, so every line here can be checked,
+        and every change to this page is in its <a href="https://github.com/bhushanladde02/sharpen/commits/main/src/main/resources/templates/privacy.html" target="_blank" rel="noopener">history</a>.</p></div>
+  </div>
+
+  <article class="card prose" id="privacy">
+    <section id="short">
+      <h2>The short version</h2>
+      <p>Sharpen keeps what you log about your AI use and what you put on your profile, so it can score it, report on it and —
+        if you choose — show it. It never captures anything you type into an AI tool. There is no advertising, no third-party
+        analytics, no tracking pixel, and nothing is sold or shared for marketing. Rendering a page makes no request to anyone
+        but this site; even the fonts are served from here. You can download everything and delete your account yourself, at
+        any time, from <a th:href="@{/settings}">Settings</a>.</p>
+    </section>
+
+    <section id="who">
+      <h2>Who runs it</h2>
+      <p>Sharpen is built and operated by one person, Bhushan Arun Ladde, as an open-source project. Questions, corrections
+        and requests go through the <a th:href="@{/feedback(from='/privacy')}">contact form</a>; a person reads every message.</p>
+    </section>
+
+    <section id="collect">
+      <h2>What is stored</h2>
+      <dl class="facts">
+        <dt>Your account</dt>
+        <dd>Email address, a password stored only as a bcrypt hash, your name (first, middle, last — or a company name), a
+          handle for your profile address, the account type, and an API key for the extension and scripts.</dd>
+        <dt>Your profile, if you fill it in</dt>
+        <dd>Headline, job title, industry, years of experience, location, other tools you use, and a picture. Pictures are
+          cropped and re-encoded on upload, which drops camera and location metadata.</dd>
+        <dt>Your sessions</dt>
+        <dd>For each AI session you log or import: date, work or personal, tool, kind of task, minutes, number of prompts,
+          token counts if a provider export supplied them, and your four answers (how much of the work was yours, whether
+          you checked the output, whether you learned something, how it turned out), plus an optional note. Monthly
+          reports are built from these.</dd>
+        <dt>Messages you send</dt>
+        <dd>The contact form keeps your message, an optional rating, an optional email address for a reply, and the page
+          you wrote from.</dd>
+        <dt>Page views</dt>
+        <dd>Counted on the server, without a cookie or a script: the page, the referring site's name, your browser's first
+          language, and whether you were signed in. To count a day's visitors, the server keeps a one-way hash of that day,
+          your address and your browser type, salted with a secret that is never written down; your address itself is
+          not stored, and the hash cannot be matched to a different day or back to you. Bots are not counted.</dd>
+      </dl>
+    </section>
+
+    <section id="never">
+      <h2>What is never collected</h2>
+      <p>Anything you type into ChatGPT, Claude, Gemini, Copilot, Perplexity or any other AI tool — not by the site, not by
+        the extension. No browsing history beyond the opt-in import described below. No contacts, no device location, no
+        microphone or camera (the site's headers forbid those outright), no payment details (Sharpen is free). Sharpen sends no email — no newsletter, no marketing.</p>
+    </section>
+
+    <section id="public">
+      <h2>What other people can see</h2>
+      <p><b>Your public profile</b> — on by default for individuals, and switched off in <a th:href="@{/settings}">Settings</a>
+        in one click — shows your name, picture, headline, job title, industry, location and experience; your AI score, its
+        parts and its flags; a month-by-month trend of sessions and work/personal split; and the tools you use. It never
+        shows your email, your notes, or individual sessions. A public profile appears in the <a th:href="@{/p}">directory</a>,
+        in search engines, in the candidate view for company accounts, and through your score badge. Switch it off and
+        all four stop at once: your profile address shows only "no public profile here", the badge stops loading, it drops out of the directory and the sitemap, and companies no longer see you.</p>
+      <p><b>Community insights</b> on <a th:href="@{/insights}">/insights</a> add up everyone's <i>rated</i> sessions over
+        the last <span th:text="${insightsDays}">90</span> days, public profile or not. They are aggregates only: nothing
+        is shown until <span th:text="${insightsMinPeople}">10</span> people are in the numbers, a tool gets its own line
+        only once <span th:text="${insightsMinPerTool}">3</span> people have used it, and no figure is about one person.</p>
+      <p><b>Company accounts</b> see public individual profiles and nothing else — no email, no private profile, no individual sessions.</p>
+    </section>
+
+    <section id="cookies">
+      <h2>Cookies</h2>
+      <p>One: a session cookie that keeps you signed in and carries the anti-forgery token for forms. It is set when you
+        sign in or open a form, is readable only by this site, and expires when you sign out, close the browser, or stay
+        idle for 30 minutes. There are no advertising, analytics or third-party cookies, so there is no cookie banner.</p>
+    </section>
+
+    <section id="extension">
+      <h2>The browser extension</h2>
+      <p>The optional Chrome extension watches a fixed list of AI sites and records, per day and tool, the minutes you spent
+        and how many prompts you sent — counted by noticing the send action, never by reading the text. It keeps those
+        records, your portal address and your API key in the browser's own extension storage, and posts the totals to your
+        account once a day or when you press <i>Sync now</i>.</p>
+      <p>Its <i>Before you installed Sharpen</i> import is opt-in: the browser asks for history access only when you press
+        <i>Preview</i>, the extension reads visit times for the same AI sites in the 90 days before installation and nothing
+        else, shows you every row before anything is sent, and gives the permission back as soon as it is done. No address,
+        page title or search ever leaves your browser.</p>
+    </section>
+
+    <section id="where">
+      <h2>Where it lives, and who else is involved</h2>
+      <p>The site and its database run on one server rented from Oracle Cloud in Ashburn, Virginia, USA; connections are
+        encrypted (HTTPS, with HSTS). The domain's DNS is hosted by Cloudflare, which answers "where is sharpenscore.com"
+        but does not carry the site's traffic. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
+        providers — Sharpen does not send your sessions to any AI model. The data would be disclosed only if the law
+        required it.</p>
+    </section>
+
+    <section id="keep">
+      <h2>How long it is kept</h2>
+      <p>Your data stays until you delete it. Deleting a session removes it at once. Deleting your account — Settings, at
+        the bottom, with your password — removes the account, every session, every report and your picture in one step,
+        with no 30-day grace period; your profile address shows "no public profile here" from the next request, and
+        community insights forget you immediately. Messages you sent through the contact form are kept as the site's record, with
+        the link to your account removed. Database backups, which exist so that a failed disk does not lose everyone's
+        data, are kept for no more than 14 days, so a deleted account is gone from every copy within 14 days. The server's
+        technical log records errors and events such as "account deleted" with the handle; it does not record pages
+        visited or addresses.</p>
+    </section>
+
+    <section id="rights">
+      <h2>Your choices and rights</h2>
+      <p><b>See and correct</b> everything in <a th:href="@{/settings}">Settings</a> and on <a th:href="@{/sessions}">Sessions</a>.
+        <b>Take it with you</b>: Settings → <i>Your data</i> gives your sessions as a CSV (the same format the importer
+        reads) and your whole account as JSON. <b>Delete</b>: Settings → <i>Delete account</i>. <b>Hide</b>: switch off the
+        public profile. None of these needs an email to anyone. If you live somewhere that gives you further rights — for
+        example California (CCPA/CPRA) or the EU and UK (GDPR) — Sharpen honours them: it does not sell or share personal
+        information as those laws define it, and any other request (to know, to restrict, to object) can be made through
+        the <a th:href="@{/feedback(from='/privacy')}">contact form</a> and is answered within 30 days.</p>
+    </section>
+
+    <section id="children">
+      <h2>Children</h2>
+      <p>Sharpen is a tool for working adults and is not directed at children under 16. An account found to belong to a
+        child is deleted.</p>
+    </section>
+
+    <section id="changes">
+      <h2>Changes</h2>
+      <p>If what Sharpen stores or shows changes, this page changes first, with a new effective date, and every revision is
+        public in the project's Git history.</p>
+    </section>
+  </article>
+</main>
+</body>
+</html>

@@ -47,7 +47,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_run" ]; then sha="${{ github.event.workflow_run.head_sha }}"
           else sha="${{ inputs.ref }}"; fi
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.meta.outputs.sha }}
       - name: Pin the exact commit (a branch name resolves to one here)
@@ -109,7 +109,7 @@ jobs:
         run: |
           if [ -n "$HOST" ] && [ -n "${{ secrets.DEPLOY_SSH_KEY }}" ]; then echo "configured=true" >> "$GITHUB_OUTPUT"
           else echo "configured=false" >> "$GITHUB_OUTPUT"; echo "Production VM not configured yet (no DEPLOY_HOST / DEPLOY_SSH_KEY secrets in the production environment) — nothing rolled out." >> "$GITHUB_STEP_SUMMARY"; fi
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.gate.outputs.configured == 'true'
         with:
           ref: ${{ needs.image.outputs.sha }}

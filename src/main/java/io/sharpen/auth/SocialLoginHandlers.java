@@ -14,23 +14,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  * Where a Google/GitHub sign-in lands. A sign-in from the login or sign-up page goes where a password sign-in
  * goes (the page that asked for it, else the dashboard); a <i>Connect</i> from Settings goes back to Settings.
  * A refusal goes back to whichever page started it, with a code the page turns into a sentence.
  *
- * <p>Every redirect goes to a fixed path on this site, and nothing a visitor can influence reaches its address
- * unchecked: the provider must be one this deployment offers, and the error code — which a provider (or anyone
- * calling the callback URL by hand with {@code ?error=…}) supplies — must be a short lower-case word. Anything
- * else becomes "unknown" / "failed". The values are then URL-encoded, so they can never add parameters.
+ * <p>Every redirect goes to a fixed path on this site, and nothing a visitor can influence reaches its address:
+ * the provider and the error code (which a provider, or anyone calling the callback URL by hand with
+ * {@code ?error=…}, supplies) are each replaced by the matching value from a fixed list Sharpen owns — a configured
+ * provider id, or one of {@link #CODES} — and anything else becomes "unknown" / "failed". The values are also
+ * URL-encoded. (Returning Sharpen's own strings rather than the checked input is also what lets code scanning see
+ * that no request data reaches the redirect.)
  */
 @Component
 public class SocialLoginHandlers {
 
-    /** What an error code may look like: OAuth codes are short snake_case words ({@code access_denied}). */
-    private static final Pattern CODE = Pattern.compile("[a-z_]{1,40}");
+    /** The error codes the sign-in pages have a sentence for; any other code is shown as "failed". */
+    static final List<String> CODES = List.of("access_denied", "email_in_use", "no_verified_email", "identity_in_use",
+            "provider_already_linked", "link_expired", "failed");
 
     private final SavedRequestAwareAuthenticationSuccessHandler normal = new SavedRequestAwareAuthenticationSuccessHandler();
     private final SocialRegistrations registrations;
@@ -40,14 +43,23 @@ public class SocialLoginHandlers {
         normal.setDefaultTargetUrl("/dashboard");
     }
 
-    /** The provider id if this deployment offers it, else "unknown" — never a visitor's own text. */
+    /**
+     * The id of the configured provider the candidate names, or "unknown". It returns the id from Sharpen's own
+     * configuration, never the candidate itself, so no text from the request reaches the redirect.
+     */
     String knownProvider(String candidate) {
-        return candidate != null && registrations.offers(candidate) ? candidate : "unknown";
+        for (SocialRegistrations.Provider p : registrations.providers()) {
+            if (p.id().equals(candidate)) return p.id();
+        }
+        return "unknown";
     }
 
-    /** The error code if it is a plain OAuth-style word, else "failed". */
+    /** The matching code from {@link #CODES}, or "failed" — again Sharpen's own string, not the request's. */
     static String safeCode(String candidate) {
-        return candidate != null && CODE.matcher(candidate).matches() ? candidate : "failed";
+        for (String code : CODES) {
+            if (code.equals(candidate)) return code;
+        }
+        return "failed";
     }
 
     public AuthenticationSuccessHandler success() {

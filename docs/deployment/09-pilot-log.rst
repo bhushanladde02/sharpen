@@ -631,7 +631,11 @@ Day 8 — Wednesday 16 September: which build is this?
    could add its own parameters (a new test reproduced ``signin_error=x&next=https://evil.example/``). Now only a
    provider this deployment offers and a plain snake_case code get through (anything else becomes ``unknown`` /
    ``failed``) and the values are URL-encoded; the test passes with the fix and fails without it. 37 tests.
-   LinkedIn next.
+   Merged as PR #50. CodeQL then flagged the same line on ``main``: the checks returned the visitor's own text
+   once it passed, and code scanning only treats a value as clean when the code returns its *own* string. The
+   checks now return the matching entry from Sharpen's fixed lists (the configured provider id, or one of
+   ``SocialLoginHandlers.CODES``) — stricter as well, since any other code now shows as ``failed`` — which clears
+   the alert by construction rather than by dismissing it. LinkedIn next.
 
 Open items (as of day 23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^

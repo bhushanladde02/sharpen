@@ -15,11 +15,27 @@ public class GlobalModelAttributes {
     private final PersonService people;
     private final SessionService sessions;
     private final io.sharpen.service.CommunityService community;
+    private final io.sharpen.auth.SocialRegistrations social;
 
-    public GlobalModelAttributes(PersonService people, SessionService sessions, io.sharpen.service.CommunityService community) {
+    public GlobalModelAttributes(PersonService people, SessionService sessions, io.sharpen.service.CommunityService community,
+                                 io.sharpen.auth.SocialRegistrations social) {
         this.people = people;
         this.sessions = sessions;
         this.community = community;
+        this.social = social;
+    }
+
+    /** The "Continue with …" providers this deployment offers (empty until a client id and secret are configured). */
+    @ModelAttribute("socialProviders")
+    public java.util.List<io.sharpen.auth.SocialRegistrations.Provider> socialProviders() {
+        return social.providers();
+    }
+
+    /** A refused Google/GitHub sign-in, as a sentence: {@code ?signin_error=<code>&provider=<id>} on login and Settings. */
+    @ModelAttribute("signInError")
+    public String signInError(jakarta.servlet.http.HttpServletRequest request) {
+        String code = request.getParameter("signin_error");
+        return code == null ? null : io.sharpen.auth.SignInService.message(code, social.label(request.getParameter("provider")));
     }
 
     /** Live community counters (cached 10 s) for the shell and the landing page. */

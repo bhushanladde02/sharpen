@@ -30,7 +30,11 @@ public class ExportService {
     private final MonthlyReportRepository reports;
     private final ReportService reportService;
 
-    public ExportService(UsageSessionRepository sessions, MonthlyReportRepository reports, ReportService reportService) {
+    private final io.sharpen.repo.PersonIdentityRepository identities;
+
+    public ExportService(UsageSessionRepository sessions, MonthlyReportRepository reports, ReportService reportService,
+                         io.sharpen.repo.PersonIdentityRepository identities) {
+        this.identities = identities;
         this.sessions = sessions;
         this.reports = reports;
         this.reportService = reportService;
@@ -84,6 +88,21 @@ public class ExportService {
         profile.put("publicProfile", person.isPublicProfile());
         profile.put("createdAt", person.getCreatedAt() == null ? null : person.getCreatedAt().toString());
         out.put("profile", profile);
+
+        // Ways to sign in: whether a password is set, and each connected Google/GitHub account as the provider showed it.
+        Map<String, Object> signIn = new LinkedHashMap<>();
+        signIn.put("password", person.hasPassword());
+        List<Map<String, Object>> linked = new ArrayList<>();
+        for (var i : identities.findByPersonIdOrderByProviderAsc(person.getId())) {
+            Map<String, Object> r = new LinkedHashMap<>();
+            r.put("provider", i.getProvider());
+            r.put("email", i.getEmail());
+            r.put("username", i.getUsername());
+            r.put("connectedAt", i.getCreatedAt() == null ? null : i.getCreatedAt().toString());
+            linked.add(r);
+        }
+        signIn.put("connected", linked);
+        out.put("signIn", signIn);
 
         List<Map<String, Object>> rows = new ArrayList<>();
         for (UsageSession s : sessions.findByPersonIdOrderByOccurredOnAscIdAsc(person.getId())) {

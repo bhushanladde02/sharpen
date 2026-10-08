@@ -30,8 +30,12 @@
       <h2>What is stored</h2>
       <dl class="facts">
         <dt>Your account</dt>
-        <dd>Email address, a password stored only as a bcrypt hash, your name (first, middle, last — or a company name), a
-          handle for your profile address, the account type, and an API key for the extension and scripts.</dd>
+        <dd>Email address, a password stored only as a bcrypt hash (none at all if you signed up with Google or GitHub and
+          have not set one), your name (first, middle, last — or a company name), a handle for your profile address, the
+          account type, and an API key for the extension and scripts.</dd>
+        <dt>Google or GitHub, if you sign in with them</dt>
+        <dd>The provider's permanent id for your account, and the email address and username it showed when you connected
+          it — enough to recognise you next time and to show you which account is connected. See below.</dd>
         <dt>Your profile, if you fill it in</dt>
         <dd>Headline, job title, industry, years of experience, location, other tools you use, and a picture. Pictures are
           cropped and re-encoded on upload, which drops camera and location metadata.</dd>
@@ -73,6 +77,20 @@
       <p><b>Company accounts</b> see public individual profiles and nothing else — no email, no private profile, no individual sessions.</p>
     </section>
 
+    <section id="providers">
+      <h2>Signing in with Google or GitHub</h2>
+      <p>If you choose <i>Continue with Google</i> or <i>Continue with GitHub</i>, the provider asks you first, then tells
+        Sharpen your account's permanent id, your name and your <b>verified</b> email address (GitHub: your primary verified
+        address, which may be one you keep private on your profile). Sharpen asks for nothing else — no contacts, no
+        repositories, no calendar, no posting rights — and never posts anything to those accounts. It uses the name and
+        email to create your account the first time, and the id to recognise you afterwards; it does not keep the
+        provider's access token once you are signed in. Google and GitHub see that you signed in to Sharpen, under their
+        own privacy policies.</p>
+      <p>A new account is made this way only when no Sharpen account already uses that email — an existing account is
+        never joined to a Google or GitHub account automatically. To add one to your account, sign in and use
+        <i>Settings → Sign-in methods → Connect</i>; <i>Disconnect</i> removes it, as long as another way in remains.</p>
+    </section>
+
     <section id="cookies">
       <h2>Cookies</h2>
       <p>One: a session cookie that keeps you signed in and carries the anti-forgery token for forms. It is set when you
@@ -97,7 +115,8 @@
       <h2>Where it lives, and who else is involved</h2>
       <p>The site and its database run on one server rented from Oracle Cloud in Ashburn, Virginia, USA; connections are
         encrypted (HTTPS, with HSTS). The domain's DNS is hosted by Cloudflare, which answers "where is sharpenscore.com"
-        but does not carry the site's traffic. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
+        but does not carry the site's traffic. Google and GitHub are involved only if you sign in with them, as described
+        above. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
         providers — Sharpen does not send your sessions to any AI model. The data would be disclosed only if the law
         required it.</p>
     </section>
@@ -105,7 +124,8 @@
     <section id="keep">
       <h2>How long it is kept</h2>
       <p>Your data stays until you delete it. Deleting a session removes it at once. Deleting your account — Settings, at
-        the bottom, with your password — removes the account, every session, every report and your picture in one step,
+        the bottom, with your password (or your handle, if you have no password) — removes the account, every session,
+        every report, your picture and any connected Google or GitHub sign-in in one step,
         with no 30-day grace period; your profile address shows "no public profile here" from the next request, and
         community insights forget you immediately. Messages you sent through the contact form are kept as the site's record, with
         the link to your account removed. Database backups, which exist so that a failed disk does not lose everyone's

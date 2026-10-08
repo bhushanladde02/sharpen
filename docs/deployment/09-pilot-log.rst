@@ -599,9 +599,48 @@ Day 8 — Wednesday 16 September: which build is this?
    Each half was proved by putting the old behaviour back: the old header parsing fails the sign-up test, and
    removing the setting fails both. No database change.
 
-Open items (as of day 22)
+#. **Continue with Google or GitHub.** (Day 23, Thursday 8 October.) Sign-up now has a one-click path. When a
+   provider's client id and secret are in ``deploy/.env`` its button appears on sign-in and sign-up; without them
+   nothing changes, so the code can go live before the provider apps exist. Spring Security does the protocol;
+   the decisions are Sharpen's, in ``SignInService``: a provider account seen before signs in as the person it is
+   linked to (matched on the provider's permanent user id, never on email); a new one creates an individual
+   account only with a provider-verified email that no account uses yet; and an existing account is **never**
+   merged by email. That last rule is deliberate — Sharpen has never verified the address people type at sign-up,
+   so automatic merging would let someone register a victim's email first and keep a password into the account
+   the victim later opens with Google. Instead, *Settings → Sign-in methods → Connect* links a provider to the
+   signed-in person. Accounts made through a provider have no password (the password form treats them as
+   unknown), can set one without a "current", confirm deletion by typing their handle, and cannot remove their
+   last way in. Provider access tokens are thrown away after sign-in, ``/privacy`` has a section on exactly what
+   Google and GitHub send, and the JSON export lists connected sign-ins. One migration: ``password_hash`` becomes
+   nullable and ``person_identity`` is added. Verified: 36 tests, seven new in ``SocialSignInTest``, which runs
+   the whole flow against a stand-in Google and GitHub inside the test — a signed ID token checked against a
+   published key, GitHub's email list with a private primary address, unverified emails refused, an existing
+   email refused with a pointer to *Connect*, connecting from Settings and signing in with it from a fresh
+   browser, someone else unable to connect the same GitHub account, the last way in kept, deletion by handle.
+   The two security rules were each proved by removing them (the unverified-email and the identity-hijack tests
+   then fail). The same seven tests passed on PostgreSQL 16 with ``ddl-auto=validate`` after applying the
+   migration — twice — to a copy of the current schema holding an existing account, and a fresh install from
+   ``schema-postgres.sql`` matched the migrated database. The libraries came down on the Mac (``mvn -DskipTests
+   package``) and were copied across, as for Spring Boot 4. Rendering the pages at phone width also turned up an
+   older fault: Settings was 86 px wider than a phone because the API key's ``<pre>`` stretched its grid column;
+   grid cells may now shrink (``.grid > * { min-width: 0 }``) and the key scrolls inside its card. Eight pages
+   checked at 400 px, none wider than the screen. On the pull request GitHub's code scanning (CodeQL) flagged the
+   failure redirect: it copied the provider name from the callback path and the error code from ``?error=`` —
+   both visitor-controlled — into the address it sent the browser to, unencoded. The destination was always
+   Sharpen's own ``/login`` or ``/settings``, so it could not send anyone to another site, but a hand-made callback
+   could add its own parameters (a new test reproduced ``signin_error=x&next=https://evil.example/``). Now only a
+   provider this deployment offers and a plain snake_case code get through (anything else becomes ``unknown`` /
+   ``failed``) and the values are URL-encoded; the test passes with the fix and fails without it. 37 tests.
+   LinkedIn next.
+
+Open items (as of day 23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Create the GitHub OAuth app and the Google OAuth client (``05-day-two.rst``, *Sign in with Google and GitHub*),
+  add the four values to ``deploy/.env`` on the A1 and to ``private/credentials.md``, ``dc up -d app``, then
+  connect your own Google and GitHub under *Settings → Sign-in methods*.
+* LinkedIn sign-in: create a LinkedIn Company Page for Sharpen and a developer app tied to it, add the product
+  *Sign In with LinkedIn using OpenID Connect* — the code follows the Google pattern.
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.

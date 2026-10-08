@@ -54,7 +54,9 @@ class WebFlowTest {
     @Test
     void publicPagesAreOpenAndPrivateOnesRedirect() throws Exception {
         mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string(containsString("Sharpen")));
-        mvc.perform(get("/login")).andExpect(status().isOk());
+        // No provider configured here: the pages offer email and password only, and the OAuth endpoints do not exist.
+        mvc.perform(get("/login")).andExpect(status().isOk()).andExpect(content().string(not(containsString("Continue with"))));
+        mvc.perform(get("/register")).andExpect(content().string(not(containsString("Sign up with"))));
         mvc.perform(get("/dashboard")).andExpect(status().is3xxRedirection());
         mvc.perform(get("/api/v1/me")).andExpect(status().isUnauthorized());
     }
@@ -255,6 +257,8 @@ class WebFlowTest {
         String json = mvc.perform(get("/settings/export/sharpen-data.json").with(asMe)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.format").value("sharpen-export/1"))
                 .andExpect(jsonPath("$.profile.email").value(me.getEmail()))
+                .andExpect(jsonPath("$.signIn.password").value(true))
+                .andExpect(jsonPath("$.signIn.connected").isArray())
                 .andExpect(jsonPath("$.sessions").isArray())
                 .andExpect(jsonPath("$.reports").isArray())
                 .andReturn().getResponse().getContentAsString();

@@ -82,5 +82,14 @@
   <div class="empty" th:if="${#lists.isEmpty(list)}" style="padding:.5rem">Nothing yet</div>
 </div>
 
+
+<!-- "Continue with Google / GitHub": only the providers configured on this deployment; nothing renders when none are. -->
+<th:block th:fragment="socialButtons(verb)">
+  <div class="social-signin" th:if="${!#lists.isEmpty(socialProviders)}">
+    <a class="btn block social" th:each="p : ${socialProviders}" th:href="@{/oauth2/authorization/{id}(id=${p.id})}"
+       th:attr="data-provider=${p.id}" th:text="${verb} + ' with ' + ${p.label}">Continue with Google</a>
+    <div class="or"><span>or</span></div>
+  </div>
+</th:block>
 </body>
 </html>

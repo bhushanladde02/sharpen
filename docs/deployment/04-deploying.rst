@@ -77,7 +77,7 @@ Back on the server, confirm it arrived and start everything:
 
 .. code-block:: bash
 
-   cat deploy/.env                          # DOMAIN, DB_PASSWORD, ADMIN_EMAIL, DEMO_DATA — four lines
+   cat deploy/.env                          # DOMAIN, DB_PASSWORD, ADMIN_EMAIL, DEMO_DATA (+ optional sign-in keys)
    docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build
 
 What that command means: ``docker compose`` reads the description file (``-f``) and the settings

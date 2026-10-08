@@ -222,3 +222,58 @@ names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps
    is not urgent: the 301s already move the ranking, the tool only speeds it up.
 #. Keep the old DuckDNS name pointing at the server indefinitely — it costs nothing and the redirect is what
    preserves old links.
+
+Sign in with Google and GitHub
+------------------------------
+
+Each provider is switched on by two values in ``deploy/.env`` on the server; until both are there the site
+offers email and password only, so the steps can be done one provider at a time and in any order. Everything
+here is free. Keep each **client secret** out of chat, screenshots and Git: it goes in ``deploy/.env`` on the
+server and in ``private/credentials.md`` on the Mac, nowhere else.
+
+**GitHub** (about five minutes)
+
+#. github.com → your picture → *Settings* → *Developer settings* (bottom of the left column) → *OAuth Apps* →
+   *New OAuth App*.
+#. *Application name* ``Sharpen``; *Homepage URL* ``https://sharpenscore.com``; *Authorization callback URL*
+   ``https://sharpenscore.com/login/oauth2/code/github`` — exactly, no trailing slash. Leave *Enable Device Flow*
+   unticked. *Register application*.
+#. Copy the *Client ID*. *Generate a new client secret* → copy it at once (GitHub shows it only once).
+#. Optional: upload a logo so the consent screen is recognisable.
+
+**Google** (about fifteen minutes)
+
+#. console.cloud.google.com → project picker → *New project* → ``Sharpen`` → *Create*, and select it.
+#. *APIs & Services* → *OAuth consent screen* (newer consoles call it *Google Auth Platform* → *Branding*) →
+   *Get started*. App name ``Sharpen``; support email: yours; audience **External**; contact email: yours.
+#. *Branding*: home page ``https://sharpenscore.com``, privacy policy ``https://sharpenscore.com/privacy``,
+   authorised domain ``sharpenscore.com`` (already verified to Google through Search Console with the same
+   account, which is what Google checks).
+#. *Data access* (scopes): add only ``openid``, ``.../auth/userinfo.email`` and ``.../auth/userinfo.profile``.
+   These are non-sensitive scopes, so no Google review is needed.
+#. *Audience*: press **Publish app** to move it from *Testing* to *In production*. In *Testing* only listed
+   test users can sign in, and their sign-ins expire after seven days.
+#. *Clients* (or *Credentials* → *Create credentials*) → *OAuth client ID* → type **Web application**, name
+   ``Sharpen``. *Authorised JavaScript origins*: ``https://sharpenscore.com``. *Authorised redirect URIs*:
+   ``https://sharpenscore.com/login/oauth2/code/google``. *Create*, then copy the client ID and secret.
+#. Google's branding guidelines ask that a "Sign in with Google" button carry Google's own "G" mark. Sharpen's
+   buttons are plain text; to add the mark, download the official asset from Google's *Sign in with Google
+   branding guidelines* page and add it to the button — do not draw one.
+
+**On the server**
+
+#. ``nano ~/sharpen/deploy/.env`` and add the four lines (either pair alone is fine)::
+
+      GOOGLE_CLIENT_ID=...apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET=...
+      GITHUB_CLIENT_ID=...
+      GITHUB_CLIENT_SECRET=...
+
+#. ``dc up -d app`` — Compose recreates the app with the new values (about 20 seconds).
+#. Open ``https://sharpenscore.com/login`` in a private window: the buttons appear for the providers you set.
+   Try each with an account that has never used Sharpen; it should land on the dashboard. Then sign in with your
+   own password account and connect your Google and GitHub under *Settings → Sign-in methods*.
+
+If a provider answers *redirect_uri_mismatch* (Google) or *The redirect_uri is not associated with this
+application* (GitHub), the callback URL in its console differs from the one above by a character — scheme,
+``www``, or a trailing slash.

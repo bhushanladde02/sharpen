@@ -637,12 +637,32 @@ Day 8 — Wednesday 16 September: which build is this?
    ``SocialLoginHandlers.CODES``) — stricter as well, since any other code now shows as ``failed`` — which clears
    the alert by construction rather than by dismissing it. LinkedIn next.
 
+#. **GitHub sign-in live, and a restart that went back in time.** (Day 23, continued.) The GitHub OAuth app
+   ``Sharpen`` was created (an *OAuth App*, not a *GitHub App* — the first form opened was the wrong one), its id
+   and secret went into ``deploy/.env`` on the A1, and after PR #50 deployed the live login page offered
+   *Continue with GitHub* with an ``https`` callback, PKCE, and only ``read:user user:email``. The admin account
+   connected GitHub from *Settings → Sign-in methods*. The secret had been pasted into a chat, so it is to be
+   rotated. Then a restart to pick up ``.env`` changes brought back the **September** site — no Insights, no
+   Privacy, no GitHub button. The restart command had been ``docker compose … up -d app`` without
+   ``APP_IMAGE``, and Compose's fallback image ``sharpen-app:local`` was still the one built on the server at
+   the first setup; the pipeline always passes an exact image, so nothing had ever updated that name. Fixed the
+   same day by running the current image by its commit tag, and for good in ``remote-deploy.sh``: every
+   successful deploy (or rollback) now tags the running image ``sharpen-app:local``, so a plain restart keeps the
+   deployed version. While checking, ``/api/v1/health`` turned out to report ``built: 1980-02-01`` for pipeline
+   builds — a reproducible-build placeholder taking the place of the real time — so the build-info goal now
+   records the real build time and the commit (``revision``), the pipeline passes the commit, and the health
+   test fails if the date starts with 1980. Reproduced both ways: with the pipeline's timestamp setting the old
+   pom stamps 1980, the new one the actual time and ``revision=46a7549cc18d``.
+
 Open items (as of day 23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Create the GitHub OAuth app and the Google OAuth client (``05-day-two.rst``, *Sign in with Google and GitHub*),
-  add the four values to ``deploy/.env`` on the A1 and to ``private/credentials.md``, ``dc up -d app``, then
-  connect your own Google and GitHub under *Settings → Sign-in methods*.
+* GitHub sign-in: rotate the client secret (it was pasted in a chat) — new secret into ``deploy/.env`` and
+  ``private/credentials.md`` only, ``dc up -d app``, test, delete the old one on GitHub.
+* Google sign-in: create the Google OAuth client (``05-day-two.rst``, *Sign in with Google and GitHub*), add its
+  two values to ``deploy/.env`` and ``private/credentials.md``, ``dc up -d app``, connect it in Settings.
+* Small fixes noticed on the live site: the menu says "1 members"; a sign-in form left open across a restart
+  shows the 403 page — it could send the person back to a fresh form with a note instead.
 * LinkedIn sign-in: create a LinkedIn Company Page for Sharpen and a developer app tied to it, add the product
   *Sign In with LinkedIn using OpenID Connect* — the code follows the Google pattern.
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

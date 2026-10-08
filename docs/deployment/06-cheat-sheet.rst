@@ -39,7 +39,9 @@ Everything from this chapter on one page, for when you already understand it and
    * - see what is running (*server*)
      - ``dc ps`` · ``docker stats --no-stream``
    * - restart (*server*)
-     - ``dc restart app`` · ``dc down && dc up -d`` · ``sudo reboot``
+     - ``dc restart app`` · ``dc down && dc up -d`` · ``sudo reboot`` — all keep the last deployed version
+   * - which build is live (*anywhere*)
+     - ``curl -s https://sharpenscore.com/api/v1/health`` — ``revision`` = commit, ``built`` = build time
    * - back up the database (*server*)
      - ``dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz``
    * - check DNS

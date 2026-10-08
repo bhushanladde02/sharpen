@@ -7,6 +7,10 @@
 # recorded in a schema_migration table so it runs exactly once), pulls the given image, restarts the stack
 # with it, waits until /api/v1/health answers through Caddy, and if it never does, puts the previous image
 # back so the site is not left broken. Prints what it did.
+#
+# The image that ends up running is also tagged sharpen-app:local — the name docker-compose.prod.yml falls back
+# to when APP_IMAGE is not given. So a plain `dc up -d app` on the server (say, after editing deploy/.env)
+# restarts the version that was last deployed, never an older image that happens to carry that name.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."                      # repository root on the VM (~/sharpen)
@@ -57,7 +61,12 @@ rollout() {  # $1 = image
   return 1
 }
 
+remember() {  # $1 = image now running; what a plain `dc up -d app` will use from now on
+  docker tag "$1" sharpen-app:local && echo "local tag     : sharpen-app:local -> $1"
+}
+
 if rollout "$APP_IMAGE"; then
+  remember "$APP_IMAGE"
   echo "healthy       : https://$DOMAIN/api/v1/health"
   echo "running       : $(curl -fsS --max-time 5 -k --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/v1/health" 2>/dev/null)"
   docker image prune -f >/dev/null
@@ -67,7 +76,12 @@ else
   dc logs --tail 40 app || true
   if [ -n "$previous" ] && [ "$previous" != "$APP_IMAGE" ]; then
     echo "!! rolling back to $previous"
-    rollout "$previous" && echo "rolled back   : $previous (site is up on the previous version)" || echo "!! rollback also failed — investigate on the VM"
+    if rollout "$previous"; then
+      remember "$previous"
+      echo "rolled back   : $previous (site is up on the previous version)"
+    else
+      echo "!! rollback also failed — investigate on the VM"
+    fi
   fi
   exit 1
 fi

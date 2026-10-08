@@ -41,8 +41,9 @@ public class SessionApiController {
     }
 
     /**
-     * Liveness for the deploy script and uptime checkers, plus which build is answering — the deploy log says
-     * what was rolled out, this says what is actually running. Open to everyone; contains nothing private.
+     * Liveness for the deploy script and uptime checkers, plus which build is answering — version, the commit it
+     * was built from ("local" for a build made outside the pipeline) and when. The deploy log says what was rolled
+     * out; this says what is actually running. Open to everyone; contains nothing private.
      */
     @GetMapping("/health")
     public Map<String, String> health() {
@@ -50,6 +51,7 @@ public class SessionApiController {
         out.put("status", "ok");
         if (build != null) {
             out.put("version", build.getVersion());
+            if (build.get("revision") != null) out.put("revision", build.get("revision"));   // commit, e.g. 46a7549cc18d
             if (build.getTime() != null) out.put("built", build.getTime().toString());
         }
         return out;

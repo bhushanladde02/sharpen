@@ -61,7 +61,7 @@ jobs:
           java-version: '21'
           cache: maven
       - name: Package the jar (tests already ran in CI)
-        run: mvn -B --no-transfer-progress -DskipTests package
+        run: mvn -B --no-transfer-progress -DskipTests -Dsharpen.revision=${{ steps.fullsha.outputs.tag }} package
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Log in to GHCR

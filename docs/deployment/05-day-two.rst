@@ -5,6 +5,16 @@ Everything here happens on the server unless stated otherwise. Log in with
 ``ssh -i ~/.ssh/sharpen_vm ubuntu@<public-ip>`` and use the ``dc`` alias from :doc:`04-deploying` (or type
 the full ``docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env`` each time).
 
+.. note::
+
+   **Which version a restart runs.** The pipeline starts the app with an exact image
+   (``ghcr.io/bhushanladde02/sharpen:<commit>``) and, once it is healthy, also tags that image
+   ``sharpen-app:local`` — the name ``docker-compose.prod.yml`` falls back to when no ``APP_IMAGE`` is given. So
+   ``dc up -d app`` (after editing ``deploy/.env``, say) restarts the version that was last deployed. Before
+   8 October 2026 the deploy did not do that, and a plain ``dc up -d app`` quietly brought back the image built
+   on the server at the first setup in September. To check what is running:
+   ``curl -s https://sharpenscore.com/api/v1/health`` — ``revision`` is the commit, ``built`` the build time.
+
 Updating to a new version
 -------------------------
 
@@ -107,8 +117,10 @@ To restore into a fresh database: ``gunzip -c sharpen-2026-09-10.sql.gz | dc exe
 Changing a setting
 ------------------
 
-Edit ``deploy/.env`` on the server with ``nano``, then ``dc up -d`` — Compose notices the changed values and
-recreates only the containers that use them. Two settings deserve a warning:
+Edit ``deploy/.env`` on the server with ``nano`` (save: *Ctrl+O*, *Enter*; exit: *Ctrl+X*), then ``dc up -d`` —
+Compose notices the changed values and recreates only the containers that use them, with the last deployed
+version (see the note at the top). Afterwards ``curl -s https://sharpenscore.com/api/v1/health`` should show the
+same ``revision`` as before. Two settings deserve a warning:
 
 * **DB_PASSWORD** is baked into the database the first time it starts. Changing it in ``.env`` later makes the
   app unable to log in. Either change it in both places (``dc exec db psql -U sharpen -c "ALTER USER sharpen
@@ -269,7 +281,9 @@ server and in ``private/credentials.md`` on the Mac, nowhere else.
       GITHUB_CLIENT_ID=...
       GITHUB_CLIENT_SECRET=...
 
-#. ``dc up -d app`` — Compose recreates the app with the new values (about 20 seconds).
+#. ``dc up -d app`` — Compose recreates the app with the new values (about 20 seconds), using the last deployed
+   version. Run it on the **server**, not the Mac (the Mac has no Docker; ``zsh: command not found: docker``
+   means you are on the wrong machine). Check ``/api/v1/health`` shows the same ``revision`` afterwards.
 #. Open ``https://sharpenscore.com/login`` in a private window: the buttons appear for the providers you set.
    Try each with an account that has never used Sharpen; it should land on the dashboard. Then sign in with your
    own password account and connect your Google and GitHub under *Settings → Sign-in methods*.

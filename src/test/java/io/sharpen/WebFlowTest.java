@@ -123,6 +123,8 @@ class WebFlowTest {
         mvc.perform(get("/api/v1/health")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("ok"))
                 .andExpect(jsonPath("$.version").isString())
+                .andExpect(jsonPath("$.revision").value("local"))                 // not built by the pipeline
+                .andExpect(jsonPath("$.built", org.hamcrest.Matchers.not(org.hamcrest.Matchers.startsWith("1980"))))
                 .andExpect(jsonPath("$.built").isString());
     }
 

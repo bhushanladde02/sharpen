@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -126,6 +127,23 @@ class WebFlowTest {
                 .andExpect(jsonPath("$.revision").value("local"))                 // not built by the pipeline
                 .andExpect(jsonPath("$.built", org.hamcrest.Matchers.not(org.hamcrest.Matchers.startsWith("1980"))))
                 .andExpect(jsonPath("$.built").isString());
+    }
+
+    @Autowired io.sharpen.service.CommunityService communityService;
+
+    @Test
+    void counterWordsFollowTheNumbers() throws Exception {
+        // "1 member" / "2 members": the label next to each live counter agrees with its number, on the landing page
+        // and in the signed-in menu (the page script keeps it that way when the numbers refresh).
+        communityService.invalidate();
+        var c = communityService.stats();
+        String landing = mvc.perform(get("/")).andReturn().getResponse().getContentAsString();
+        assertTrue(landing.contains(c.members() == 1 ? ">person tracking their AI use<" : ">people tracking their AI use<"));
+        assertTrue(landing.contains(c.sessions() == 1 ? ">session logged<" : ">sessions logged<"));
+        assertTrue(landing.contains(c.reports() == 1 ? ">monthly report<" : ">monthly reports<"));
+        String menu = mvc.perform(get("/dashboard").with(user(me.getEmail()).roles("INDIVIDUAL"))).andReturn().getResponse().getContentAsString();
+        assertTrue(menu.contains(c.members() == 1 ? ">member<" : ">members<"), "menu label matches " + c.members());
+        assertTrue(menu.contains("data-one=\"member\" data-many=\"members\""), "the live refresh knows both forms");
     }
 
     @Test

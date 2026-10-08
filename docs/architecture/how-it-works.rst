@@ -153,6 +153,14 @@ browser-side headers: ``X-Frame-Options: SAMEORIGIN`` (no embedding by other sit
 strict-origin-when-cross-origin`` (an outbound click reveals the site, never the page), and a
 ``Permissions-Policy`` that denies camera, microphone, geolocation, payment and USB outright.
 
+Behind the proxy, the app takes the client's address and scheme from Caddy's ``X-Forwarded-For`` and
+``X-Forwarded-Proto`` through Tomcat's remote-IP valve (``server.forward-headers-strategy: native``), which honours
+them only when the request comes from a private-network address — Caddy on the Docker network — and takes the
+right-most untrusted address, so a visitor who writes their own ``X-Forwarded-For`` changes nothing. Every
+consumer (the sign-up and contact rate limits, the visitor hash) simply reads ``request.getRemoteAddr()``. Knowing
+the browser spoke https, Tomcat marks the session cookie ``Secure``; it is also ``HttpOnly`` and ``SameSite=Lax``.
+``ProxyHeadersTest`` starts the real server and checks all of this over HTTP, because MockMvc never runs the valve.
+
 What we use from Spring Boot, and why it matters
 ------------------------------------------------
 

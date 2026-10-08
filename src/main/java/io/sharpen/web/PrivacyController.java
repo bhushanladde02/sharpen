@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PrivacyController {
 
     /** Shown at the top of the page; bump it with any change to what the page promises. */
-    static final String EFFECTIVE = "7 October 2026";
+    static final String EFFECTIVE = "8 October 2026";
 
     @GetMapping("/privacy")
     public String privacy(Model model) {

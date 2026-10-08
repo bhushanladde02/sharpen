@@ -62,11 +62,16 @@ Security controls (prototype)
      - Uploads capped at 10 MB; CSV parsed in memory with no external process.
    * - SE-7
      - The H2 console is enabled only in the dev profile and disabled in ``postgres``.
+   * - SE-8
+     - Behind the proxy, client address and scheme come from forwarded headers only when sent by a private-network
+       proxy (Tomcat remote-IP valve); rate limits and visitor counting use that address, so a client-supplied
+       ``X-Forwarded-For`` cannot reset a limit. The session cookie is ``Secure`` over https, ``HttpOnly`` and
+       ``SameSite=Lax``. Tested against the real server in ``ProxyHeadersTest``.
 
 Release 1 additions
 -------------------
 
-* TLS termination and HSTS at the edge (SE-8).
+* TLS termination and HSTS at the edge — done (Caddy); the app side of the proxy is SE-8.
 * Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9).
 * Email verification and password reset with expiring tokens (SE-10).
 * Company account gating and profile-view audit log (SE-11, see CV-6 / CV-7).

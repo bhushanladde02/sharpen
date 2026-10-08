@@ -42,6 +42,21 @@ public class PersonService {
         return saved;
     }
 
+    /**
+     * An individual account made through Google or GitHub: the provider has verified the email, so there is no
+     * password and no sign-up form — the names come from the provider and can be edited in Settings.
+     */
+    public Person registerFromProvider(String email, String displayName) {
+        String mail = email.trim().toLowerCase(Locale.ROOT);
+        if (people.findByEmailIgnoreCase(mail).isPresent()) {
+            throw new IllegalArgumentException("An account already exists for " + mail);
+        }
+        String name = displayName == null || displayName.isBlank() ? mail.substring(0, mail.indexOf('@')) : displayName.trim();
+        Person saved = people.save(new Person(mail, null, name, uniqueHandle(name), AccountType.INDIVIDUAL, newApiKey()));
+        community.invalidate();
+        return saved;
+    }
+
     @Transactional(readOnly = true)
     public Optional<Person> byEmail(String email) { return people.findByEmailIgnoreCase(email); }
 
@@ -66,12 +81,15 @@ public class PersonService {
         return current().orElseThrow(() -> new IllegalStateException("Not signed in"));
     }
 
-    /** Why a password change was refused, or null when it went through. */
+    /**
+     * Why a password change was refused, or null when it went through. An account made through Google or GitHub
+     * has no password yet; it sets one without a "current" — the person is signed in, which is the proof.
+     */
     public String changePassword(Person person, String current, String next, String repeat) {
-        if (current == null || !passwordEncoder.matches(current, person.getPasswordHash())) return "The current password is not right.";
+        if (person.hasPassword() && (current == null || !passwordEncoder.matches(current, person.getPasswordHash()))) return "The current password is not right.";
         if (next == null || next.length() < 8 || next.length() > 72) return "The new password needs 8 to 72 characters.";
         if (!next.equals(repeat)) return "The two copies of the new password do not match.";
-        if (next.equals(current)) return "That is already your password.";
+        if (person.hasPassword() && next.equals(current)) return "That is already your password.";
         person.setPasswordHash(passwordEncoder.encode(next));
         people.save(person);
         return null;

@@ -67,12 +67,19 @@ Security controls (prototype)
        proxy (Tomcat remote-IP valve); rate limits and visitor counting use that address, so a client-supplied
        ``X-Forwarded-For`` cannot reset a limit. The session cookie is ``Secure`` over https, ``HttpOnly`` and
        ``SameSite=Lax``. Tested against the real server in ``ProxyHeadersTest``.
+   * - SE-13
+     - Google/GitHub sign-in: Spring Security checks state, nonce and (Google) the ID token's signature, issuer,
+       audience and expiry. No automatic merge by email — Sharpen never verified sign-up emails, so merging would
+       let someone pre-register a victim's address and keep a password into the account the victim later opens
+       with Google; linking needs a signed-in person pressing *Connect* (a POST with CSRF). A password-less account is
+       invisible to the password form. Provider access tokens are discarded after sign-in. Each rule has a test that
+       fails when the rule is removed.
 
 Release 1 additions
 -------------------
 
 * TLS termination and HSTS at the edge — done (Caddy); the app side of the proxy is SE-8.
-* Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9).
+* Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9) — ``/register`` and the contact form are done (``SpamGuard``).
 * Email verification and password reset with expiring tokens (SE-10).
 * Company account gating and profile-view audit log (SE-11, see CV-6 / CV-7).
 * Dependency scanning in CI and a documented data-retention policy (SE-12) — retention is now documented on

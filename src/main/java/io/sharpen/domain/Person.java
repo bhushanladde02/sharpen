@@ -21,7 +21,8 @@ public class Person {
     @Column(nullable = false, length = 190)
     private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 100)
+    /** BCrypt hash; null for an account made through Google or GitHub until its owner sets a password. */
+    @Column(name = "password_hash", length = 100)
     private String passwordHash;
 
     /** What is shown everywhere: "First [Middle] Last" for a person, the company name for a company account. */
@@ -91,6 +92,9 @@ public class Person {
     }
 
     public boolean isCompany() { return accountType == AccountType.COMPANY; }
+
+    /** False for an account that only signs in through Google or GitHub. */
+    public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
 
     public Long getId() { return id; }
     public String getEmail() { return email; }

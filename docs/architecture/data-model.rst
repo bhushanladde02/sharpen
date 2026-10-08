@@ -1,7 +1,7 @@
 Data model
 ==========
 
-Three tables. The PostgreSQL DDL is in ``src/main/resources/db/schema-postgres.sql``; H2 is created by Hibernate
+The tables that hold a person's data (pictures, feedback and page views are described alongside their features). The PostgreSQL DDL is in ``src/main/resources/db/schema-postgres.sql``; H2 is created by Hibernate
 in development.
 
 person
@@ -21,8 +21,8 @@ person
      - varchar(190)
      - unique, lower-cased; login name
    * - password_hash
-     - varchar(100)
-     - BCrypt
+     - varchar(100), nullable
+     - BCrypt; null for an account made through Google or GitHub until a password is set in Settings
    * - display_name
      - varchar(120)
      - what every page shows: "First [Middle] Last" for a person, the company name for a company
@@ -52,6 +52,38 @@ person
    * - api_key
      - varchar(64)
      - unique; ``shp_`` + 48 hex chars
+   * - created_at
+     - timestamptz
+     -
+
+person_identity
+---------------
+
+A Google or GitHub account that may sign in as a person. One row per provider per person; matched on the
+provider's permanent user id, never on email. Deleted with the person.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Column
+     - Type
+     - Notes
+   * - id
+     - bigserial PK
+     -
+   * - person_id
+     - bigint FK → person
+     - ``on delete cascade``; unique with ``provider``
+   * - provider
+     - varchar(20)
+     - ``google`` or ``github`` (the registration id)
+   * - subject
+     - varchar(190)
+     - the provider's permanent user id (Google ``sub``, GitHub numeric ``id``); unique with ``provider``
+   * - email, username
+     - varchar(190), varchar(100)
+     - what the provider showed at link time, for Settings to display; not used to match
    * - created_at
      - timestamptz
      -

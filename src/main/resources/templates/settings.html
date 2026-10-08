@@ -60,10 +60,35 @@
         <p class="help">The CSV is in Sharpen's own import layout, so it opens in a spreadsheet and can be imported into another account.
           The JSON has your profile, every session and every generated report. Deleting the account is at the bottom of this page.</p>
       </div>
+      <div class="card" id="sign-in" th:if="${signInMethods != null and !#lists.isEmpty(signInMethods)}">
+        <h2>Sign-in methods</h2>
+        <div class="notice" th:if="${signInError}" th:text="${signInError}" style="margin-bottom:.75rem">Not connected.</div>
+        <th:block th:each="p : ${socialProviders}"><div class="flash" th:if="${param.connected != null and param.connected[0] == p.id}"
+             th:text="${p.label} + ' connected. You can now sign in with it.'" style="margin-bottom:.75rem">Connected.</div></th:block>
+        <ul class="signin-list">
+          <li>
+            <div><b>Email and password</b><span class="muted-3" th:text="${me.email}">you@example.com</span></div>
+            <span class="chip" th:classappend="${me.hasPassword()} ? 'good'" th:text="${me.hasPassword()} ? 'Set' : 'Not set'">Set</span>
+          </li>
+          <li th:each="m : ${signInMethods}">
+            <div><b th:text="${m.label}">Google</b>
+              <span class="muted-3" th:text="${m.connected()} ? ${m.identity.label} : 'Not connected'">you@gmail.com</span></div>
+            <form th:if="${m.connected()}" th:action="@{/settings/disconnect/{p}(p=${m.provider})}" method="post">
+              <button class="btn small" type="submit">Disconnect</button></form>
+            <form th:unless="${m.connected()}" th:action="@{/settings/connect/{p}(p=${m.provider})}" method="post">
+              <button class="btn small primary" type="submit">Connect</button></form>
+          </li>
+        </ul>
+        <p class="muted-3" style="font-size:.8rem;margin-top:.6rem">Sharpen keeps only the provider's user id, the email and the username it shows,
+          to know it is you. It never posts anything to these accounts. The last way into your account cannot be removed.</p>
+      </div>
       <div class="card" id="password">
-        <h2>Password</h2>
+        <h2 th:text="${me.hasPassword()} ? 'Password' : 'Set a password'">Password</h2>
+        <p th:unless="${me.hasPassword()}" style="margin-bottom:.6rem">Your account signs in through
+          <th:block th:each="m, it : ${signInMethods}" th:if="${m.connected()}"><th:block th:text="${m.label}">Google</th:block> </th:block>only.
+          A password lets you also sign in with <b th:text="${me.email}">your email</b>.</p>
         <form th:action="@{/settings/password}" method="post" class="stack">
-          <div><label for="pw-current">Current password</label>
+          <div th:if="${me.hasPassword()}"><label for="pw-current">Current password</label>
             <input type="password" id="pw-current" name="current" required autocomplete="current-password"></div>
           <div class="grid two">
             <div><label for="pw-next">New password (8+ characters)</label>
@@ -71,7 +96,7 @@
             <div><label for="pw-repeat">New password again</label>
               <input type="password" id="pw-repeat" name="repeat" required minlength="8" maxlength="72" autocomplete="new-password"></div>
           </div>
-          <div><button class="btn" type="submit">Change password</button></div>
+          <div><button class="btn" type="submit" th:text="${me.hasPassword()} ? 'Change password' : 'Set password'">Change password</button></div>
         </form>
       </div>
       <div class="card">
@@ -95,8 +120,10 @@
           Your public profile address stops working. Download your data above first if you want to keep it.</p>
         <form th:action="@{/settings/delete}" method="post" class="stack"
               onsubmit="return confirm('Delete your Sharpen account and all its data? This cannot be undone.')">
-          <div><label for="delete-password">Your password, to confirm</label>
+          <div th:if="${me.hasPassword()}"><label for="delete-password">Your password, to confirm</label>
             <input type="password" id="delete-password" name="password" required autocomplete="current-password"></div>
+          <div th:unless="${me.hasPassword()}"><label for="delete-handle">Type your handle, <code th:text="${me.handle}">handle</code>, to confirm</label>
+            <input type="text" id="delete-handle" name="password" required autocomplete="off" spellcheck="false"></div>
           <button class="btn danger" type="submit">Delete my account</button>
         </form>
       </div>

@@ -4,7 +4,7 @@
 create table person (
     id               bigserial primary key,
     email            varchar(190) not null,
-    password_hash    varchar(100) not null,
+    password_hash    varchar(100),         -- null for an account made through Google/GitHub until a password is set
     display_name     varchar(120) not null,
     first_name       varchar(60),          -- individuals only: display_name = first [middle] last
     middle_name      varchar(60),
@@ -22,6 +22,19 @@ create table person (
     created_at       timestamp(6) with time zone not null default now(),
     avatar_version   integer      not null default 0
 );
+
+-- Other ways to sign in: a Google or GitHub account linked to a person, by the provider's permanent user id.
+create table person_identity (
+    id          bigserial    primary key,
+    person_id   bigint       not null references person (id) on delete cascade,
+    provider    varchar(20)  not null,
+    subject     varchar(190) not null,
+    email       varchar(190),
+    username    varchar(100),
+    created_at  timestamp(6) with time zone not null default now()
+);
+create unique index ux_identity_provider_subject on person_identity (provider, subject);
+create unique index ux_identity_person_provider  on person_identity (person_id, provider);
 
 -- Profile pictures live apart from person so the bytes are never loaded with the person row.
 create table person_avatar (

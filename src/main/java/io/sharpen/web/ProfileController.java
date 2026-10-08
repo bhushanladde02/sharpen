@@ -119,10 +119,13 @@ public class ProfileController {
     private final SessionService sessions;
     private final AvatarService avatars;
 
+    private final io.sharpen.auth.SignInService signIn;
+
     public ProfileController(PersonService people, PersonRepository repo, StatsService stats, ReportService reports,
                              SessionService sessions, AvatarService avatars, ExportService exports,
-                             AccountDeletionService deletion) {
+                             AccountDeletionService deletion, io.sharpen.auth.SignInService signIn) {
         this.deletion = deletion;
+        this.signIn = signIn;
         this.people = people;
         this.repo = repo;
         this.stats = stats;
@@ -144,7 +147,8 @@ public class ProfileController {
                                 jakarta.servlet.http.HttpServletRequest request) {
         Person me = people.requireCurrent();
         if (!deletion.confirms(me, password)) {
-            redirect.addFlashAttribute("flash", "Account not deleted — the password did not match.");
+            redirect.addFlashAttribute("flash", me.hasPassword() ? "Account not deleted — the password did not match."
+                    : "Account not deleted — type your handle exactly as shown to confirm.");
             return "redirect:/settings#delete";
         }
         AccountDeletionService.Removed gone = deletion.delete(me);
@@ -296,11 +300,13 @@ public class ProfileController {
     public String settings(Model model) {
         Person me = people.requireCurrent();
         model.addAttribute("form", ProfileForm.from(me));
+        model.addAttribute("signInMethods", signIn.methods(me));
         return "settings";
     }
 
     @PostMapping("/settings")
-    public String saveSettings(@Valid @ModelAttribute("form") ProfileForm form, BindingResult binding, RedirectAttributes redirect) {
+    public String saveSettings(@Valid @ModelAttribute("form") ProfileForm form, BindingResult binding, RedirectAttributes redirect,
+                               Model model) {
         Person me = people.requireCurrent();
         String missing = form.validateName(me);
         if (missing != null) binding.rejectValue(missing, "required", "Required");
@@ -308,7 +314,10 @@ public class ProfileController {
                 && people.byHandle(form.getHandle()).isPresent()) {
             binding.rejectValue("handle", "taken", "That handle is taken");
         }
-        if (binding.hasErrors()) return "settings";
+        if (binding.hasErrors()) {
+            model.addAttribute("signInMethods", signIn.methods(me));
+            return "settings";
+        }
         form.applyTo(me);
         people.save(me);
         redirect.addFlashAttribute("flash", "Profile saved.");

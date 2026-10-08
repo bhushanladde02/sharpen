@@ -181,7 +181,22 @@
       answer: function () {
         return '<p>Password reset by email is not built yet. Send a message from the ' + contact + ' with the email you registered under and the author ' +
                'resets it by hand, usually the same day.</p>' +
-               '<p>To change a password you still know: <a href="/settings#password">Settings → Password</a> — current password once, the new one twice.</p>';
+               '<p>To change a password you still know: <a href="/settings#password">Settings → Password</a> — current password once, the new one twice.</p>' +
+               '<p>If you signed up with Google or GitHub there is no password to forget: use the same button on the <a href="/login">sign-in page</a>. ' +
+               'You can add a password in Settings if you want one.</p>';
+      }
+    },
+    {
+      id: 'providers', chip: 'Google / GitHub sign-in',
+      keys: ['google', 'github', 'gmail', 'sign in with', 'login with', 'log in with', 'continue with', 'oauth', 'social login',
+             'connect google', 'connect github', 'disconnect', 'single sign on', 'sso', 'linkedin'],
+      answer: function () {
+        return '<p><b>Continue with Google</b> or <b>Continue with GitHub</b> on the <a href="/login">sign-in</a> and <a href="/register">sign-up</a> pages ' +
+               'creates an individual account from your name and verified email, with no password to remember. ' +
+               'Sharpen receives only your account id, name and verified email; it never posts to those accounts.</p>' +
+               '<p><b>Already have an account?</b> Sign in with your password, then <a href="/settings#sign-in">Settings → Sign-in methods → Connect</a>. ' +
+               'An existing account is never joined to a Google or GitHub account automatically — that is deliberate, so no one can claim an account by email alone.</p>' +
+               '<p>LinkedIn sign-in is next on the list.</p>';
       }
     },
     {

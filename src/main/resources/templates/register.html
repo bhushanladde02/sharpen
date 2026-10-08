@@ -7,6 +7,11 @@
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <h1>Create your account</h1>
     <p class="muted" style="margin-top:.25rem">Individuals get a dashboard, monthly reports and a public AI profile. Companies get the candidate view.</p>
+    <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
+    <div th:if="${!#lists.isEmpty(socialProviders)}">
+      <p class="muted-3" style="font-size:.8rem;margin:.9rem 0 0">Quickest for individuals — your name and verified email come from the provider. Company accounts use the form below.</p>
+      <div th:replace="~{fragments :: socialButtons('Sign up')}"></div>
+    </div>
     <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
       <input type="hidden" th:field="*{t}">
       <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" th:field="*{website}" tabindex="-1" autocomplete="off"></div>

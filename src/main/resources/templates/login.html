@@ -7,10 +7,13 @@
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <h1>Sign in</h1>
     <p class="muted" style="margin-top:.25rem" th:if="${demoData}">Demo accounts: <code>demo@sharpen.io</code> (individual) or <code>hiring@sharpen.io</code> (company), password <code>demo1234</code>.</p>
-    <p class="muted" style="margin-top:.25rem" th:unless="${demoData}">Sharpen is an independent project by Bhushan Arun Ladde. This is its own account system — the <a href="https://github.com/bhushanladde02/sharpen" target="_blank" rel="noopener">source is public</a>.</p>
-    <div th:if="${param.error}" class="notice" style="margin-bottom:1rem">Email or password did not match.</div>
+    <p class="muted" style="margin-top:.25rem" th:unless="${demoData}">Sharpen is an independent project by Bhushan Arun Ladde — the <a href="https://github.com/bhushanladde02/sharpen" target="_blank" rel="noopener">source is public</a>.</p>
+    <div th:if="${param.error}" class="notice" style="margin-bottom:1rem">Email or password did not match.<th:block th:if="${!#lists.isEmpty(socialProviders)}"> If you created your account with
+      <th:block th:each="p, it : ${socialProviders}"><th:block th:text="${p.label}">Google</th:block><th:block th:unless="${it.last}"> or </th:block></th:block>, use that button.</th:block></div>
+    <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
     <div th:if="${param.registered}" class="flash">Account created. Sign in to continue.</div>
     <div th:if="${param.logout}" class="flash">Signed out.</div>
+    <div th:replace="~{fragments :: socialButtons('Continue')}"></div>
     <form th:action="@{/login}" method="post" class="stack">
       <div><label for="username">Email</label><input type="email" id="username" name="username" required autofocus autocomplete="username"></div>
       <div><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>

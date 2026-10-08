@@ -146,6 +146,7 @@ img, svg { max-width: 100%; }
 .card.lift { box-shadow: var(--shadow); border-color: transparent; }
 .card h2 { margin-bottom: .75rem; }
 .grid { display: grid; gap: .9rem; }
+.grid > * { min-width: 0; }   /* a long <pre> (the API key) scrolls inside its card instead of widening the page on a phone */
 .grid.two { grid-template-columns: 1fr; }
 .grid.three { grid-template-columns: 1fr; }
 .grid.four { grid-template-columns: repeat(2, 1fr); }
@@ -473,3 +474,14 @@ dl.facts { margin: 0; display: grid; gap: .2rem; }
 dl.facts dt { font-weight: 700; color: var(--ink); margin-top: .6rem; }
 dl.facts dt:first-child { margin-top: 0; }
 dl.facts dd { margin: 0; color: var(--ink-2); line-height: 1.6; }
+
+/* "Continue with Google / GitHub" and Settings → Sign-in methods. Plain text buttons, no third-party logos. */
+.social-signin { display: flex; flex-direction: column; gap: .5rem; margin: .9rem 0 .6rem; }
+.btn.social { justify-content: center; font-weight: 700; }
+.social-signin .or { display: flex; align-items: center; gap: .75rem; color: var(--ink-3); font-size: .78rem; margin: .35rem 0 .1rem; }
+.social-signin .or::before, .social-signin .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+ul.signin-list { list-style: none; margin: 0; padding: 0; }
+ul.signin-list li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .6rem 0; border-top: 1px solid var(--line); }
+ul.signin-list li:first-child { border-top: 0; padding-top: 0; }
+ul.signin-list li > div { display: flex; flex-direction: column; min-width: 0; }
+ul.signin-list li > div span { font-size: .82rem; overflow-wrap: anywhere; }

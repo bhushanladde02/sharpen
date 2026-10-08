@@ -35,6 +35,11 @@ services:
       SHARPEN_DEMO_DATA: ${DEMO_DATA:-false}
       SHARPEN_ADMIN_EMAIL: ${ADMIN_EMAIL}
       SHARPEN_SITE_HOST: ${DOMAIN}
+      # "Continue with Google / GitHub": each provider appears only when both its values are set in deploy/.env.
+      SHARPEN_OAUTH_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      SHARPEN_OAUTH_GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      SHARPEN_OAUTH_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      SHARPEN_OAUTH_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
     depends_on:
       db:

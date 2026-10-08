@@ -81,13 +81,23 @@ here about the people who chose to be measured, with the panel's protections: no
 are in the numbers, a tool gets a row only once 3 people have used it, unrated imports do not count, and no line
 is ever about a person. Below the threshold the page says so and shows the count to go.
 
+## Signing in
+
+Email and password, or **Continue with Google / GitHub** when the deployment configures them (two values per
+provider in `deploy/.env`; setup in `docs/deployment/05-day-two.rst`). A first sign-in with a provider creates an
+individual account from the provider's name and *verified* email; an existing account is never merged by email —
+its owner signs in with the password and connects the provider under Settings → Sign-in methods, which proves both
+sides. Accounts are matched on the provider's permanent user id, provider tokens are not kept, and the last way
+into an account cannot be removed. LinkedIn is next.
+
 ## Getting it out again
 
 Settings → **Your data**: every session as CSV in Sharpen's own import layout (opens in a spreadsheet, imports
 into another account — the exporter and importer are tested against each other), or the whole account as one
 JSON document (profile, sessions, every generated report with its full content). Instant, self-service, nothing
 secret in it (no password hash, no API key). Endpoints: `/settings/export/sessions.csv`, `/settings/export/sharpen-data.json`.
-**Delete account** (same page, password re-entered) removes the account, its sessions, reports and picture in one
+**Delete account** (same page, password re-entered — or the handle typed, for an account that has no password)
+removes the account, its sessions, reports, picture and connected sign-ins in one
 transaction and signs the browser out; feedback the person left stays but is unlinked. No grace period, no e-mail
 to send.
 

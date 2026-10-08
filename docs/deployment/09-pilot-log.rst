@@ -624,7 +624,14 @@ Day 8 — Wednesday 16 September: which build is this?
    package``) and were copied across, as for Spring Boot 4. Rendering the pages at phone width also turned up an
    older fault: Settings was 86 px wider than a phone because the API key's ``<pre>`` stretched its grid column;
    grid cells may now shrink (``.grid > * { min-width: 0 }``) and the key scrolls inside its card. Eight pages
-   checked at 400 px, none wider than the screen. LinkedIn next.
+   checked at 400 px, none wider than the screen. On the pull request GitHub's code scanning (CodeQL) flagged the
+   failure redirect: it copied the provider name from the callback path and the error code from ``?error=`` —
+   both visitor-controlled — into the address it sent the browser to, unencoded. The destination was always
+   Sharpen's own ``/login`` or ``/settings``, so it could not send anyone to another site, but a hand-made callback
+   could add its own parameters (a new test reproduced ``signin_error=x&next=https://evil.example/``). Now only a
+   provider this deployment offers and a plain snake_case code get through (anything else becomes ``unknown`` /
+   ``failed``) and the values are URL-encoded; the test passes with the fix and fails without it. 37 tests.
+   LinkedIn next.
 
 Open items (as of day 23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^

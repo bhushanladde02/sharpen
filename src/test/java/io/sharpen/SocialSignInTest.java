@@ -219,6 +219,34 @@ class SocialSignInTest {
     }
 
     @Test
+    void refusalsRedirectOnlyWithCheckedValues() throws Exception {
+        // The person presses Cancel on GitHub: the provider returns ?error=access_denied — the normal case.
+        Browser b = new Browser();
+        Map<String, String> q = query(b.get("/oauth2/authorization/github").headers().firstValue("Location").orElseThrow());
+        String cancelled = b.get(q.get("redirect_uri") + "?error=access_denied&state=" + URLEncoder.encode(q.get("state"), StandardCharsets.UTF_8))
+                .headers().firstValue("Location").orElseThrow();
+        assertEquals("/login", URI.create(cancelled).getPath());
+        assertEquals("signin_error=access_denied&provider=github", URI.create(cancelled).getRawQuery());
+        assertTrue(b.get(cancelled).body().contains("Sign-in with GitHub was cancelled."));
+
+        // Someone calls the callback by hand with a crafted error trying to add parameters: it becomes "failed".
+        Browser c = new Browser();
+        q = query(c.get("/oauth2/authorization/github").headers().firstValue("Location").orElseThrow());
+        String crafted = c.get(q.get("redirect_uri") + "?error=" + URLEncoder.encode("x&next=https://evil.example/#", StandardCharsets.UTF_8)
+                + "&state=" + URLEncoder.encode(q.get("state"), StandardCharsets.UTF_8)).headers().firstValue("Location").orElseThrow();
+        assertEquals("/login", URI.create(crafted).getPath());
+        assertEquals("signin_error=failed&provider=github", URI.create(crafted).getRawQuery());
+        assertFalse(crafted.contains("evil"), crafted);
+
+        // A made-up provider in the callback path: the redirect names no provider the visitor chose.
+        String unknown = new Browser().get("/login/oauth2/code/" + URLEncoder.encode("evil.example", StandardCharsets.UTF_8) + "?code=x&state=y")
+                .headers().firstValue("Location").orElseThrow();
+        assertEquals("/login", URI.create(unknown).getPath());
+        assertTrue(URI.create(unknown).getRawQuery().endsWith("&provider=unknown"), unknown);
+        assertFalse(unknown.contains("evil"), unknown);
+    }
+
+    @Test
     void githubCreatesAnAccountOnceAndSignsInAfterwards() throws Exception {
         githubUser = Map.of("id", 101, "login", "octo", "name", "Octo Cat");
         githubEmails = List.of(Map.of("email", "octo-hidden@users.example", "primary", false, "verified", true),

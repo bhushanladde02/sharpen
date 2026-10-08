@@ -72,8 +72,9 @@ Security controls (prototype)
        audience and expiry. No automatic merge by email — Sharpen never verified sign-up emails, so merging would
        let someone pre-register a victim's address and keep a password into the account the victim later opens
        with Google; linking needs a signed-in person pressing *Connect* (a POST with CSRF). A password-less account is
-       invisible to the password form. Provider access tokens are discarded after sign-in. Each rule has a test that
-       fails when the rule is removed.
+       invisible to the password form. Provider access tokens are discarded after sign-in. Redirects after a
+       refused sign-in carry only a known provider id and a plain error code, URL-encoded (CodeQL finding on PR #50).
+       Each rule has a test that fails when the rule is removed.
 
 Release 1 additions
 -------------------

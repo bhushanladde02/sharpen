@@ -118,10 +118,12 @@ public class CommunityController {
         return "admin-feedback";
     }
 
-    /** Caddy sets X-Forwarded-For in production; the first address is the client's. */
+    /**
+     * The client's address. Behind Caddy, Tomcat's remote-IP handling ({@code server.forward-headers-strategy:
+     * native}) has already replaced the proxy's address with the client's, trusting X-Forwarded-For only when it
+     * comes from a private-network proxy — so a visitor cannot pick their own address by sending the header.
+     */
     private static String clientAddress(HttpServletRequest req) {
-        String xff = req.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
         return req.getRemoteAddr();
     }
 }

@@ -146,9 +146,8 @@ public class AuthController {
         return "redirect:/login?registered";
     }
 
+    /** The client's address; see {@code CommunityController.clientAddress} for why the header is not read here. */
     private static String clientAddress(HttpServletRequest req) {
-        String xff = req.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
         return req.getRemoteAddr();
     }
 }

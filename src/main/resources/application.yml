@@ -41,6 +41,16 @@ spring:
 
 server:
   port: 8080
+  # Behind Caddy: Tomcat's RemoteIpValve takes the client address and scheme from X-Forwarded-For / -Proto, but
+  # only when the request comes from a private-network address (the Docker network), so a visitor cannot spoof
+  # either header. With the scheme known to be https, the session cookie gets Secure and redirects stay on https.
+  # Without a proxy (development) nothing changes.
+  forward-headers-strategy: native
+  servlet:
+    session:
+      cookie:
+        same-site: lax     # the cookie is not sent on cross-site POSTs; ordinary links into the site still work
+        http-only: true
   compression:
     enabled: true
   error:

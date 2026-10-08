@@ -26,9 +26,7 @@ public class PageViewInterceptor implements HandlerInterceptor {
                 || mav.getViewName().startsWith("redirect:")) return;
         String path = req.getRequestURI();
         if (path.startsWith("/api/") || path.startsWith("/admin/") || path.equals("/error")) return;
-        String address = req.getHeader("X-Forwarded-For");          // set by Caddy in production
-        if (address != null && address.contains(",")) address = address.substring(0, address.indexOf(',')).trim();
-        if (address == null || address.isBlank()) address = req.getRemoteAddr();
+        String address = req.getRemoteAddr();   // the client's, already resolved from Caddy's X-Forwarded-For by Tomcat
         boolean signedIn = req.getUserPrincipal() != null;
         traffic.record(path, req.getHeader("Referer"), address, req.getHeader("User-Agent"), req.getHeader("Accept-Language"), signedIn);
     }

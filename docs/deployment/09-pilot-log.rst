@@ -583,7 +583,23 @@ Day 8 — Wednesday 16 September: which build is this?
    served), cookie headers and font caching checked on the running jar, rendered at desktop and phone width.
    No database change, so no PostgreSQL step.
 
-Open items (as of day 21)
+#. **Trusting the proxy properly.** (Day 22, Thursday 8 October.) Three places — the sign-up limit, the contact
+   limit and the visitor hash — each read ``X-Forwarded-For`` themselves and took the *first* address in it. That
+   first entry is whatever the browser chose to send; only the last one is written by Caddy. Production was not
+   exposed, because current Caddy replaces an incoming ``X-Forwarded-For`` from an untrusted client rather than
+   appending to it, but the app was relying on that without saying so. Now Tomcat resolves the client address
+   and scheme from the forwarded headers itself (``server.forward-headers-strategy: native``), trusting them only
+   from a private-network proxy and taking the right-most untrusted address, and the three places read
+   ``getRemoteAddr()``. The same change tells Tomcat the browser used https, so the session cookie is now
+   ``Secure`` (plus ``HttpOnly`` and ``SameSite=Lax``) and cannot be sent over plain http to the redirect.
+   ``/privacy`` says so, effective 8 October. Verified: 29 tests (two new, in ``ProxyHeadersTest``, against the
+   real server over HTTP: the cookie is ``Secure``/``HttpOnly``/``SameSite=Lax`` behind the proxy and not
+   ``Secure`` without it; five sign-ups with five invented leading addresses from one client exhaust that
+   client's allowance and the sixth is refused, while another client is unaffected; redirects stay relative).
+   Each half was proved by putting the old behaviour back: the old header parsing fails the sign-up test, and
+   removing the setting fails both. No database change.
+
+Open items (as of day 22)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

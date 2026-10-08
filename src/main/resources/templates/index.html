@@ -16,9 +16,9 @@
       </div>
       <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
       <div class="counter-strip">
-        <div><b class="num" data-count="members" th:text="${#numbers.formatInteger(community.members, 1, 'COMMA')}">0</b><span>people tracking their AI use</span></div>
-        <div><b class="num" data-count="sessions" th:text="${#numbers.formatInteger(community.sessions, 1, 'COMMA')}">0</b><span>sessions logged</span></div>
-        <div><b class="num" data-count="reports" th:text="${#numbers.formatInteger(community.reports, 1, 'COMMA')}">0</b><span>monthly reports</span></div>
+        <div><b class="num" data-count="members" th:text="${#numbers.formatInteger(community.members, 1, 'COMMA')}">0</b><span data-unit="members" data-one="person tracking their AI use" data-many="people tracking their AI use" th:text="${community.members == 1} ? 'person tracking their AI use' : 'people tracking their AI use'">people tracking their AI use</span></div>
+        <div><b class="num" data-count="sessions" th:text="${#numbers.formatInteger(community.sessions, 1, 'COMMA')}">0</b><span data-unit="sessions" data-one="session logged" data-many="sessions logged" th:text="${community.sessions == 1} ? 'session logged' : 'sessions logged'">sessions logged</span></div>
+        <div><b class="num" data-count="reports" th:text="${#numbers.formatInteger(community.reports, 1, 'COMMA')}">0</b><span data-unit="reports" data-one="monthly report" data-many="monthly reports" th:text="${community.reports == 1} ? 'monthly report' : 'monthly reports'">monthly reports</span></div>
       </div>
     </div>
     <div class="hero-card" aria-label="Example AI score">

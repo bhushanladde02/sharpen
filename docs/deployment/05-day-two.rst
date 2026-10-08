@@ -255,19 +255,24 @@ server and in ``private/credentials.md`` on the Mac, nowhere else.
 
 **Google** (about fifteen minutes)
 
-#. console.cloud.google.com → project picker → *New project* → ``Sharpen`` → *Create*, and select it.
-#. *APIs & Services* → *OAuth consent screen* (newer consoles call it *Google Auth Platform* → *Branding*) →
-   *Get started*. App name ``Sharpen``; support email: yours; audience **External**; contact email: yours.
+#. console.cloud.google.com → project picker (top left; it may show an auto-created "API Project" — do not use
+   that) → *New project* → ``Sharpen`` → *Create* → *Select project*. No billing account is needed.
+#. ``https://console.cloud.google.com/auth/overview`` (*Google Auth Platform*) → *Get started*: App name
+   ``Sharpen``; user support email: yours; audience **External** (Internal is for Workspace organisations only);
+   contact email: yours; tick the user-data policy → *Continue* → *Create*.
 #. *Branding*: home page ``https://sharpenscore.com``, privacy policy ``https://sharpenscore.com/privacy``,
    authorised domain ``sharpenscore.com`` (already verified to Google through Search Console with the same
-   account, which is what Google checks).
+   account, which is what Google checks). Leave the **logo empty** — uploading one starts a brand review that
+   can take weeks.
 #. *Data access* (scopes): add only ``openid``, ``.../auth/userinfo.email`` and ``.../auth/userinfo.profile``.
    These are non-sensitive scopes, so no Google review is needed.
 #. *Audience*: press **Publish app** to move it from *Testing* to *In production*. In *Testing* only listed
    test users can sign in, and their sign-ins expire after seven days.
-#. *Clients* (or *Credentials* → *Create credentials*) → *OAuth client ID* → type **Web application**, name
-   ``Sharpen``. *Authorised JavaScript origins*: ``https://sharpenscore.com``. *Authorised redirect URIs*:
-   ``https://sharpenscore.com/login/oauth2/code/google``. *Create*, then copy the client ID and secret.
+#. *Clients* → *Create client* → type **Web application**, name ``Sharpen website``. *Authorised JavaScript
+   origins*: ``https://sharpenscore.com``. *Authorised redirect URIs*:
+   ``https://sharpenscore.com/login/oauth2/code/google``. *Create*. The dialog shows the client ID and the secret
+   **once** — press *Download JSON* before *OK*, and keep the file in ``private/`` (git-ignored), not in the
+   repository. The JSON also lists the redirect URI and origin, which makes it the easiest way to check them.
 #. Google's branding guidelines ask that a "Sign in with Google" button carry Google's own "G" mark. Sharpen's
    buttons are plain text; to add the mark, download the official asset from Google's *Sign in with Google
    branding guidelines* page and add it to the button — do not draw one.

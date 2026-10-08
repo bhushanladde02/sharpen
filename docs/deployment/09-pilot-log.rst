@@ -654,15 +654,30 @@ Day 8 — Wednesday 16 September: which build is this?
    test fails if the date starts with 1980. Reproduced both ways: with the pipeline's timestamp setting the old
    pom stamps 1980, the new one the actual time and ``revision=46a7549cc18d``.
 
+#. **Google sign-in live; both providers connected.** (Day 23, evening.) A dedicated Google Cloud project
+   ``Sharpen`` (the account's auto-created "API Project" left alone), Google Auth Platform set to External with
+   home page, ``/privacy`` and the authorised domain, no logo (a logo starts a brand review), the three
+   non-sensitive scopes ``openid``, ``userinfo.email`` and ``userinfo.profile``, a Web client "Sharpen website"
+   with the one origin and the one redirect URI, and the app **published** to *In production* — no review needed
+   for those scopes. The downloaded client JSON confirmed both URIs; a copy lives in ``private/``. The two
+   values went into ``deploy/.env``, the restart kept the deployed version (``revision`` unchanged — the
+   morning's fix doing its job), and the live login page offers *Continue with Google* and *Continue with
+   GitHub*. The admin account now has all three ways in under *Settings → Sign-in methods*. Decision on the
+   GitHub secret that had been pasted into a chat: keep it (it lets someone imitate the sign-in flow, which still
+   needs each person to press *Authorize* and yields only name, username and email); rotate if it ever appears
+   anywhere else. The Google secret was likewise shown in a screenshot; same decision. Also fixed from the
+   morning's list: the counters said "1 members" — the word next to each number now follows it ("1 member",
+   "1 person tracking their AI use", "1 session logged"), on the server-rendered page and in the 30-second live
+   refresh; a test checks it, and a browser run on a fresh site with exactly one member showed "1 member" before
+   and after the refresh. 38 tests.
+
 Open items (as of day 23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* GitHub sign-in: rotate the client secret (it was pasted in a chat) — new secret into ``deploy/.env`` and
-  ``private/credentials.md`` only, ``dc up -d app``, test, delete the old one on GitHub.
-* Google sign-in: create the Google OAuth client (``05-day-two.rst``, *Sign in with Google and GitHub*), add its
-  two values to ``deploy/.env`` and ``private/credentials.md``, ``dc up -d app``, connect it in Settings.
-* Small fixes noticed on the live site: the menu says "1 members"; a sign-in form left open across a restart
-  shows the 403 page — it could send the person back to a fresh form with a note instead.
+* A sign-in form left open across a restart shows the 403 page — it could send the person back to a fresh
+  form with a note instead.
+* Optional: Google's branding guidelines ask for the official "G" mark on a *Sign in with Google* button; add the
+  asset from Google's branding page if wanted (Sharpen's buttons are plain text).
 * LinkedIn sign-in: create a LinkedIn Company Page for Sharpen and a developer app tied to it, add the product
   *Sign In with LinkedIn using OpenID Connect* — the code follows the Google pattern.
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.

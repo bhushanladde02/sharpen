@@ -235,8 +235,8 @@ names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps
 #. Keep the old DuckDNS name pointing at the server indefinitely — it costs nothing and the redirect is what
    preserves old links.
 
-Sign in with Google and GitHub
-------------------------------
+Sign in with Google, GitHub and LinkedIn
+----------------------------------------
 
 Each provider is switched on by two values in ``deploy/.env`` on the server; until both are there the site
 offers email and password only, so the steps can be done one provider at a time and in any order. Everything
@@ -277,22 +277,48 @@ server and in ``private/credentials.md`` on the Mac, nowhere else.
    buttons are plain text; to add the mark, download the official asset from Google's *Sign in with Google
    branding guidelines* page and add it to the button — do not draw one.
 
+**LinkedIn** (about twenty minutes; LinkedIn only gives sign-in to apps that belong to a Company Page)
+
+#. **Company Page.** linkedin.com → *For Business* (the grid icon, top right) → *Create a Company Page* →
+   *Company*. Name ``Sharpen``; LinkedIn public URL e.g. ``linkedin.com/company/sharpenscore``; website
+   ``https://sharpenscore.com``; industry *Software Development*; size *0–1 employees*; type *Self-owned* or
+   *Privately held*; logo: ``src/main/resources/static/img/apple-touch-icon.png`` will do. Tick that you are an
+   authorised representative → *Create page*. You are its admin.
+#. **Developer app.** https://www.linkedin.com/developers/apps → *Create app*. App name ``Sharpen``; *LinkedIn
+   Page*: pick the ``Sharpen`` page you just made; privacy policy URL ``https://sharpenscore.com/privacy``; app
+   logo: the same PNG (LinkedIn requires one here); tick the legal agreement → *Create app*.
+#. **Verify** the app for the page: app → *Settings* → *Verify* → *Generate URL*, open that URL while signed in
+   as the page admin (you) and approve. The app shows *Verified*.
+#. **Product.** app → *Products* → *Sign In with LinkedIn using OpenID Connect* → *Request access* → accept the
+   terms. It is granted at once, and *Auth* → *OAuth 2.0 scopes* then lists ``openid``, ``profile`` and
+   ``email``. Request no other products.
+#. **Redirect URL.** app → *Auth* → *Authorized redirect URLs for your app* → *Add redirect URL* →
+   ``https://sharpenscore.com/login/oauth2/code/linkedin`` → *Update*.
+#. **Keys.** Same *Auth* page: *Client ID*, and *Primary Client Secret* (eye icon to show, copy icon to copy).
+   LinkedIn keeps showing the secret, so there is nothing to download; copy both into ``private/credentials.md``.
+#. What LinkedIn gives Sharpen: the member's id, name, verified email and photo address — not their headline or
+   work history (those need LinkedIn partner approval). Sharpen sends its credentials in the form body, as
+   LinkedIn requires, and does not use PKCE with LinkedIn (see ``SocialRegistrations.linkedin``).
+
 **On the server**
 
-#. ``nano ~/sharpen/deploy/.env`` and add the four lines (either pair alone is fine)::
+#. ``nano ~/sharpen/deploy/.env`` and add the lines for the providers you set up (any pair alone is fine)::
 
       GOOGLE_CLIENT_ID=...apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET=...
       GITHUB_CLIENT_ID=...
       GITHUB_CLIENT_SECRET=...
+      LINKEDIN_CLIENT_ID=...
+      LINKEDIN_CLIENT_SECRET=...
 
 #. ``dc up -d app`` — Compose recreates the app with the new values (about 20 seconds), using the last deployed
    version. Run it on the **server**, not the Mac (the Mac has no Docker; ``zsh: command not found: docker``
    means you are on the wrong machine). Check ``/api/v1/health`` shows the same ``revision`` afterwards.
 #. Open ``https://sharpenscore.com/login`` in a private window: the buttons appear for the providers you set.
    Try each with an account that has never used Sharpen; it should land on the dashboard. Then sign in with your
-   own password account and connect your Google and GitHub under *Settings → Sign-in methods*.
+   own password account and connect your Google, GitHub and LinkedIn under *Settings → Sign-in methods*.
 
-If a provider answers *redirect_uri_mismatch* (Google) or *The redirect_uri is not associated with this
-application* (GitHub), the callback URL in its console differs from the one above by a character — scheme,
-``www``, or a trailing slash.
+If a provider answers *redirect_uri_mismatch* (Google), *The redirect_uri is not associated with this
+application* (GitHub) or *The redirect_uri does not match the registered value* (LinkedIn), the callback URL in
+its console differs from the one above by a character — scheme, ``www``, or a trailing slash. LinkedIn's
+*unauthorized_scope_error* means the *Sign In with LinkedIn using OpenID Connect* product is not added yet.

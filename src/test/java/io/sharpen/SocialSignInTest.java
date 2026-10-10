@@ -66,6 +66,9 @@ class SocialSignInTest {
     static volatile Map<String, Object> githubUser = Map.of();
     static volatile List<Map<String, Object>> githubEmails = List.of();
     static volatile String lastNonce;
+    static volatile Map<String, Object> linkedinUser = Map.of();
+    /** How Sharpen authenticated at LinkedIn's token endpoint last time: what the form body and headers held. */
+    static volatile String linkedinTokenBody = "", linkedinTokenAuthHeader = "";
 
     static {
         try {
@@ -90,6 +93,9 @@ class SocialSignInTest {
         r.add("sharpen.oauth.github.client-id", () -> "github-test-client");
         r.add("sharpen.oauth.github.client-secret", () -> "github-test-secret");
         r.add("sharpen.oauth.github.endpoint-base", () -> base + "/gh");
+        r.add("sharpen.oauth.linkedin.client-id", () -> "linkedin-test-client");
+        r.add("sharpen.oauth.linkedin.client-secret", () -> "linkedin-test-secret");
+        r.add("sharpen.oauth.linkedin.endpoint-base", () -> base + "/li");
     }
 
     private static void provider(HttpExchange x) throws IOException {
@@ -109,6 +115,23 @@ class SocialSignInTest {
             } else if (path.startsWith("/g/") && path.endsWith("/userinfo")) {
                 body = googleUser;
             } else if (path.startsWith("/g/") && path.endsWith("/certs")) {
+                body = new JWKSet(KEY.toPublicJWK()).toJSONObject();
+            } else if (path.equals("/li/oauth/v2/accessToken")) {
+                // LinkedIn wants the client credentials in the form body (client_secret_post), not a Basic header.
+                linkedinTokenBody = new String(x.getRequestBody().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                linkedinTokenAuthHeader = Objects.toString(x.getRequestHeaders().getFirst("Authorization"), "");
+                Map<String, Object> u = linkedinUser;
+                JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder()
+                        .issuer("https://www.linkedin.com/oauth").subject((String) u.get("sub")).audience("linkedin-test-client")
+                        .issueTime(new Date()).expirationTime(Date.from(Instant.now().plusSeconds(300))).claim("nonce", lastNonce);
+                u.forEach(claims::claim);
+                SignedJWT jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(KEY.getKeyID()).build(), claims.build());
+                jwt.sign(new RSASSASigner(KEY));
+                body = Map.of("access_token", "li-access", "token_type", "Bearer", "expires_in", 300,
+                        "scope", "openid,profile,email", "id_token", jwt.serialize());
+            } else if (path.equals("/li/v2/userinfo")) {
+                body = linkedinUser;
+            } else if (path.equals("/li/oauth/openid/jwks")) {
                 body = new JWKSet(KEY.toPublicJWK()).toJSONObject();
             } else if (path.startsWith("/gh/") && path.endsWith("/access_token")) {
                 body = Map.of("access_token", "gh-access", "token_type", "bearer", "scope", "read:user,user:email");
@@ -213,7 +236,7 @@ class SocialSignInTest {
     void loginAndSignUpOfferTheConfiguredProviders() throws Exception {
         Browser b = new Browser();
         String login = b.get("/login").body();
-        assertTrue(login.contains("Continue with Google") && login.contains("Continue with GitHub"));
+        assertTrue(login.contains("Continue with Google") && login.contains("Continue with GitHub") && login.contains("Continue with LinkedIn"));
         assertTrue(login.contains("href=\"/oauth2/authorization/github\""));
         assertTrue(b.get("/register").body().contains("Sign up with GitHub"));
     }
@@ -244,6 +267,39 @@ class SocialSignInTest {
         assertEquals("/login", URI.create(unknown).getPath());
         assertTrue(URI.create(unknown).getRawQuery().endsWith("&provider=unknown"), unknown);
         assertFalse(unknown.contains("evil"), unknown);
+    }
+
+    @Test
+    void linkedinCreatesAnAccountTheLinkedInWay() throws Exception {
+        linkedinUser = Map.of("sub", "li-ada", "email", "ada@linkedin.example", "email_verified", true,
+                "given_name", "Ada", "family_name", "Lovelace", "name", "Ada Lovelace", "locale", "en-US");
+        Browser b = new Browser();
+        HttpResponse<String> toLinkedIn = b.get("/oauth2/authorization/linkedin");
+        String authorize = toLinkedIn.headers().firstValue("Location").orElseThrow();
+        Map<String, String> q = query(authorize);
+        assertEquals("openid profile email", q.get("scope"));
+        assertNotNull(q.get("nonce"), "OpenID Connect: a nonce is sent");
+        assertNull(q.get("code_challenge"), "no PKCE towards LinkedIn (see SocialRegistrations.linkedin)");
+
+        assertTrue(b.returnFromProvider(toLinkedIn).endsWith("/dashboard"));
+        assertTrue(linkedinTokenBody.contains("client_secret=linkedin-test-secret"), "credentials in the form body");
+        assertTrue(linkedinTokenBody.contains("client_id=linkedin-test-client"));
+        assertFalse(linkedinTokenBody.contains("code_verifier"), "no PKCE verifier either");
+        assertFalse(linkedinTokenAuthHeader.startsWith("Basic"), "no Basic header: " + linkedinTokenAuthHeader);
+
+        Person ada = people.findByEmailIgnoreCase("ada@linkedin.example").orElseThrow();
+        assertEquals("Ada", ada.getFirstName());
+        assertEquals("Lovelace", ada.getLastName());
+        assertFalse(ada.hasPassword());
+        assertTrue(identities.findByProviderAndSubject("linkedin", "li-ada").isPresent());
+        String settings = b.get("/settings").body();
+        assertTrue(settings.contains(">LinkedIn<") && settings.contains("ada@linkedin.example"), "Settings names the LinkedIn account");
+
+        // An unverified LinkedIn email does not make an account.
+        linkedinUser = Map.of("sub", "li-unverified", "email", "unsure@linkedin.example", "email_verified", false,
+                "given_name", "Un", "family_name", "Sure", "name", "Un Sure");
+        assertTrue(new Browser().continueWith("linkedin").contains("signin_error=no_verified_email&provider=linkedin"));
+        assertTrue(people.findByEmailIgnoreCase("unsure@linkedin.example").isEmpty());
     }
 
     @Test

@@ -22,7 +22,7 @@ person
      - unique, lower-cased; login name
    * - password_hash
      - varchar(100), nullable
-     - BCrypt; null for an account made through Google or GitHub until a password is set in Settings
+     - BCrypt; null for an account made through Google, GitHub or LinkedIn until a password is set in Settings
    * - display_name
      - varchar(120)
      - what every page shows: "First [Middle] Last" for a person, the company name for a company
@@ -59,7 +59,7 @@ person
 person_identity
 ---------------
 
-A Google or GitHub account that may sign in as a person. One row per provider per person; matched on the
+A Google, GitHub or LinkedIn account that may sign in as a person. One row per provider per person; matched on the
 provider's permanent user id, never on email. Deleted with the person.
 
 .. list-table::
@@ -77,10 +77,10 @@ provider's permanent user id, never on email. Deleted with the person.
      - ``on delete cascade``; unique with ``provider``
    * - provider
      - varchar(20)
-     - ``google`` or ``github`` (the registration id)
+     - ``google``, ``github`` or ``linkedin`` (the registration id)
    * - subject
      - varchar(190)
-     - the provider's permanent user id (Google ``sub``, GitHub numeric ``id``); unique with ``provider``
+     - the provider's permanent user id (Google and LinkedIn ``sub``, GitHub numeric ``id``); unique with ``provider``
    * - email, username
      - varchar(190), varchar(100)
      - what the provider showed at link time, for Settings to display; not used to match

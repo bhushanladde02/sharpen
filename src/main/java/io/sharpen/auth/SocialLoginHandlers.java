@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Where a Google/GitHub sign-in lands. A sign-in from the login or sign-up page goes where a password sign-in
+ * Where a Google/GitHub/LinkedIn sign-in lands. A sign-in from the login or sign-up page goes where a password sign-in
  * goes (the page that asked for it, else the dashboard); a <i>Connect</i> from Settings goes back to Settings.
  * A refusal goes back to whichever page started it, with a code the page turns into a sentence.
  *

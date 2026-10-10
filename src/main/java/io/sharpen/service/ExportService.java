@@ -89,7 +89,7 @@ public class ExportService {
         profile.put("createdAt", person.getCreatedAt() == null ? null : person.getCreatedAt().toString());
         out.put("profile", profile);
 
-        // Ways to sign in: whether a password is set, and each connected Google/GitHub account as the provider showed it.
+        // Ways to sign in: whether a password is set, and each connected Google/GitHub/LinkedIn account as the provider showed it.
         Map<String, Object> signIn = new LinkedHashMap<>();
         signIn.put("password", person.hasPassword());
         List<Map<String, Object>> linked = new ArrayList<>();

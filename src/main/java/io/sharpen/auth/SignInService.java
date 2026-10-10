@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Decides which Sharpen account a Google or GitHub sign-in belongs to. The rules, in order:
+ * Decides which Sharpen account a Google, GitHub or LinkedIn sign-in belongs to. The rules, in order:
  *
  * <ol>
  *   <li><b>Connecting from Settings</b> (the person is signed in and pressed <i>Connect</i>): the provider account

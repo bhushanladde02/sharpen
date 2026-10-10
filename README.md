@@ -83,12 +83,13 @@ is ever about a person. Below the threshold the page says so and shows the count
 
 ## Signing in
 
-Email and password, or **Continue with Google / GitHub** when the deployment configures them (two values per
+Email and password, or **Continue with Google / GitHub / LinkedIn** when the deployment configures them (two values per
 provider in `deploy/.env`; setup in `docs/deployment/05-day-two.rst`). A first sign-in with a provider creates an
 individual account from the provider's name and *verified* email; an existing account is never merged by email —
 its owner signs in with the password and connects the provider under Settings → Sign-in methods, which proves both
 sides. Accounts are matched on the provider's permanent user id, provider tokens are not kept, and the last way
-into an account cannot be removed. LinkedIn is next.
+into an account cannot be removed. LinkedIn gives name and email only — headline and work history need LinkedIn
+partner approval, so profiles are not filled from it.
 
 ## Getting it out again
 

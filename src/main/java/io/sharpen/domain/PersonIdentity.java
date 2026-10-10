@@ -21,7 +21,7 @@ public class PersonIdentity {
     @Column(name = "person_id", nullable = false)
     private Long personId;
 
-    /** Registration id: {@code google} or {@code github}. */
+    /** Registration id: {@code google}, {@code github} or {@code linkedin}. */
     @Column(nullable = false, length = 20)
     private String provider;
 

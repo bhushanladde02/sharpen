@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * Settings → Sign-in methods: connect a Google or GitHub account to the signed-in person, or disconnect it.
+ * Settings → Sign-in methods: connect a Google, GitHub or LinkedIn account to the signed-in person, or disconnect it.
  * Connecting is a POST (so it carries the form's anti-forgery token) that marks the session and hands over to
  * Spring's {@code /oauth2/authorization/<provider>}; {@code SocialUserServices} sees the mark when the provider
  * sends the person back and links instead of signing in someone new.

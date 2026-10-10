@@ -31,7 +31,7 @@ public class GlobalModelAttributes {
         return social.providers();
     }
 
-    /** A refused Google/GitHub sign-in, as a sentence: {@code ?signin_error=<code>&provider=<id>} on login and Settings. */
+    /** A refused Google/GitHub/LinkedIn sign-in, as a sentence: {@code ?signin_error=<code>&provider=<id>} on login and Settings. */
     @ModelAttribute("signInError")
     public String signInError(jakarta.servlet.http.HttpServletRequest request) {
         String code = request.getParameter("signin_error");

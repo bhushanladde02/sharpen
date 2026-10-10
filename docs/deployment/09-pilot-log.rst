@@ -671,15 +671,31 @@ Day 8 — Wednesday 16 September: which build is this?
    refresh; a test checks it, and a browser run on a fresh site with exactly one member showed "1 member" before
    and after the refresh. 38 tests.
 
-Open items (as of day 23)
+#. **LinkedIn sign-in, in code.** (Day 25, Saturday 10 October.) The third provider. Spring has no built-in
+   LinkedIn entry, so ``SocialRegistrations.linkedin`` spells out LinkedIn's OpenID Connect endpoints
+   (authorization, token, keys, user info, issuer ``https://www.linkedin.com/oauth``) with two LinkedIn-specific
+   choices, both checked by the test: the client credentials go in the token request's form body
+   (``client_secret_post`` — LinkedIn does not take a Basic header), and there is no PKCE, which Spring Security 7
+   adds to every request by default but LinkedIn documents only for native apps; state, nonce and the signed ID
+   token still protect the flow. Everything else — the account rules, Settings, deletion, the privacy page's
+   promises — was already provider-neutral, so LinkedIn needed one registration, two environment variables and
+   wording. The stand-in provider in ``SocialSignInTest`` now also plays LinkedIn: a new account with the names
+   from the ID token, an unverified email refused, the authorization request carrying ``openid profile email`` and
+   a nonce but no code challenge, and the token request carrying the secret in the body and no verifier. 39 tests.
+   ``/privacy`` names LinkedIn and says the photo address it sends is not kept (effective 10 October). The setup
+   guide has the LinkedIn steps: a Company Page first (LinkedIn's condition for a developer app), the app tied to
+   it and verified, the *Sign In with LinkedIn using OpenID Connect* product, the redirect URL.
+
+Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * A sign-in form left open across a restart shows the 403 page — it could send the person back to a fresh
   form with a note instead.
 * Optional: Google's branding guidelines ask for the official "G" mark on a *Sign in with Google* button; add the
   asset from Google's branding page if wanted (Sharpen's buttons are plain text).
-* LinkedIn sign-in: create a LinkedIn Company Page for Sharpen and a developer app tied to it, add the product
-  *Sign In with LinkedIn using OpenID Connect* — the code follows the Google pattern.
+* LinkedIn sign-in, the LinkedIn side: Company Page → developer app (verified for the page) → product *Sign In with
+  LinkedIn using OpenID Connect* → redirect URL → ``LINKEDIN_CLIENT_ID`` / ``_SECRET`` in ``deploy/.env`` →
+  ``dc up -d app`` → connect it in Settings (``05-day-two.rst``).
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.

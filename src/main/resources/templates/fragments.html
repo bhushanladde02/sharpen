@@ -83,7 +83,7 @@
 </div>
 
 
-<!-- "Continue with Google / GitHub": only the providers configured on this deployment; nothing renders when none are. -->
+<!-- "Continue with Google / GitHub / LinkedIn": only the providers configured on this deployment; nothing renders when none are. -->
 <th:block th:fragment="socialButtons(verb)">
   <div class="social-signin" th:if="${!#lists.isEmpty(socialProviders)}">
     <a class="btn block social" th:each="p : ${socialProviders}" th:href="@{/oauth2/authorization/{id}(id=${p.id})}"

@@ -16,9 +16,10 @@
       </div>
       <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
       <div class="counter-strip">
-        <div><b class="num" data-count="members" th:text="${#numbers.formatInteger(community.members, 1, 'COMMA')}">0</b><span data-unit="members" data-one="person tracking their AI use" data-many="people tracking their AI use" th:text="${community.members == 1} ? 'person tracking their AI use' : 'people tracking their AI use'">people tracking their AI use</span></div>
-        <div><b class="num" data-count="sessions" th:text="${#numbers.formatInteger(community.sessions, 1, 'COMMA')}">0</b><span data-unit="sessions" data-one="session logged" data-many="sessions logged" th:text="${community.sessions == 1} ? 'session logged' : 'sessions logged'">sessions logged</span></div>
-        <div><b class="num" data-count="reports" th:text="${#numbers.formatInteger(community.reports, 1, 'COMMA')}">0</b><span data-unit="reports" data-one="monthly report" data-many="monthly reports" th:text="${community.reports == 1} ? 'monthly report' : 'monthly reports'">monthly reports</span></div>
+        <!-- Real totals from Sharpen's own page-view count (bots excluded; one browser counts once a day). -->
+        <div title="Visits since counting began — one browser counts once a day; bots are not counted"><b class="num" data-count="visits" th:text="${#numbers.formatInteger(community.visits, 1, 'COMMA')}">0</b><span data-unit="visits" data-one="visit to Sharpen" data-many="visits to Sharpen" th:text="${community.visits == 1} ? 'visit to Sharpen' : 'visits to Sharpen'">visits to Sharpen</span></div>
+        <div><b class="num" data-count="pageViews" th:text="${#numbers.formatInteger(community.pageViews, 1, 'COMMA')}">0</b><span data-unit="pageViews" data-one="page viewed" data-many="pages viewed" th:text="${community.pageViews == 1} ? 'page viewed' : 'pages viewed'">pages viewed</span></div>
+        <div th:if="${community.countries >= 3}"><b class="num" data-count="countries" th:text="${community.countries}">0</b><span>countries visiting</span></div>
       </div>
     </div>
     <div class="hero-card" aria-label="Example AI score">

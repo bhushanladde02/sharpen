@@ -704,6 +704,22 @@ Day 8 — Wednesday 16 September: which build is this?
    visitors from ten countries giving the expected pie and PDF. Slice colours pass the palette check
    (colour-blind separation) in light and dark. ``/privacy`` says the country is kept and where it comes from. 51 tests.
 
+#. **The home page counts visits.** (Day 25, Saturday 10 October.) "1 person tracking their AI use · 7 sessions
+   logged · 1 monthly report" undersold a site that people do visit. The landing page's counter strip now shows
+   **visits to Sharpen** (one browser counted once a day, bots excluded, summed since counting began on 12
+   September), **pages viewed**, and — from three — **countries visiting**, straight from ``page_view``; the
+   signed-in menu keeps members and sessions. Nothing is seeded or rounded up: the numbers are the same ones the
+   Traffic page and the Evidence PDF report. The page-view totals are cached for a minute
+   (``CommunityService``), so a page view never runs the counting queries itself. ``/privacy`` mentions the
+   site totals; FR-70/71 updated. 51 tests; checked on PostgreSQL (48 visits, 86 pages, 10 countries in the
+   simulation).
+
+#. **Countries live.** (Day 25, Saturday 10 October.) LinkedIn sign-in and visitor countries merged and deployed.
+   On the A1, ``dc logs app | grep "Country list"`` showed the app fetching
+   ``dbip-country-lite-2026-10.csv.gz`` from DB-IP by itself at 20:26 UTC — 710,834 ranges — into the ``geodata``
+   volume, so the first download needed nothing by hand and the non-root app user could write the volume. (The
+   ``dc`` shortcut had to be added to ``~/.bashrc`` on the A1 first; it is an alias, not a command.)
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -714,8 +730,9 @@ Open items (as of day 25)
 * LinkedIn sign-in, the LinkedIn side: Company Page → developer app (verified for the page) → product *Sign In with
   LinkedIn using OpenID Connect* → redirect URL → ``LINKEDIN_CLIENT_ID`` / ``_SECRET`` in ``deploy/.env`` →
   ``dc up -d app`` → connect it in Settings (``05-day-two.rst``).
-* After the country change is deployed: ``dc logs app | grep "Country list"`` should show the list downloaded,
-  and Traffic should show the DB-IP line instead of the yellow "not loaded" notice (``05-day-two.rst``, *Countries*).
+* Reboot the A1 at a quiet moment: its login says *System restart required* (kernel updates). All three containers
+  are ``restart: unless-stopped``, so ``sudo reboot`` brings the site back by itself in about a minute; then
+  ``curl -s https://sharpenscore.com/api/v1/health``.
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.

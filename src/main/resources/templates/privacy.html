@@ -71,6 +71,8 @@
         shows your email, your notes, or individual sessions. A public profile appears in the <a th:href="@{/p}">directory</a>,
         in search engines, in the candidate view for company accounts, and through your score badge. Switch it off and
         all four stop at once: your profile address shows only "no public profile here", the badge stops loading, it drops out of the directory and the sitemap, and companies no longer see you.</p>
+      <p><b>Site totals</b> on the home page — visits, pages viewed and how many countries visitors came from — are
+        counts over everyone and say nothing about any one visit.</p>
       <p><b>Community insights</b> on <a th:href="@{/insights}">/insights</a> add up everyone's <i>rated</i> sessions over
         the last <span th:text="${insightsDays}">90</span> days, public profile or not. They are aggregates only: nothing
         is shown until <span th:text="${insightsMinPeople}">10</span> people are in the numbers, a tool gets its own line

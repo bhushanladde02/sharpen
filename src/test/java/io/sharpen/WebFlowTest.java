@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -139,9 +140,10 @@ class WebFlowTest {
         communityService.invalidate();
         var c = communityService.stats();
         String landing = mvc.perform(get("/")).andReturn().getResponse().getContentAsString();
-        assertTrue(landing.contains(c.members() == 1 ? ">person tracking their AI use<" : ">people tracking their AI use<"));
-        assertTrue(landing.contains(c.sessions() == 1 ? ">session logged<" : ">sessions logged<"));
-        assertTrue(landing.contains(c.reports() == 1 ? ">monthly report<" : ">monthly reports<"));
+        assertTrue(landing.contains(c.visits() == 1 ? ">visit to Sharpen<" : ">visits to Sharpen<"));
+        assertTrue(landing.contains(c.pageViews() == 1 ? ">page viewed<" : ">pages viewed<"));
+        assertTrue(landing.contains("data-one=\"visit to Sharpen\" data-many=\"visits to Sharpen\""), "the live refresh knows both forms");
+        assertEquals(c.countries() >= 3, landing.contains(">countries visiting<"), "countries appear from three");
         String menu = mvc.perform(get("/dashboard").with(user(me.getEmail()).roles("INDIVIDUAL"))).andReturn().getResponse().getContentAsString();
         assertTrue(menu.contains(c.members() == 1 ? ">member<" : ">members<"), "menu label matches " + c.members());
         assertTrue(menu.contains("data-one=\"member\" data-many=\"members\""), "the live refresh knows both forms");
@@ -573,6 +575,15 @@ class WebFlowTest {
         mvc.perform(get("/admin/traffic").param("month", YearMonth.from(LocalDate.now()).toString()).with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Evidence PDF")));
         mvc.perform(get("/admin/traffic").param("days", "0").with(asMe)).andExpect(status().isOk());   // "All time"
+        // The landing page's public totals count the same views: visits, pages, and countries once there are three
+        communityService.invalidate();
+        var totals = communityService.stats();
+        assertTrue(totals.visits() >= 4 && totals.pageViews() >= totals.visits(), "visits " + totals.visits() + ", views " + totals.pageViews());
+        assertEquals(2, totals.countries());   // India and the UK; unknown addresses are not a country
+        mvc.perform(get("/api/v1/public/stats")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.visits").value((int) totals.visits()))
+                .andExpect(jsonPath("$.pageViews").value((int) totals.pageViews()))
+                .andExpect(jsonPath("$.countries").value(2));
         mvc.perform(get("/admin/traffic.csv").param("days", "7").with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("day,page_views,visitors,signups,sessions_logged,reports_generated")));
         mvc.perform(get("/admin/traffic.pdf").param("month", YearMonth.from(LocalDate.now()).toString()).with(asMe)).andExpect(status().isOk())

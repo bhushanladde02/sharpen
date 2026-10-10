@@ -281,13 +281,16 @@ Community and feedback
      - Status
      - Where
    * - FR-70
-     - The landing page and every signed-in page must show the live number of members, sessions logged and
-       reports generated, refreshed without a reload (every 30 s and when the tab regains focus).
+     - The landing page must show the live number of visits (one browser once a day, bots excluded, since counting
+       began), pages viewed and — once visitors have come from three or more — countries; every signed-in page
+       shows members and sessions logged. All refresh without a reload (every 30 s and when the tab regains focus)
+       and are real counts from Sharpen's own tables, never seeded or rounded up.
      - Done
      - ``CommunityService``, ``/api/v1/public/stats``, ``layout.html``
    * - FR-71
-     - Counters are served from a 10-second in-memory cache and invalidated on registration, so a new member
-       sees themselves counted immediately while page views never trigger COUNT queries.
+     - Counters are served from an in-memory cache — account counts for 10 seconds, the page-view totals for a
+       minute — and invalidated on registration, so a new member sees themselves counted immediately while a page
+       view never triggers COUNT queries of its own.
      - Done
      - ``CommunityService``
    * - FR-72

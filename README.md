@@ -174,8 +174,9 @@ automatic HTTPS, a domain at Cloudflare (a free DuckDNS name for the pilot), the
 day-two operations (migrations, Search Console, traffic records, moving domains) and troubleshooting, with
 diagrams, and the CI/CD pipeline (GitHub Actions: test → smoke → docs, then multi-arch image to GHCR → SSH
 rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `deploy/README.md` is the
-one-page version for people who already know the tools. The landing page and every
-signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
+one-page version for people who already know the tools. The landing page shows live
+totals of visits, pages viewed and (from three) visitors' countries, and every signed-in page shows members and
+sessions logged — all from `/api/v1/public/stats`, refreshed every 30 s; there is
 a `/feedback` contact form open to everyone (linked as *Contact* and from the Help guide; honeypot, signed-timestamp and rate-limit protection, no captcha — registration has the same guard), and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
 `/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports), including
 where visitors come from — a pie by country and a list by continent, looked up on the server in DB-IP's free country

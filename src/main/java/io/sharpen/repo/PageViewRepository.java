@@ -32,6 +32,14 @@ public interface PageViewRepository extends JpaRepository<PageView, Long> {
     @Query("select count(v), count(distinct v.visitor) from PageView v where v.viewDay between :from and :to")
     List<Object[]> totals(LocalDate from, LocalDate to);
 
+    /** [page views, visits] since counting began; a visit is one browser on one day (the hash includes the day). */
+    @Query("select count(v), count(distinct v.visitor) from PageView v")
+    List<Object[]> allTime();
+
+    /** Countries visitors have come from (unknown and not-recorded left out). */
+    @Query("select count(distinct v.country) from PageView v where v.country is not null and v.country <> 'ZZ'")
+    long countriesReached();
+
     @Query("select min(v.viewDay) from PageView v")
     LocalDate firstDay();
 }

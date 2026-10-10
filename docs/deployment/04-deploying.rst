@@ -112,7 +112,8 @@ Refresh if the browser gives up early. After that it is instant, with the padloc
 
 What to verify:
 
-* The landing page shows the live counters (members, sessions, reports) — all zero on a fresh database.
+* The landing page shows the live counters (visits, pages viewed) — zero on a fresh database until the first
+  visits are counted (within a minute); countries appear once visitors have come from three.
 * **Register** with the ``ADMIN_EMAIL`` address from ``.env``. That account, and only that one, can open
   ``https://sharpenscore.com/admin/feedback``.
 * Log a session, open the dashboard, generate a report, download its PDF. If all of that works on the server,

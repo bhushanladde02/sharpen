@@ -39,13 +39,13 @@ Accounts
      - Release 1
      - —
    * - FR-6
-     - A visitor must be able to sign up and sign in with Google or GitHub when the deployment configures them.
+     - A visitor must be able to sign up and sign in with Google, GitHub or LinkedIn when the deployment configures them.
        A new account (individual) needs the provider to vouch for a verified email that no Sharpen account uses yet;
        an existing account is never joined automatically and connects a provider from Settings while signed in.
        Accounts are matched on the provider's permanent user id. The last way into an account cannot be removed; an
        account without a password sets one without a "current" and confirms deletion with its handle. Provider
        access tokens are not kept.
-     - Done (Google, GitHub); LinkedIn next
+     - Done (Google, GitHub, LinkedIn)
      - ``auth/``, ``SignInMethodsController``, ``SocialSignInTest``
 
 Session logging

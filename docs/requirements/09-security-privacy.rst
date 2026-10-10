@@ -68,7 +68,7 @@ Security controls (prototype)
        ``X-Forwarded-For`` cannot reset a limit. The session cookie is ``Secure`` over https, ``HttpOnly`` and
        ``SameSite=Lax``. Tested against the real server in ``ProxyHeadersTest``.
    * - SE-13
-     - Google/GitHub sign-in: Spring Security checks state, nonce and (Google) the ID token's signature, issuer,
+     - Google/GitHub/LinkedIn sign-in: Spring Security checks state, nonce and (Google, LinkedIn) the ID token's signature, issuer,
        audience and expiry. No automatic merge by email — Sharpen never verified sign-up emails, so merging would
        let someone pre-register a victim's address and keep a password into the account the victim later opens
        with Google; linking needs a signed-in person pressing *Connect* (a POST with CSRF). A password-less account is

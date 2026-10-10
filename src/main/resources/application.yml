@@ -39,7 +39,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
 
-# "Continue with Google / GitHub" — sharpen.oauth.{google,github}.client-id / client-secret, normally from the
+# "Continue with Google / GitHub / LinkedIn" — sharpen.oauth.{google,github,linkedin}.client-id / client-secret, normally from the
 # environment (SHARPEN_OAUTH_GOOGLE_CLIENT_ID, …; see deploy/.env.example). Unset means the provider is not offered.
 
 server:

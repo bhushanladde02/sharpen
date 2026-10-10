@@ -43,7 +43,7 @@ public class PersonService {
     }
 
     /**
-     * An individual account made through Google or GitHub: the provider has verified the email, so there is no
+     * An individual account made through Google, GitHub or LinkedIn: the provider has verified the email, so there is no
      * password and no sign-up form — the names come from the provider and can be edited in Settings.
      */
     public Person registerFromProvider(String email, String displayName) {
@@ -82,7 +82,7 @@ public class PersonService {
     }
 
     /**
-     * Why a password change was refused, or null when it went through. An account made through Google or GitHub
+     * Why a password change was refused, or null when it went through. An account made through Google, GitHub or LinkedIn
      * has no password yet; it sets one without a "current" — the person is signed in, which is the proof.
      */
     public String changePassword(Person person, String current, String next, String repeat) {

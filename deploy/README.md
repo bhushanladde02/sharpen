@@ -15,7 +15,7 @@ troubleshooting and day-two operations. This file is the short version for peopl
 |---|---|
 | `docker-compose.prod.yml` | db (postgres:16) + app (built from `../Dockerfile`) + caddy (ports 80/443) |
 | `Caddyfile` | `{$DOMAIN}` → automatic Let's Encrypt TLS, `reverse_proxy app:8080`, security headers |
-| `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`, optional `GOOGLE_`/`GITHUB_CLIENT_ID` and `_SECRET` for "Continue with …" (setup: `docs/deployment/05-day-two.rst`). `.env` is git-ignored |
+| `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`, optional `GOOGLE_`/`GITHUB_`/`LINKEDIN_CLIENT_ID` and `_SECRET` for "Continue with …" (setup: `docs/deployment/05-day-two.rst`). `.env` is git-ignored |
 | `setup-vm.sh` | one-time VM prep: Docker, ufw 22/80/443, Oracle iptables fix |
 | `oci-retry-a1.sh` | polls Oracle for a free `VM.Standard.A1.Flex` across all ADs and sizes until one is created |
 | `oci-create-micro.sh` | Plan B: creates the always-available free `VM.Standard.E2.1.Micro` (1 GB) |

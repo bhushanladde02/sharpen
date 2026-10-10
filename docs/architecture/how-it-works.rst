@@ -147,7 +147,7 @@ Security
 authenticated ``Person`` (or a 401). The second handles everything else with form login, a session cookie and
 CSRF protection, and leaves the landing page, login, registration, public profiles and static files open.
 
-The same chain offers *Continue with Google / GitHub* when a provider's client id and secret are configured
+The same chain offers *Continue with Google / GitHub / LinkedIn* when a provider's client id and secret are configured
 (``auth/SocialRegistrations``; nothing changes when none are). Spring Security runs the OAuth 2.0 / OpenID Connect
 exchange — state, nonce, and for Google the ID token's signature, issuer, audience and expiry — and
 ``auth/SocialUserServices`` maps the result to a person by three rules in ``auth/SignInService``: a *Connect* from
@@ -158,7 +158,10 @@ email, because Sharpen never verified sign-up emails — merging would let someo
 keep a password into the account the victim later opens with Google. The principal is named after the Sharpen
 account's email, so ``PersonService.current()`` and every role check work unchanged. Provider access tokens are
 discarded after sign-in (``DiscardingAuthorizedClientRepository``). ``SocialSignInTest`` runs the whole flow
-against a stand-in Google and GitHub inside the test, including a signed ID token.
+against a stand-in Google, GitHub and LinkedIn inside the test, including signed ID tokens. LinkedIn has no
+built-in Spring entry, so ``SocialRegistrations.linkedin`` spells out its OpenID Connect endpoints, sends the client
+credentials in the form body (LinkedIn does not accept a Basic header) and leaves out PKCE, which Spring Security 7
+adds by default but LinkedIn documents only for native apps; the test checks all three.
 Roles come from ``account_type``; ``/candidates`` requires ``COMPANY``. Beyond the URL rules, every repository
 query that returns a person's data takes the caller's id as a parameter (``findByIdAndPersonId``), so there is no
 code path where one account can read another's sessions by guessing an id. The web chain also sets the

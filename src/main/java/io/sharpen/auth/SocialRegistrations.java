@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -16,7 +19,8 @@ import java.util.Map;
 
 /**
  * The "Sign in with …" providers this deployment offers. A provider is offered only when its client id and secret
- * are configured ({@code SHARPEN_OAUTH_GOOGLE_CLIENT_ID} / {@code _CLIENT_SECRET}, the same for GITHUB), so the
+ * are configured ({@code SHARPEN_OAUTH_GOOGLE_CLIENT_ID} / {@code _CLIENT_SECRET}, the same for GITHUB and
+ * LINKEDIN), so the
  * site runs exactly as before until they are set, and each can be switched on separately.
  *
  * <p>Unlike Spring's in-memory repository this one may be empty. {@code endpoint-base} (tests only) points a
@@ -36,7 +40,10 @@ public class SocialRegistrations implements ClientRegistrationRepository, Iterab
                                @Value("${sharpen.oauth.google.endpoint-base:}") String googleBase,
                                @Value("${sharpen.oauth.github.client-id:}") String githubId,
                                @Value("${sharpen.oauth.github.client-secret:}") String githubSecret,
-                               @Value("${sharpen.oauth.github.endpoint-base:}") String githubBase) {
+                               @Value("${sharpen.oauth.github.endpoint-base:}") String githubBase,
+                               @Value("${sharpen.oauth.linkedin.client-id:}") String linkedinId,
+                               @Value("${sharpen.oauth.linkedin.client-secret:}") String linkedinSecret,
+                               @Value("${sharpen.oauth.linkedin.endpoint-base:}") String linkedinBase) {
         if (configured(googleId, googleSecret)) {
             // OpenID Connect: openid + profile + email, the ID token is checked against Google's keys.
             add(rebase(CommonOAuth2Provider.GOOGLE.getBuilder("google")
@@ -48,6 +55,40 @@ public class SocialRegistrations implements ClientRegistrationRepository, Iterab
                     .clientId(githubId.trim()).clientSecret(githubSecret.trim())
                     .scope("read:user", "user:email").build(), githubBase), "GitHub");
         }
+        if (configured(linkedinId, linkedinSecret)) {
+            add(rebase(linkedin(linkedinId.trim(), linkedinSecret.trim()), linkedinBase), "LinkedIn");
+        }
+    }
+
+    /**
+     * LinkedIn's "Sign In with LinkedIn using OpenID Connect" product. Spring has no built-in entry for it, so the
+     * endpoints are spelled out from LinkedIn's documentation. Two LinkedIn-specific choices:
+     * <ul>
+     *   <li>LinkedIn takes the client credentials in the form body ({@code client_secret_post}), not in a Basic
+     *       header.</li>
+     *   <li>No PKCE. Spring Security 7 adds it to every request by default, but LinkedIn documents it only for
+     *       native apps, not for a web app with a client secret. The flow stays protected by the state parameter,
+     *       the nonce and the signed ID token (issuer, audience, expiry, LinkedIn's published keys) and the secret.</li>
+     * </ul>
+     * Scopes: {@code openid profile email} — name, picture URL and verified email; nothing from the profile itself
+     * (headline, positions) is available without LinkedIn partner approval.
+     */
+    static ClientRegistration linkedin(String id, String secret) {
+        return ClientRegistration.withRegistrationId("linkedin")
+                .clientId(id).clientSecret(secret)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .scope("openid", "profile", "email")
+                .authorizationUri("https://www.linkedin.com/oauth/v2/authorization")
+                .tokenUri("https://www.linkedin.com/oauth/v2/accessToken")
+                .jwkSetUri("https://www.linkedin.com/oauth/openid/jwks")
+                .issuerUri("https://www.linkedin.com/oauth")
+                .userInfoUri("https://api.linkedin.com/v2/userinfo")
+                .userNameAttributeName(IdTokenClaimNames.SUB)
+                .clientName("LinkedIn")
+                .clientSettings(ClientRegistration.ClientSettings.builder().requireProofKey(false).build())
+                .build();
     }
 
     private static boolean configured(String id, String secret) {

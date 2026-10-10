@@ -21,7 +21,7 @@ public class Person {
     @Column(nullable = false, length = 190)
     private String email;
 
-    /** BCrypt hash; null for an account made through Google or GitHub until its owner sets a password. */
+    /** BCrypt hash; null for an account made through Google, GitHub or LinkedIn until its owner sets a password. */
     @Column(name = "password_hash", length = 100)
     private String passwordHash;
 
@@ -93,7 +93,7 @@ public class Person {
 
     public boolean isCompany() { return accountType == AccountType.COMPANY; }
 
-    /** False for an account that only signs in through Google or GitHub. */
+    /** False for an account that only signs in through Google, GitHub or LinkedIn. */
     public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
 
     public Long getId() { return id; }

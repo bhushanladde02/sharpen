@@ -28,8 +28,8 @@ Ordered by what unblocks a public launch.
 Release 2 candidates
 --------------------
 
-* Sign in with LinkedIn (OpenID Connect; name, email and picture only — profile fields such as headline need
-  LinkedIn partner approval). Google and GitHub are done (FR-6).
+* LinkedIn profile import (headline, positions) — needs LinkedIn partner approval; sign-in with Google, GitHub
+  and LinkedIn is done (FR-6).
 
 * Provider connectors (OpenAI / Anthropic admin APIs) on a schedule (FR-46).
 * Verifiable signals as a sixth score dimension (tests run, sources cited).

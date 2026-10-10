@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Turns "Google/GitHub says this is user X" into "this is Sharpen person P". The rest of the application
+ * Turns "Google/GitHub/LinkedIn says this is user X" into "this is Sharpen person P". The rest of the application
  * identifies the signed-in person by email ({@code PersonService.current()}), so the principal built here is named
  * after the Sharpen account's email — not the provider's — and carries the same role a password sign-in gets.
  */

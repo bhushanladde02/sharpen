@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PersonRepository people) {
-        // An account made through Google or GitHub has no password: to the password form it does not exist, so
+        // An account made through Google, GitHub or LinkedIn has no password: to the password form it does not exist, so
         // the form says "did not match" rather than revealing which accounts sign in some other way.
         return email -> people.findByEmailIgnoreCase(email)
                 .filter(p -> p.hasPassword())
@@ -65,7 +65,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webChain(HttpSecurity http, SocialRegistrations social, SocialUserServices socialUsers,
                                         SocialLoginHandlers socialHandlers) throws Exception {
-        // "Continue with Google / GitHub", only for the providers configured on this deployment. Spring handles
+        // "Continue with Google / GitHub / LinkedIn", only for the providers configured on this deployment. Spring handles
         // the redirect, state and nonce checks and the code exchange; SocialUserServices maps the result to a person.
         if (!social.isEmpty()) {
             http.oauth2Login(o -> o

@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Deletes an account and everything that belongs to it, in one transaction, after the person has proved it is
- * them by re-entering their password (or, for an account that signs in only through Google or GitHub, typing its
- * handle). Sessions, generated reports, the picture and any linked Google/GitHub sign-in go with the account;
+ * them by re-entering their password (or, for an account that signs in only through Google, GitHub or LinkedIn, typing its
+ * handle). Sessions, generated reports, the picture and any linked Google/GitHub/LinkedIn sign-in go with the account;
  * feedback they left stays (it is the site's record, not theirs) but is unlinked from the person. Nothing is
  * soft-deleted or kept "for 30 days" — the person asked for it to be gone, so it is gone, and the public profile
  * address shows "no public profile here" from the next request. The PostgreSQL schema would cascade most of this on its own; doing it explicitly

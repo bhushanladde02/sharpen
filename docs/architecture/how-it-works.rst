@@ -147,7 +147,8 @@ Security
 authenticated ``Person`` (or a 401). The second handles everything else with form login, a session cookie and
 CSRF protection, and leaves the landing page, login, registration, public profiles and static files open.
 
-The same chain offers *Continue with Google / GitHub / LinkedIn* when a provider's client id and secret are configured
+The same chain offers *Continue with Google / GitHub / LinkedIn* (the full walkthrough — setup, the request flow,
+the rules, tests and operations — is :doc:`sign-in-with-providers`) when a provider's client id and secret are configured
 (``auth/SocialRegistrations``; nothing changes when none are). Spring Security runs the OAuth 2.0 / OpenID Connect
 exchange — state, nonce, and for Google the ID token's signature, issuer, audience and expiry — and
 ``auth/SocialUserServices`` maps the result to a person by three rules in ``auth/SignInService``: a *Connect* from

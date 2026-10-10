@@ -312,3 +312,29 @@ s.text(805, 318, "Skipped, not failed, until the DEPLOY_* secrets exist", 11.5, 
 s.box(30, 190, 130, 150, "Also", "CodeQL scan weekly and on PRs; Dependabot PRs for Maven, Actions, Docker; a v* tag makes a Release with the jar", bold=False)
 s.text(500, 392, "Every step is a file in .github/workflows; the VM-side script is deploy/remote-deploy.sh.", 11.5, INK2, anchor="middle")
 s.save("09-pipeline.svg")
+
+# ------------------------------------------------------------------ 10. sign in with Google / GitHub / LinkedIn
+s = Svg(1000, 690)
+s.text(20, 30, "“Continue with Google”, request by request (GitHub and LinkedIn take the same path)", 15, INK, weight=800)
+y = 66
+steps = [
+    ("Browser", "The button is a link to /oauth2/authorization/google. (Settings → Connect is a POST first: it marks the session with the signed-in person's id, then redirects here.)", SURF, LINE),
+    ("Spring Security", "Creates state, nonce and (Google, GitHub) a PKCE verifier, keeps them in the session, and redirects to the provider with Sharpen's client id, the scopes and the callback URL.", ACCENT_SOFT, ACCENT),
+    ("Google / GitHub / LinkedIn", "The person signs in there and approves. The provider sends the browser back to /login/oauth2/code/google with a one-time code and the same state.", ORANGE_SOFT, ORANGE),
+    ("Spring Security", "Checks the state, then (server to server) swaps the code, client secret (and PKCE verifier) for tokens at the provider's token endpoint.", ACCENT_SOFT, ACCENT),
+    ("Spring Security", "Google, LinkedIn: verifies the ID token (signature against the provider's published keys, issuer, audience, expiry, nonce). GitHub: reads /user and /user/emails.", ACCENT_SOFT, ACCENT),
+    ("SocialUserServices", "Turns the answer into a ProviderUser: permanent id (sub / numeric id), verified email, name, username.", GOOD_SOFT, GOOD),
+    ("SignInService.resolve", "Connect → link to the signed-in person · known id → that person · new id → new account if the email is verified and unused · else refuse with a code.", GOOD_SOFT, GOOD),
+    ("Session", "Principal named by the Sharpen account's email with its role, so the rest of the app is unchanged. The provider's token is dropped (DiscardingAuthorizedClientRepository).", SURF, LINE),
+    ("SocialLoginHandlers", "Success: the page that asked, else /dashboard (Connect: /settings?connected=google). Refusal: /login?signin_error=<code>&provider=google, both from fixed lists.", GOOD_SOFT, GOOD),
+]
+for i, (t, sub, fill, stroke) in enumerate(steps):
+    s.step(40, y + 24, i + 1)
+    s.box(62, y, 250, 50, t, None, fill=fill, stroke=stroke, mono=t[0].islower() or t.startswith("Social") or t.startswith("SignIn"))
+    for j, ln in enumerate(wrap(sub, 650, 6.3)):
+        s.text(330, y + 18 + j * 14, ln, 11.5, INK2)
+    if i < len(steps) - 1:
+        s.arrow(187, y + 50, 187, y + 66)
+    y += 66
+s.text(500, y + 10, "Blue: Spring Security does it.  Green: Sharpen's own code (io.sharpen.auth).  Orange: the provider's site.", 11.5, INK2, anchor="middle")
+s.save("10-sign-in.svg")

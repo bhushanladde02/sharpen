@@ -1,0 +1,6 @@
+/* Let table cells wrap. The Read the Docs theme keeps every cell on one line and scrolls the table sideways,
+   which hides most of a wide table's text; the docs' tables hold sentences, so they read better wrapped.
+   Long code (URLs, class names) may break anywhere inside a table; a table that is still too wide scrolls. */
+.wy-table-responsive table td,
+.wy-table-responsive table th { white-space: normal; vertical-align: top; }
+.wy-table-responsive table code { white-space: normal; overflow-wrap: anywhere; }

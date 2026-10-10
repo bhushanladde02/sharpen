@@ -207,6 +207,7 @@ the tool did the typing, the person did the thinking and checked the result.
 | security design | `config/SecurityConfig.java` — two filter chains: form login for pages, stateless API-key for `/api/**` |
 | the end-to-end test | `WebFlowTest` — register → log → import → API ingest → report → PDF → public profile → company view |
 | the design explained with diagrams | `docs/architecture/how-it-works.rst` |
+| sign in with Google, GitHub and LinkedIn, end to end | `docs/architecture/sign-in-with-providers.rst` — setup, request flow, account rules, tests, operations |
 | how it runs in production for $0 | `docs/deployment/` and `deploy/` |
 | the delivery pipeline | `.github/workflows/` (CI, Deploy, CodeQL, Release) and `deploy/remote-deploy.sh` |
 

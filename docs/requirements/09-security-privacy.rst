@@ -33,7 +33,8 @@ Privacy principles
    * - PR-7
      - **No third-party requests.** Rendering a page contacts no host but Sharpen's own: no analytics, no
        advertising, no CDN — the three font families are self-hosted under ``static/fonts`` (SIL OFL 1.1). A test
-       asserts that no page references ``googleapis``/``gstatic``.
+       asserts that no page references ``googleapis``/``gstatic``. Visitor countries come from a list the server
+       downloads monthly, not from a lookup service (SE-14).
 
 Security controls (prototype)
 -----------------------------
@@ -76,6 +77,12 @@ Security controls (prototype)
        refused sign-in carry only values from Sharpen's own fixed lists — a configured provider id and one of
        ``SocialLoginHandlers.CODES`` — URL-encoded (CodeQL finding on PR #50).
        Each rule has a test that fails when the rule is removed.
+   * - SE-14
+     - Visitor countries: looked up in memory from DB-IP's list held on the server, so no address is sent to a
+       geolocation service, and only the ISO code is stored — never the address. Only literal IPv4/IPv6 addresses are
+       parsed (no DNS lookups from attacker-supplied text). The monthly download is capped at 64 MB, must parse
+       into at least 100,000 ranges with under 1 % unreadable lines before it replaces the current list, and is
+       written to a temporary file and moved into place atomically. Off in development and tests.
 
 Release 1 additions
 -------------------

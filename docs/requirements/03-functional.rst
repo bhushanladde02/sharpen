@@ -308,3 +308,12 @@ Community and feedback
        Cached 15 minutes; invalidated when an account is deleted.
      - Done
      - ``InsightsService``, ``InsightsController``, ``insights.html``
+   * - FR-75
+     - The owner's traffic page must show where visitors come from: a pie of the period's visitors by country (at
+       most five named, the rest as *Other countries*) with a legend giving each share and count, the same visitors
+       by continent, and every country in a table; the Evidence PDF must carry the country and continent tables. The
+       country is looked up on the server from the visitor's address in a locally held list and only its two-letter
+       code is stored; visitors who cannot be placed, and views from before countries were recorded, are counted
+       and named, not mixed into the shares.
+     - Done
+     - ``CountryLookup``, ``CountryListUpdater``, ``TrafficService``, ``admin-traffic.html``

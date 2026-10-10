@@ -9,7 +9,10 @@
 #   docker build -f deploy/Dockerfile.ci -t sharpen:local .
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-RUN groupadd --system sharpen && useradd --system --gid sharpen --no-create-home sharpen
+RUN groupadd --system sharpen && useradd --system --gid sharpen --no-create-home sharpen \
+ && mkdir -p /app/data/geo && chown -R sharpen:sharpen /app/data
+# /app/data/geo is where the app keeps DB-IP's country list. Created here, owned by the app's user, so the
+# geodata volume in docker-compose.prod.yml starts out writable (Docker copies the ownership into a new volume).
 COPY target/sharpen.jar app.jar
 USER sharpen
 ENV SPRING_PROFILES_ACTIVE=postgres

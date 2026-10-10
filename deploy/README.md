@@ -13,7 +13,7 @@ troubleshooting and day-two operations. This file is the short version for peopl
 
 | File | Role |
 |---|---|
-| `docker-compose.prod.yml` | db (postgres:16) + app (built from `../Dockerfile`) + caddy (ports 80/443) |
+| `docker-compose.prod.yml` | db (postgres:16) + app (built from `../Dockerfile`; volume `geodata` holds DB-IP's monthly country list) + caddy (ports 80/443) |
 | `Caddyfile` | `{$DOMAIN}` → automatic Let's Encrypt TLS, `reverse_proxy app:8080`, security headers |
 | `.env.example` → `.env` | `DOMAIN`, `DB_PASSWORD`, `ADMIN_EMAIL`, `DEMO_DATA`, optional `GOOGLE_`/`GITHUB_`/`LINKEDIN_CLIENT_ID` and `_SECRET` for "Continue with …" (setup: `docs/deployment/05-day-two.rst`). `.env` is git-ignored |
 | `setup-vm.sh` | one-time VM prep: Docker, ufw 22/80/443, Oracle iptables fix |
@@ -70,6 +70,7 @@ cd ~/sharpen && git pull && dc up -d --build app      # update (db and caddy kee
 dc ps · dc logs -f app · dc restart app · docker stats --no-stream   # restarts keep the last deployed image (sharpen-app:local)
 curl -s https://sharpenscore.com/api/v1/health      # revision = commit that is live, built = when
 dc exec -T db pg_dump -U sharpen sharpen | gzip > ~/backups/sharpen-$(date +%F).sql.gz   # backup (cron it)
+dc logs app | grep "Country list"                   # visitor-country list: downloaded monthly by the app itself
 ```
 
 Live counters on every page come from `/api/v1/public/stats` (30 s refresh); `/api/v1/health` is open for

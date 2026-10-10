@@ -33,7 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:mem:sharpen-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
         "sharpen.demo-data=false",
-        "sharpen.admin-email=flow@example.com"
+        "sharpen.admin-email=flow@example.com",
+        "sharpen.geo.file=src/test/resources/geo/test-countries.csv"
 })
 class WebFlowTest {
 
@@ -555,10 +556,19 @@ class WebFlowTest {
         mvc.perform(get("/p").header("User-Agent", "Mozilla/5.0 test").header("Referer", "https://news.ycombinator.com/item?id=1")
                 .header("Accept-Language", "en-US,en;q=0.9")).andExpect(status().isOk());
         mvc.perform(get("/p").header("User-Agent", "Googlebot/2.1")).andExpect(status().isOk());
+        // Countries: two visitors from India, one from the UK, the address itself never kept
+        for (String[] v : new String[][]{{"49.36.10.1", "Mozilla/5.0 A"}, {"49.36.10.2", "Mozilla/5.0 B"}, {"81.2.69.160", "Mozilla/5.0 C"}}) {
+            mvc.perform(get("/p").header("User-Agent", v[1]).with(r -> { r.setRemoteAddr(v[0]); return r; })).andExpect(status().isOk());
+        }
         traffic.flush();
         mvc.perform(get("/admin/traffic").with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("news.ycombinator.com")))
-                .andExpect(content().string(containsString("Evidence PDF")));
+                .andExpect(content().string(containsString("Evidence PDF")))
+                .andExpect(content().string(containsString("Where visitors come from")))
+                .andExpect(content().string(containsString("aria-label=\"Visitors by country: India 67%, United Kingdom 33%\"")))
+                .andExpect(content().string(containsString("could not be placed")))     // the MockMvc 127.0.0.1 visitor
+                .andExpect(content().string(containsString("Asia")))
+                .andExpect(content().string(containsString("IP Geolocation by DB-IP")));
         // A month on its own (the link every month chip produces) — days is null on that path
         mvc.perform(get("/admin/traffic").param("month", YearMonth.from(LocalDate.now()).toString()).with(asMe)).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Evidence PDF")));

@@ -41,6 +41,65 @@
     </svg>
   </div>
 
+  <section class="card geo" id="countries" style="margin-bottom:1rem" th:with="pl=${s.places}">
+    <h2>Where visitors come from</h2>
+    <p class="muted geo-lede">Share of this period's visitors by country (a visitor is one browser on one day). The country
+      comes from the visitor's network address, looked up on this server in a downloaded list; the address itself is
+      never stored.</p>
+
+    <p class="empty" th:if="${pl.located == 0}">No countries for this period yet<span th:if="${pl.notRecorded > 0}"> — countries are
+      recorded from 10 October 2026</span>.</p>
+
+    <div class="geo-body" th:if="${pl.located > 0}">
+      <figure class="geo-pie">
+        <svg viewBox="-4 -4 188 188" width="180" height="180" role="img"
+             th:attr="aria-label='Visitors by country: ' + ${#strings.listJoin(pie.![label + ' ' + percent], ', ')}">
+          <!-- No <title> tooltips here: the layout picks up every <title> on the page. Hovering a slice lights up its
+               legend row, which carries the numbers (CSS :has), and the reverse. -->
+          <path th:each="sl : ${pie}" th:if="${sl.path != ''}" th:attr="d=${sl.path}" th:class="'slice s-' + ${sl.slot}"/>
+        </svg>
+        <figcaption class="muted"><b class="num" th:text="${#numbers.formatInteger(pl.located, 1, 'COMMA')}">0</b> visitors
+          in <b class="num" th:text="${#lists.size(pl.countries)}">0</b> <span th:text="${#lists.size(pl.countries) == 1} ? 'country' : 'countries'">countries</span></figcaption>
+      </figure>
+      <ul class="geo-legend" aria-label="Pie legend">
+        <li class="head" aria-hidden="true"><i></i><span>Country</span><span>Share</span><span>Visitors</span></li>
+        <li th:each="sl : ${pie}" th:class="'k-' + ${sl.slot}"><i th:class="'s-' + ${sl.slot}"></i><span class="name" th:text="${sl.label}">India</span>
+          <span class="num pct" th:text="${sl.percent}">40%</span><span class="num muted" th:text="${sl.visitors}">12</span></li>
+      </ul>
+      <div class="geo-continents">
+        <h3>By continent</h3>
+        <table class="insight-bars" aria-label="Visitors by continent">
+          <tr th:each="c : ${pl.continents}">
+            <th scope="row" th:text="${c.name}">Asia</th>
+            <td class="bar"><span class="fill" th:style="'width:' + ${#numbers.formatDecimal(c.share * 100, 1, 1, 'POINT')} + '%'"></span></td>
+            <td class="num" th:text="${c.percent}">40%</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <details class="geo-all" th:if="${pl.located > 0}">
+      <summary th:text="'Every country (' + ${#lists.size(pl.countries)} + ') — visitors, page views and share'">Every country</summary>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Country</th><th class="num">Visitors</th><th class="num">Page views</th><th class="num">Share of visitors</th></tr></thead>
+        <tbody><tr th:each="c : ${pl.countries}"><td th:text="${c.name}">India</td><td class="num" th:text="${c.visitors}">0</td>
+          <td class="num" th:text="${c.views}">0</td><td class="num" th:text="${c.percent}">0%</td></tr></tbody>
+      </table></div>
+    </details>
+
+    <ul class="geo-notes muted">
+      <li th:if="${pl.unknown > 0}"><b class="num" th:text="${pl.unknown}">0</b> <span th:text="${pl.unknown == 1} ? 'visitor' : 'visitors'">visitors</span>
+        could not be placed (a private network, or an address the list does not cover) and <span th:text="${pl.unknown == 1} ? 'is' : 'are'">are</span> left out of the shares.</li>
+      <li th:if="${pl.notRecorded > 0 and pl.located > 0}"><b class="num" th:text="${pl.notRecorded}">0</b> <span th:text="${pl.notRecorded == 1} ? 'visitor' : 'visitors'">visitors</span>
+        from before 10 October 2026 <span th:text="${pl.notRecorded == 1} ? 'is' : 'are'">are</span> left out: countries were not recorded then.</li>
+      <li th:if="${!geo.loaded}" class="notice">The country list is not loaded, so new visits count as "could not be placed". The server
+        downloads it shortly after start-up and checks it every night — see <i>Countries</i> in the day-two guide if this stays.</li>
+      <li th:if="${geo.loaded}">Country list: DB-IP <i>IP to Country Lite</i>, <span th:text="${#temporals.format(geo.fileDate, 'd MMM yyyy')}">2 Oct 2026</span>,
+        <span class="num" th:text="${#numbers.formatInteger(geo.ranges, 1, 'COMMA')}">700,000</span> address ranges, refreshed monthly.
+        <a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a>.</li>
+    </ul>
+  </section>
+
   <div class="grid two">
     <div class="card">
       <h2>Top pages</h2>

@@ -485,3 +485,54 @@ ul.signin-list li { display: flex; align-items: center; justify-content: space-b
 ul.signin-list li:first-child { border-top: 0; padding-top: 0; }
 ul.signin-list li > div { display: flex; flex-direction: column; min-width: 0; }
 ul.signin-list li > div span { font-size: .82rem; overflow-wrap: anywhere; }
+
+/* Traffic → "Where visitors come from": a pie of up to five countries plus "Other", a legend that carries the
+   numbers (so colour is never the only key), continent bars, and the full table behind a disclosure.
+   Slice colours are the validated categorical order (light and dark stepped separately); "other" is neutral. */
+.geo { --geo-1: #2a78d6; --geo-2: #eb6834; --geo-3: #1baf7a; --geo-4: #eda100; --geo-5: #e87ba4; --geo-other: #a0a9b4; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .geo { --geo-1: #3987e5; --geo-2: #d95926; --geo-3: #199e70; --geo-4: #c98500; --geo-5: #d55181; --geo-other: #5f6a78; }
+}
+.geo .geo-lede { margin-top: -.4rem; margin-bottom: .9rem; font-size: .88rem; max-width: 80ch; }
+.geo-body { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.1fr); gap: 1.25rem 2rem; align-items: center; }
+.geo-pie { margin: 0; text-align: center; }
+.geo-pie svg { display: block; margin: 0 auto .4rem; }
+.geo-pie figcaption { font-size: .8rem; }
+.geo .slice { stroke: var(--surface); stroke-width: 2; stroke-linejoin: round; transition: opacity .15s; }
+.geo .s-1 { fill: var(--geo-1); background: var(--geo-1); } .geo .s-2 { fill: var(--geo-2); background: var(--geo-2); }
+.geo .s-3 { fill: var(--geo-3); background: var(--geo-3); } .geo .s-4 { fill: var(--geo-4); background: var(--geo-4); }
+.geo .s-5 { fill: var(--geo-5); background: var(--geo-5); } .geo .s-other { fill: var(--geo-other); background: var(--geo-other); }
+/* Hover a slice → its legend row (with the numbers) lights up; hover a legend row → only its slice stays solid.
+   Mouse and trackpad only, so a tap on a phone does not leave the chart dimmed. */
+@media (hover: hover) {
+.geo svg:hover .slice { opacity: .3; }
+.geo svg .slice:hover { opacity: 1; }
+.geo:has(.slice.s-1:hover) .geo-legend li.k-1, .geo-legend li.k-1:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-1:hover) .slice:not(.s-1) { opacity: .3; }
+.geo:has(.slice.s-2:hover) .geo-legend li.k-2, .geo-legend li.k-2:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-2:hover) .slice:not(.s-2) { opacity: .3; }
+.geo:has(.slice.s-3:hover) .geo-legend li.k-3, .geo-legend li.k-3:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-3:hover) .slice:not(.s-3) { opacity: .3; }
+.geo:has(.slice.s-4:hover) .geo-legend li.k-4, .geo-legend li.k-4:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-4:hover) .slice:not(.s-4) { opacity: .3; }
+.geo:has(.slice.s-5:hover) .geo-legend li.k-5, .geo-legend li.k-5:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-5:hover) .slice:not(.s-5) { opacity: .3; }
+.geo:has(.slice.s-other:hover) .geo-legend li.k-other, .geo-legend li.k-other:hover { background: var(--surface-2); }
+.geo:has(.geo-legend li.k-other:hover) .slice:not(.s-other) { opacity: .3; }
+}
+ul.geo-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+ul.geo-legend li { border-radius: 6px; padding: .15rem .3rem; margin: 0 -.3rem; transition: background .15s; display: grid; grid-template-columns: 12px minmax(0, 1fr) auto 3.2rem; gap: .55rem; align-items: center; font-size: .9rem; }
+ul.geo-legend i { width: 12px; height: 12px; border-radius: 3px; }
+ul.geo-legend .name { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+ul.geo-legend .pct { color: var(--ink); font-weight: 700; text-align: right; }
+ul.geo-legend .num.muted { text-align: right; font-size: .8rem; }
+ul.geo-legend li.head { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; padding-bottom: 0; }
+ul.geo-legend li.head span { text-align: right; }
+ul.geo-legend li.head span:first-of-type { text-align: left; }
+.geo-continents h3 { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); margin: 0 0 .4rem; }
+.geo-all { margin-top: 1rem; }
+.geo-all summary { cursor: pointer; font-weight: 700; font-size: .88rem; color: var(--accent); }
+.geo-all .table-wrap { margin-top: .6rem; max-height: 22rem; overflow-y: auto; }
+ul.geo-notes { list-style: none; margin: .9rem 0 0; padding: 0; font-size: .8rem; display: grid; gap: .3rem; }
+@media (max-width: 899px) { .geo-body { grid-template-columns: auto minmax(0, 1fr); } .geo-continents { grid-column: 1 / -1; } }
+@media (max-width: 539px) { .geo-body { grid-template-columns: minmax(0, 1fr); } }

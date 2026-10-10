@@ -107,6 +107,8 @@ stored, what a public profile shows (profiles are public by default for individu
 single session cookie, the extension and its opt-in history import, where the server is, retention (deletion is
 immediate; backups are kept at most 14 days) and the person's rights. No page contacts any host but Sharpen's own —
 even the fonts (Manrope, Bricolage Grotesque, IBM Plex Mono, SIL OFL 1.1) are self-hosted under `static/fonts`.
+Visitor countries come from [DB-IP](https://db-ip.com)'s *IP to Country Lite* list (CC BY 4.0), downloaded by the
+server once a month; only the country code is kept.
 
 ## Help and contact
 
@@ -175,7 +177,9 @@ rollout with health check and rollback; CodeQL, Dependabot, tagged releases). `d
 one-page version for people who already know the tools. The landing page and every
 signed-in page show live member/session/report counters (`/api/v1/public/stats`, refreshed every 30 s), there is
 a `/feedback` contact form open to everyone (linked as *Contact* and from the Help guide; honeypot, signed-timestamp and rate-limit protection, no captcha — registration has the same guard), and the account named in `SHARPEN_ADMIN_EMAIL` can read the inbox at
-`/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports).
+`/admin/feedback` and the first-party, cookieless traffic dashboard at `/admin/traffic` (CSV and PDF exports), including
+where visitors come from — a pie by country and a list by continent, looked up on the server in DB-IP's free country
+list so no address is stored or sent anywhere.
 
 ## About this project
 

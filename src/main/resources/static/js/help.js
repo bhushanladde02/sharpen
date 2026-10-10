@@ -141,7 +141,7 @@
              'export', 'download my data', 'backup', 'back up', 'take my data', 'get my data', 'leave', 'privacy policy', 'policy', 'ccpa', 'data protection'],
       answer: function () {
         return '<p>Sharpen stores only what you log or type. No third-party analytics, no advertising, no cookies beyond the one that keeps you signed in, ' +
-               'and no requests to anyone else — even the fonts are served by Sharpen; page views are counted server-side without identifying anyone.</p>' +
+               'and no requests to anyone else — even the fonts are served by Sharpen; page views are counted server-side without identifying anyone, with the visitor\'s country looked up on the server — the address itself is not kept.</p>' +
                '<p>Your sessions, email and reports are never public. The public profile — on by default, off in <a href="/settings">Settings</a> in one click — shows only the AI-related facts you chose.</p>' +
                '<p><b>Taking your data out:</b> <a href="/settings">Settings</a> → <b>Your data</b> → <b>Sessions (CSV)</b> (opens in a spreadsheet and ' +
                'imports into another Sharpen account) or <b>Everything (JSON)</b> (profile, sessions, reports). Instant, no request needed.</p>' +

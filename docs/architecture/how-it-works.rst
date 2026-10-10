@@ -288,6 +288,17 @@ What we chose not to use
   ``self_assessed`` rows count, so the community numbers obey the same rule as the score and an import cannot
   move them. Private and public profiles contribute alike, because nothing on the page can be traced to either;
   ``AccountDeletionService`` invalidates the cache so a deleted account leaves the aggregate at once.
+* **Countries without a third party.** The traffic page's *Where visitors come from* card needs each visitor's
+  country, which usually means sending addresses to a geolocation service or embedding its script. Instead
+  ``CountryLookup`` holds DB-IP's free *IP to Country Lite* list in memory — about 700,000 ranges as sorted
+  ``long`` arrays (IPv4 and IPv6 apart), about 25 MB, found by binary search in under a microsecond — and
+  ``TrafficService.record`` stores only the two-letter answer next to the view; the address never reaches the
+  database. ``CountryListUpdater`` downloads the month's list from DB-IP into a Docker volume (once a month;
+  a download that does not parse is discarded), so DB-IP learns that a server fetched a file and nothing else.
+  Only literal addresses are parsed — a host name is never looked up — and ``CountryLookupTest`` runs the
+  download against a stand-in server. The pie (``Charts.pieSlices``) is server-side SVG like the other charts,
+  at most five named countries plus *Other*, with a legend that carries the numbers so colour is never the
+  only key.
 * **No third party in the page.** Every page is built from Sharpen's own HTML, one CSS file, one small script
   and three self-hosted font families (``static/fonts``, latin and latin-ext subsets, about 130 KB for a first
   visit, cached for a year under content-hashed names like every other static file — the resource chain rewrites

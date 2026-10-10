@@ -65,6 +65,11 @@ sharpen:
   site-host: ${SHARPEN_SITE_HOST:localhost:8080}
   # The account allowed to read /admin/feedback. Set SHARPEN_ADMIN_EMAIL in production.
   admin-email: ${SHARPEN_ADMIN_EMAIL:demo@sharpen.io}
+  # Country of each page view, from DB-IP's free "IP to Country Lite" list (CC BY 4.0) held on disk and searched in
+  # memory; the address itself is never stored. download: fetch it monthly from db-ip.com (production turns it on).
+  geo:
+    file: ${SHARPEN_GEO_FILE:data/geo/dbip-country-lite.csv.gz}
+    download: ${SHARPEN_GEO_DOWNLOAD:false}
 
 logging:
   level:

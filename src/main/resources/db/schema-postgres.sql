@@ -108,7 +108,8 @@ create table page_view (
     referrer    varchar(190),
     visitor     varchar(64)  not null,
     lang        varchar(16),
-    signed_in   boolean      not null default false
+    signed_in   boolean      not null default false,
+    country     varchar(2)   -- ISO 3166-1 alpha-2; 'ZZ' unknown; null before 2026-10-10
 );
 create index ix_page_view_day  on page_view (view_day);
 create index ix_page_view_path on page_view (path);

@@ -25,6 +25,10 @@ public interface PageViewRepository extends JpaRepository<PageView, Long> {
     @Query("select v.lang, count(v) from PageView v where v.viewDay between :from and :to group by v.lang order by count(v) desc")
     List<Object[]> topLanguages(LocalDate from, LocalDate to);
 
+    /** [country, views, visitors] most visitors first; null is "not recorded" (before countries were), ZZ "unknown". */
+    @Query("select v.country, count(v), count(distinct v.visitor) from PageView v where v.viewDay between :from and :to group by v.country order by count(distinct v.visitor) desc, count(v) desc")
+    List<Object[]> countries(LocalDate from, LocalDate to);
+
     @Query("select count(v), count(distinct v.visitor) from PageView v where v.viewDay between :from and :to")
     List<Object[]> totals(LocalDate from, LocalDate to);
 

@@ -20,3 +20,11 @@ Third-party material: the web fonts in src/main/resources/static/fonts (Manrope,
 Bricolage Grotesque, IBM Plex Mono) are by their respective authors and are
 distributed under the SIL Open Font License 1.1; see
 src/main/resources/static/fonts/OFL.txt.
+
+Visitor countries on the traffic page use the IP to Country Lite database by
+DB-IP (https://db-ip.com), licensed under Creative Commons Attribution 4.0
+International; the server downloads it at run time (it is not in this
+repository) and credits it as "IP Geolocation by DB-IP" where it is shown.
+Country names and continents in src/main/resources/geo/countries.csv come from
+the countries-list package (https://github.com/annexare/Countries), MIT License,
+Copyright (c) 2014 Annexare Studio.

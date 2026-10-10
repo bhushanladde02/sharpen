@@ -686,6 +686,24 @@ Day 8 — Wednesday 16 September: which build is this?
    guide has the LinkedIn steps: a Company Page first (LinkedIn's condition for a developer app), the app tied to
    it and verified, the *Sign In with LinkedIn using OpenID Connect* product, the redirect URL.
 
+#. **Where visitors come from.** (Day 25, Saturday 10 October.) The traffic page gained a *Where visitors come
+   from* card: a pie of visitors by country (five named, the rest as *Other countries*), a legend with each share
+   and count, a by-continent bar list, and the full country table behind a disclosure; the Evidence PDF has the
+   same two tables. The country is looked up **on the server**, when the view is recorded, in DB-IP's free *IP to
+   Country Lite* list (CC BY 4.0, about 700,000 ranges, 4.6 MB gzipped), held in memory as sorted arrays —
+   loaded in about a second, about 25 MB of memory, under a microsecond a lookup. Only the two-letter code is
+   stored (new column ``page_view.country``, migration ``2026-10-10-page-view-country.sql``); the address still
+   is not. No third party is asked: the app downloads the list from ``download.db-ip.com`` once a month (current
+   month's edition, or last month's early in a month), checks it parses before swapping it in, and keeps it in a
+   new Docker volume, ``geodata``, so restarts do not download again. Views before today have no country and are
+   reported as such; private addresses and gaps in the list count as *could not be placed*. Continents and
+   English names come from the ``countries-list`` data (MIT), with Russia in Europe as in the UN grouping.
+   Checked against the real list (``8.8.8.8`` → US, a Jio address → IN, the A1's own address → US) and on
+   PostgreSQL 16: the migration twice, a fresh install from ``schema-postgres.sql``, the app booting with
+   ``validate``, a failed download leaving the site running with the "not loaded" notice, then 38 simulated
+   visitors from ten countries giving the expected pie and PDF. Slice colours pass the palette check
+   (colour-blind separation) in light and dark. ``/privacy`` says the country is kept and where it comes from. 51 tests.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -696,6 +714,8 @@ Open items (as of day 25)
 * LinkedIn sign-in, the LinkedIn side: Company Page → developer app (verified for the page) → product *Sign In with
   LinkedIn using OpenID Connect* → redirect URL → ``LINKEDIN_CLIENT_ID`` / ``_SECRET`` in ``deploy/.env`` →
   ``dc up -d app`` → connect it in Settings (``05-day-two.rst``).
+* After the country change is deployed: ``dc logs app | grep "Country list"`` should show the list downloaded,
+  and Traffic should show the DB-IP line instead of the yellow "not loaded" notice (``05-day-two.rst``, *Countries*).
 * Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
 * Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.

@@ -32,6 +32,32 @@ public final class Charts {
         return sb.toString().trim();
     }
 
+    /**
+     * SVG paths for pie slices, clockwise from twelve o'clock, in a circle of radius {@code r} centred on
+     * ({@code r}, {@code r}). One path per value, in order; a zero value gets an empty path. A single non-zero value
+     * is a whole circle (drawn as two half-arcs, since one arc cannot start and end at the same point).
+     */
+    public static List<String> pieSlices(List<Long> values, double r) {
+        long total = values.stream().mapToLong(Long::longValue).sum();
+        List<String> out = new java.util.ArrayList<>();
+        if (total <= 0) { values.forEach(v -> out.add("")); return out; }
+        double angle = 0;
+        for (long v : values) {
+            if (v <= 0) { out.add(""); continue; }
+            if (v == total) {
+                out.add("M" + fmt(r) + " 0 A" + fmt(r) + " " + fmt(r) + " 0 1 1 " + fmt(r) + " " + fmt(2 * r)
+                        + " A" + fmt(r) + " " + fmt(r) + " 0 1 1 " + fmt(r) + " 0 Z");
+                continue;
+            }
+            double sweep = 2 * Math.PI * v / total;
+            double x0 = r + r * Math.sin(angle), y0 = r - r * Math.cos(angle);
+            double x1 = r + r * Math.sin(angle + sweep), y1 = r - r * Math.cos(angle + sweep);
+            out.add("M" + fmt(r) + " " + fmt(r) + " L" + fmt(x0) + " " + fmt(y0) + " A" + fmt(r) + " " + fmt(r) + " 0 "
+                    + (sweep > Math.PI ? 1 : 0) + " 1 " + fmt(x1) + " " + fmt(y1) + " Z");
+            angle += sweep;
+        }
+        return out;
+    }
 
     private static String fmt(double d) { return String.format(Locale.ROOT, "%.1f", d); }
 }

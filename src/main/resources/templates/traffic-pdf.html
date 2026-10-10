@@ -41,6 +41,25 @@
   <table><thead><tr><th>Source</th><th class="n">Views</th></tr></thead>
     <tbody><tr th:each="r : ${s.referrers}"><td th:text="${r.key}">(direct)</td><td class="n" th:text="${r.views}">0</td></tr></tbody></table>
 
+  <h2>Where visitors came from</h2>
+  <p class="muted" th:if="${s.places.located == 0}">No countries recorded for this period (countries are recorded from 10 October 2026).</p>
+  <table th:if="${s.places.located > 0}"><tr>
+    <td style="width:58%;padding-left:0">
+      <table><thead><tr><th>Country</th><th class="n">Visitors</th><th class="n">Views</th><th class="n">Share</th></tr></thead>
+        <tbody><tr th:each="c, it : ${s.places.countries}" th:if="${it.index < 20}"><td th:text="${c.name}">India</td><td class="n" th:text="${c.visitors}">0</td>
+          <td class="n" th:text="${c.views}">0</td><td class="n" th:text="${c.percent}">0%</td></tr>
+        <tr th:if="${#lists.size(s.places.countries) > 20}"><td colspan="4" class="muted" th:text="'and ' + ${#lists.size(s.places.countries) - 20} + ' more countries'">more</td></tr></tbody></table>
+    </td>
+    <td style="padding-right:0">
+      <table><thead><tr><th>Continent</th><th class="n">Visitors</th><th class="n">Share</th></tr></thead>
+        <tbody><tr th:each="c : ${s.places.continents}"><td th:text="${c.name}">Asia</td><td class="n" th:text="${c.visitors}">0</td><td class="n" th:text="${c.percent}">0%</td></tr></tbody></table>
+    </td>
+  </tr></table>
+  <p class="muted" style="font-size:8.5pt" th:if="${s.places.located > 0 or s.places.unknown > 0}">Shares are of the
+    <span th:text="${s.places.located}">0</span> visitors whose country is known<span th:if="${s.places.unknown > 0}"
+    th:text="'; ' + ${s.places.unknown} + ' could not be placed'">; 2 could not be placed</span><span th:if="${s.places.notRecorded > 0}"
+    th:text="'; ' + ${s.places.notRecorded} + ' came before countries were recorded (10 October 2026)'">; earlier</span>.</p>
+
   <h2>Day by day</h2>
   <table class="days"><thead><tr><th>Day</th><th class="n">Views</th><th class="n">Visitors</th><th class="n">Sign-ups</th><th class="n">Sessions</th><th class="n">Reports</th></tr></thead>
     <tbody><tr th:each="d : ${s.days}"><td th:text="${d.day}">d</td><td class="n" th:text="${d.views}">0</td><td class="n" th:text="${d.visitors}">0</td><td class="n" th:text="${d.signups}">0</td><td class="n" th:text="${d.sessions}">0</td><td class="n" th:text="${d.reports}">0</td></tr></tbody></table>
@@ -49,7 +68,9 @@
     Method: every successfully served HTML page is counted once, server-side, in the application's own PostgreSQL database
     (table <span style="font-family:Courier">page_view</span>). Requests whose user agent identifies a crawler, monitor or command-line tool
     are excluded. A visitor is a salted hash of (day, network address, user agent), so one browser counts once per day and cannot be
-    identified or followed across days; no cookies or third-party scripts are used. Sign-ups, sessions and reports come from the
+    identified or followed across days; no cookies or third-party scripts are used. A view's country is looked up from its network address on
+    the server, in DB-IP's IP to Country Lite list (IP Geolocation by DB-IP, https://db-ip.com, CC BY 4.0); only the two-letter
+    country code is kept, never the address. Sign-ups, sessions and reports come from the
     application's account, session and report tables. Source code: https://github.com/bhushanladde02/sharpen (AGPL-3.0). © Bhushan Arun Ladde.
   </div>
 </body>

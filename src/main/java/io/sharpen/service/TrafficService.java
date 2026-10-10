@@ -29,7 +29,8 @@ import java.util.regex.Pattern;
  * <p>Recording: {@link #record} is called by {@code PageViewInterceptor} for every HTML page served; views
  * are buffered in memory and written in one batch every few seconds so a page never waits on the analytics
  * insert. Bots are dropped by user-agent. Visitors are identified for one day only, by a salted hash of
- * (day, address, user agent); the salt is generated at start-up and never stored.
+ * (day, address, user agent); the salt is generated at start-up and never stored. The country is looked up from
+ * the address in memory ({@link CountryLookup}) and only the two-letter code is kept.
  *
  * <p>Reporting: daily series and totals over a range, combined with product events from the other tables
  * (sign-ups, sessions logged, reports generated) so a period can be described in one table.
@@ -54,25 +55,41 @@ public class TrafficService {
 
     public record Day(LocalDate day, long views, long visitors, long signups, long sessions, long reports) {}
     public record Row(String key, long views, long visitors) {}
+    /** A country or a continent: its visitors, views, and its share of the visitors whose country is known. */
+    public record Place(String code, String name, long views, long visitors, double share) {
+        /** "42%" or "<1%" — whole percentages read faster than decimals and add up near enough. */
+        public String percent() {
+            long p = Math.round(share * 100);
+            return visitors > 0 && p == 0 ? "<1%" : p + "%";
+        }
+    }
+    /**
+     * Where visitors came from. {@code located} is the visitors with a known country (what the shares are of);
+     * {@code unknown} could not be placed (private networks, addresses missing from the list, or no list loaded);
+     * {@code notRecorded} came before countries were recorded.
+     */
+    public record Places(List<Place> countries, List<Place> continents, long located, long unknown, long notRecorded) {}
     public record Summary(LocalDate from, LocalDate to, long views, long visitors, long signups, long sessions,
                           long reports, long members, long publicProfiles, long feedback,
-                          List<Day> days, List<Row> pages, List<Row> referrers, List<Row> languages) {}
+                          List<Day> days, List<Row> pages, List<Row> referrers, List<Row> languages, Places places) {}
 
     private final PageViewRepository views;
     private final PersonRepository people;
     private final UsageSessionRepository sessions;
     private final MonthlyReportRepository reports;
     private final FeedbackRepository feedback;
+    private final CountryLookup countries;
     private final ConcurrentLinkedQueue<PageView> buffer = new ConcurrentLinkedQueue<>();
     private final byte[] salt = new byte[32];
 
     public TrafficService(PageViewRepository views, PersonRepository people, UsageSessionRepository sessions,
-                          MonthlyReportRepository reports, FeedbackRepository feedback) {
+                          MonthlyReportRepository reports, FeedbackRepository feedback, CountryLookup countries) {
         this.views = views;
         this.people = people;
         this.sessions = sessions;
         this.reports = reports;
         this.feedback = feedback;
+        this.countries = countries;
         new SecureRandom().nextBytes(salt);
     }
 
@@ -87,7 +104,7 @@ public class TrafficService {
         String lang = acceptLanguage == null ? null : acceptLanguage.split("[,;]")[0].trim();
         if (lang != null && (lang.isEmpty() || lang.length() > 16)) lang = null;
         buffer.add(new PageView(day, path.length() > 200 ? path.substring(0, 200) : path, referrer,
-                visitorHash(day, address, userAgent), lang, signedIn));
+                visitorHash(day, address, userAgent), lang, signedIn, countries.country(address)));
     }
 
     /** Every 10 s, write whatever has been queued. */
@@ -162,7 +179,39 @@ public class TrafficService {
         long pub = everyone.stream().filter(p -> p.getAccountType() == AccountType.INDIVIDUAL && p.isPublicProfile()).count();
         return new Summary(from, to, views, visitors, signups, sess, reps, members, pub, feedback.count(), days,
                 rows(this.views.topPaths(from, to), 15), rows(this.views.topReferrers(from, to), 15),
-                rows(this.views.topLanguages(from, to), 10));
+                rows(this.views.topLanguages(from, to), 10), places(this.views.countries(from, to)));
+    }
+
+    /** Countries most visitors first, and the same visitors grouped by continent. */
+    public static Places places(List<Object[]> raw) {
+        long located = 0, unknown = 0, notRecorded = 0;
+        List<long[]> counts = new ArrayList<>();
+        List<String> codes = new ArrayList<>();
+        for (Object[] r : raw) {
+            String code = (String) r[0];
+            long views = ((Number) r[1]).longValue(), visitors = ((Number) r[2]).longValue();
+            if (code == null) notRecorded += visitors;
+            else if (!Countries.known(code)) unknown += visitors;
+            else { located += visitors; codes.add(code); counts.add(new long[]{views, visitors}); }
+        }
+        List<Place> countryList = new ArrayList<>();
+        Map<String, long[]> byContinent = new LinkedHashMap<>();
+        for (int i = 0; i < codes.size(); i++) {
+            long[] c = counts.get(i);
+            countryList.add(new Place(codes.get(i), Countries.name(codes.get(i)), c[0], c[1], located == 0 ? 0 : c[1] / (double) located));
+            long[] k = byContinent.computeIfAbsent(Countries.continent(codes.get(i)), x -> new long[2]);
+            k[0] += c[0];
+            k[1] += c[1];
+        }
+        countryList.sort(Comparator.comparingLong(Place::visitors).reversed().thenComparing(Comparator.comparingLong(Place::views).reversed())
+                .thenComparing(Place::name));
+        List<Place> continentList = new ArrayList<>();
+        for (Map.Entry<String, long[]> e : byContinent.entrySet()) {
+            continentList.add(new Place(e.getKey(), Countries.continentName(e.getKey()), e.getValue()[0], e.getValue()[1],
+                    located == 0 ? 0 : e.getValue()[1] / (double) located));
+        }
+        continentList.sort(Comparator.comparingLong(Place::visitors).reversed().thenComparing(Place::name));
+        return new Places(countryList, continentList, located, unknown, notRecorded);
     }
 
     private static void bump(Map<LocalDate, long[]> byDay, LocalDate d, int idx) {

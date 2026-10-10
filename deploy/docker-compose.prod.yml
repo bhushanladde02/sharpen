@@ -43,6 +43,9 @@ services:
       SHARPEN_OAUTH_LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
       SHARPEN_OAUTH_LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
+    volumes:
+      # DB-IP's country list (~8 MB), downloaded by the app monthly, kept across restarts and redeploys
+      - geodata:/app/data/geo
     depends_on:
       db:
         condition: service_healthy
@@ -67,5 +70,6 @@ services:
 
 volumes:
   pgdata:
+  geodata:
   caddy_data:
   caddy_config:

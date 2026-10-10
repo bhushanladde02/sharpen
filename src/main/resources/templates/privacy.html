@@ -49,9 +49,10 @@
           you wrote from.</dd>
         <dt>Page views</dt>
         <dd>Counted on the server, without a cookie or a script: the page, the referring site's name, your browser's first
-          language, and whether you were signed in. To count a day's visitors, the server keeps a one-way hash of that day,
+          language, whether you were signed in, and the country your network address belongs to — looked up on this server
+          in a downloaded list, so no one else is asked. To count a day's visitors, the server keeps a one-way hash of that day,
           your address and your browser type, salted with a secret that is never written down; your address itself is
-          not stored, and the hash cannot be matched to a different day or back to you. Bots are not counted.</dd>
+          not stored (only the two-letter country), and the hash cannot be matched to a different day or back to you. Bots are not counted.</dd>
       </dl>
     </section>
 
@@ -117,7 +118,8 @@
       <p>The site and its database run on one server rented from Oracle Cloud in Ashburn, Virginia, USA; connections are
         encrypted (HTTPS, with HSTS). The domain's DNS is hosted by Cloudflare, which answers "where is sharpenscore.com"
         but does not carry the site's traffic. Google, GitHub and LinkedIn are involved only if you sign in with them, as described
-        above. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
+        above. Countries come from DB-IP's free country list (<a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a>),
+        which the server downloads once a month; DB-IP sees that download and nothing about visitors. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
         providers — Sharpen does not send your sessions to any AI model. The data would be disclosed only if the law
         required it.</p>
     </section>

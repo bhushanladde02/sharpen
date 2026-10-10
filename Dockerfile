@@ -9,6 +9,7 @@ RUN mvn -q -B package -DskipTests
 # Run stage
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+RUN mkdir -p /app/data/geo
 COPY --from=build /src/target/sharpen.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=postgres
 EXPOSE 8080

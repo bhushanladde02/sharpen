@@ -1,6 +1,7 @@
 package io.sharpen.web;
 
 import io.sharpen.domain.Person;
+import io.sharpen.service.CountryLookup;
 import io.sharpen.service.PdfService;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.TrafficService;
@@ -30,13 +31,21 @@ public class TrafficController {
     private final TrafficService traffic;
     private final PersonService people;
     private final PdfService pdf;
+    private final CountryLookup countries;
     private final String adminEmail;
 
-    public TrafficController(TrafficService traffic, PersonService people, PdfService pdf,
+    /** One slice of the "where visitors come from" pie; {@code slot} picks its colour (1–5, or "other"). */
+    public record Slice(String label, long visitors, String percent, String path, String slot) {}
+
+    /** Five named countries at most, the rest as one "Other countries" slice — a pie stays readable up to six. */
+    static final int PIE_COUNTRIES = 5;
+
+    public TrafficController(TrafficService traffic, PersonService people, PdfService pdf, CountryLookup countries,
                              @Value("${sharpen.admin-email:}") String adminEmail) {
         this.traffic = traffic;
         this.people = people;
         this.pdf = pdf;
+        this.countries = countries;
         this.adminEmail = adminEmail == null ? "" : adminEmail.trim().toLowerCase(Locale.ROOT);
     }
 
@@ -77,7 +86,31 @@ public class TrafficController {
         List<String> months = new java.util.ArrayList<>();
         for (YearMonth ym = YearMonth.from(LocalDate.now(ZoneOffset.UTC)); !ym.isBefore(YearMonth.from(traffic.firstDay())); ym = ym.minusMonths(1)) months.add(ym.toString());
         model.addAttribute("months", months);
+        model.addAttribute("pie", pie(s.places()));
+        model.addAttribute("geo", countries.status());
         return "admin-traffic";
+    }
+
+    static List<Slice> pie(TrafficService.Places places) {
+        List<TrafficService.Place> list = places.countries();
+        int named = list.size() <= PIE_COUNTRIES ? list.size() : PIE_COUNTRIES;
+        List<Long> values = new java.util.ArrayList<>();
+        for (int i = 0; i < named; i++) values.add(list.get(i).visitors());
+        long rest = 0;
+        for (int i = named; i < list.size(); i++) rest += list.get(i).visitors();
+        if (rest > 0) values.add(rest);
+        List<String> paths = Charts.pieSlices(values, 90);
+        List<Slice> out = new java.util.ArrayList<>();
+        for (int i = 0; i < named; i++) {
+            var p = list.get(i);
+            out.add(new Slice(p.name(), p.visitors(), p.percent(), paths.get(i), String.valueOf(i + 1)));
+        }
+        if (rest > 0) {
+            int others = list.size() - named;
+            var share = new TrafficService.Place("", "", 0, rest, places.located() == 0 ? 0 : rest / (double) places.located());
+            out.add(new Slice("Other countries (" + others + ")", rest, share.percent(), paths.get(named), "other"));
+        }
+        return out;
     }
 
     @GetMapping(value = "/admin/traffic.csv", produces = "text/csv")

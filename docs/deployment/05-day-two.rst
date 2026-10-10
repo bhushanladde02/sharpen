@@ -191,8 +191,39 @@ Sharpen measures its own traffic — no Google Analytics, no cookie banner. Ever
 counted once, server-side (``page_view`` table; bots excluded by user agent; a visitor is a salted hash of
 day + address + user agent, so one browser counts once per day and cannot be identified or followed). The
 owner's account sees **Traffic** in the sidebar: page views, visitors, sign-ups, sessions and reports per
-day, top pages, referrers, languages, for 7/30/90/365 days, all time, or any month — with a **CSV** of the
-daily series and an **Evidence PDF** that states the method in its footer.
+day, top pages, referrers, languages and **where visitors come from** (a pie by country, a list by continent), for
+7/30/90/365 days, all time, or any month — with a **CSV** of the daily series and an **Evidence PDF** that states the
+method in its footer.
+
+Countries
+^^^^^^^^^
+
+Each view's country is looked up from the visitor's address **on the server**, in DB-IP's free *IP to Country
+Lite* list, and only the two-letter code is stored (``page_view.country``; ``ZZ`` when the address cannot be placed,
+empty for views before 10 October 2026). No visitor data goes anywhere. The list:
+
+* lives in the ``geodata`` Docker volume at ``/app/data/geo/dbip-country-lite.csv.gz`` (about 5 MB);
+* is downloaded by the app from ``https://download.db-ip.com/free/dbip-country-lite-YYYY-MM.csv.gz`` shortly
+  after start-up when it is missing, and re-checked every night at 03:41 UTC — a list older than 32 days is
+  replaced by the current month's edition (or last month's, early in a month). A download that does not parse
+  is thrown away and the old list stays;
+* is credited on the Traffic page, in the PDF and on ``/privacy`` as *IP Geolocation by DB-IP* — the condition
+  of its CC BY 4.0 licence.
+
+Check it after a deploy::
+
+    dc logs app | grep "Country list"           # "Country list updated from …" or "Country list loaded: …"
+    dc exec app ls -la /app/data/geo/
+
+The Traffic page says the same at the bottom of the card: the list's date and size, or a yellow notice when no
+list is loaded (every visit then counts as *could not be placed*). If the A1 cannot reach db-ip.com, download
+the file on the Mac from the same address (this month's name) and copy it in::
+
+    dc cp dbip-country-lite-2026-10.csv.gz app:/app/data/geo/dbip-country-lite.csv.gz && dc restart app
+
+Settings (environment, all optional): ``SHARPEN_GEO_DOWNLOAD`` (``true`` in production, ``false`` in development
+and tests, which never call out) and ``SHARPEN_GEO_FILE``. A country is right for about 99 % of addresses;
+a VPN or a company network shows where it exits, not where the person sits.
 
 Keep three independent sources of the same story, monthly: Sharpen's own PDF + CSV, Google Search Console's
 Performance export (Google's own count of impressions and clicks), and GitHub Insights → Traffic. The

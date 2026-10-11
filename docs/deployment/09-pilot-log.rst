@@ -720,6 +720,16 @@ Day 8 — Wednesday 16 September: which build is this?
    volume, so the first download needed nothing by hand and the non-root app user could write the volume. (The
    ``dc`` shortcut had to be added to ``~/.bashrc`` on the A1 first; it is an alias, not a command.)
 
+#. **Sign-in, documented end to end.** (Day 25, Saturday 10 October.) The setup steps were in the day-two
+   guide and the history here, but how the feature works inside Sharpen was one paragraph. New page
+   :doc:`../architecture/sign-in-with-providers`: the three providers side by side (protocol, scopes, which id and
+   email are used, client authentication, PKCE), what was set up where and in which order, a nine-step diagram of
+   one sign-in (``10-sign-in.svg``), what each class in ``io.sharpen.auth`` does, the account rules with every
+   refusal code, Connect and Disconnect, password-less accounts, what is stored, what each test proves, and how
+   to switch on, rotate, switch off and troubleshoot. Linked from *How it works*, the day-two guide and the README.
+   Docs tables now wrap their text (``_static/tables.css``) instead of scrolling sideways with most of each
+   sentence out of view — every page with a wide table benefits.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 690" width="1000" height="690" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a5665"/></marker></defs><rect width="1000" height="690" fill="#f4f5f8" rx="16"/><text x="20" y="30" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#12171f">“Continue with Google”, request by request (GitHub and LinkedIn take the same path)</text>
+<circle cx="40" cy="90" r="11" fill="#2857d9"/>
+<text x="40" y="94" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">1</text>
+<rect x="62" y="66" width="250" height="50" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="187.0" y="95.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Browser</text>
+<text x="330" y="84" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">The button is a link to /oauth2/authorization/google. (Settings → Connect is a POST first: it marks the</text>
+<text x="330" y="98" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">session with the signed-in person's id, then redirects here.)</text>
+<path d="M187 116 L187 132" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="156" r="11" fill="#2857d9"/>
+<text x="40" y="160" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">2</text>
+<rect x="62" y="132" width="250" height="50" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="187.0" y="161.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring Security</text>
+<text x="330" y="150" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Creates state, nonce and (Google, GitHub) a PKCE verifier, keeps them in the session, and redirects to</text>
+<text x="330" y="164" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">the provider with Sharpen's client id, the scopes and the callback URL.</text>
+<path d="M187 182 L187 198" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="222" r="11" fill="#2857d9"/>
+<text x="40" y="226" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">3</text>
+<rect x="62" y="198" width="250" height="50" rx="10" fill="#fde8dc" stroke="#c2410c" stroke-width="1.2"/>
+<text x="187.0" y="227.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Google / GitHub / LinkedIn</text>
+<text x="330" y="216" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">The person signs in there and approves. The provider sends the browser back to</text>
+<text x="330" y="230" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">/login/oauth2/code/google with a one-time code and the same state.</text>
+<path d="M187 248 L187 264" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="288" r="11" fill="#2857d9"/>
+<text x="40" y="292" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">4</text>
+<rect x="62" y="264" width="250" height="50" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="187.0" y="293.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring Security</text>
+<text x="330" y="282" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Checks the state, then (server to server) swaps the code, client secret (and PKCE verifier) for tokens</text>
+<text x="330" y="296" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">at the provider's token endpoint.</text>
+<path d="M187 314 L187 330" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="354" r="11" fill="#2857d9"/>
+<text x="40" y="358" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">5</text>
+<rect x="62" y="330" width="250" height="50" rx="10" fill="#e6ecfc" stroke="#2857d9" stroke-width="1.2"/>
+<text x="187.0" y="359.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Spring Security</text>
+<text x="330" y="348" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Google, LinkedIn: verifies the ID token (signature against the provider's published keys, issuer,</text>
+<text x="330" y="362" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">audience, expiry, nonce). GitHub: reads /user and /user/emails.</text>
+<path d="M187 380 L187 396" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="420" r="11" fill="#2857d9"/>
+<text x="40" y="424" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">6</text>
+<rect x="62" y="396" width="250" height="50" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="187.0" y="425.5" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700" fill="#12171f">SocialUserServices</text>
+<text x="330" y="414" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Turns the answer into a ProviderUser: permanent id (sub / numeric id), verified email, name, username.</text>
+<path d="M187 446 L187 462" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="486" r="11" fill="#2857d9"/>
+<text x="40" y="490" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">7</text>
+<rect x="62" y="462" width="250" height="50" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="187.0" y="491.5" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700" fill="#12171f">SignInService.resolve</text>
+<text x="330" y="480" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Connect → link to the signed-in person · known id → that person · new id → new account if the email is</text>
+<text x="330" y="494" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">verified and unused · else refuse with a code.</text>
+<path d="M187 512 L187 528" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="552" r="11" fill="#2857d9"/>
+<text x="40" y="556" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">8</text>
+<rect x="62" y="528" width="250" height="50" rx="10" fill="#ffffff" stroke="#d9dfe8" stroke-width="1.2"/>
+<text x="187.0" y="557.5" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#12171f">Session</text>
+<text x="330" y="546" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Principal named by the Sharpen account's email with its role, so the rest of the app is unchanged. The</text>
+<text x="330" y="560" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">provider's token is dropped (DiscardingAuthorizedClientRepository).</text>
+<path d="M187 578 L187 594" fill="none" stroke="#4a5665" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="40" cy="618" r="11" fill="#2857d9"/>
+<text x="40" y="622" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#fff">9</text>
+<rect x="62" y="594" width="250" height="50" rx="10" fill="#e2f4e6" stroke="#0f7a2b" stroke-width="1.2"/>
+<text x="187.0" y="623.5" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700" fill="#12171f">SocialLoginHandlers</text>
+<text x="330" y="612" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Success: the page that asked, else /dashboard (Connect: /settings?connected=google). Refusal:</text>
+<text x="330" y="626" text-anchor="start" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">/login?signin_error=&lt;code&gt;&amp;provider=google, both from fixed lists.</text>
+<text x="500" y="670" text-anchor="middle" font-family="Manrope, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500" fill="#4a5665">Blue: Spring Security does it.  Green: Sharpen's own code (io.sharpen.auth).  Orange: the provider's site.</text></svg>

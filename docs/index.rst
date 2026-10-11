@@ -30,6 +30,7 @@ them (``FR-12``, ``NFR-3``).
    architecture/how-it-works
    architecture/overview
    architecture/data-model
+   architecture/sign-in-with-providers
    architecture/build-and-run
 
 .. toctree::

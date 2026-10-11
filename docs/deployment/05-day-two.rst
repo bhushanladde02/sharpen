@@ -269,7 +269,9 @@ names with suspicion). Sharpen moved to ``sharpenscore.com`` on day 5. The steps
 Sign in with Google, GitHub and LinkedIn
 ----------------------------------------
 
-Each provider is switched on by two values in ``deploy/.env`` on the server; until both are there the site
+How the feature works inside Sharpen — the request flow, which code decides what, what is stored, the tests — is
+in :doc:`../architecture/sign-in-with-providers`; this section is the click-by-click setup. Each provider is
+switched on by two values in ``deploy/.env`` on the server; until both are there the site
 offers email and password only, so the steps can be done one provider at a time and in any order. Everything
 here is free. Keep each **client secret** out of chat, screenshots and Git: it goes in ``deploy/.env`` on the
 server and in ``private/credentials.md`` on the Mac, nowhere else.

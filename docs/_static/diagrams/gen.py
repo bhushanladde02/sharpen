@@ -179,7 +179,7 @@ s.box(290, 140, 230, 120, "SessionService", "logManual / upsertExternal: idempot
 s.arrow(520, 200, 566, 200)
 s.box(568, 140, 180, 120, "usage_session", "one row per session: volume + 4 assessment fields + self_assessed flag", mono=True, bold=False)
 s.arrow(748, 200, 794, 200)
-s.box(796, 130, 184, 140, "AiScoreService", "only self_assessed rows; minute-weighted (5–240); 5 dimensions × weights → 0–1000 + flags", fill=GOOD_SOFT, stroke=GOOD)
+s.box(796, 130, 184, 140, "AiScoreService", "only self_assessed rows; minute-weighted (5–240); 5 dimensions × weights → 0–100 + flags", fill=GOOD_SOFT, stroke=GOOD)
 
 s.box(290, 320, 230, 62, "Rating screen", "the person answers the 4 questions for \"needs rating\" rows", fill=WARN_SOFT, stroke=WARN)
 s.arrow(405, 320, 405, 262, "assess()", lx=445, ly=295)

@@ -4,7 +4,7 @@ Glossary
 .. glossary::
 
    AI score
-      The 0–1000 composite of the five dimensions over a window. See :doc:`requirements/04-scoring`.
+      The 0–100 composite of the five dimensions over a window. See :doc:`requirements/04-scoring`.
 
    Assessment / self-assessment
       The four answers a person gives per session: human contribution %, output verified, learned something,

@@ -18,7 +18,7 @@
     </svg>
     <div class="center">
       <div class="big num" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</div>
-      <div class="of">of 1000</div>
+      <div class="of">of 100</div>
     </div>
   </div>
   <div>
@@ -49,10 +49,10 @@
     <line class="grid-line" x1="24" y1="4" x2="296" y2="4"/>
     <line class="grid-line" x1="24" y1="40" x2="296" y2="40"/>
     <line class="grid-line" x1="24" y1="76" x2="296" y2="76"/>
-    <text x="300" y="7">1000</text><text x="300" y="43">500</text><text x="300" y="79">0</text>
+    <text x="300" y="7">100</text><text x="300" y="43">50</text><text x="300" y="79">0</text>
     <path class="line" th:attr="d=${path}"/>
     <th:block th:each="m, it : ${trend}" th:with="x=${24 + it.index * (272.0 / (trend.size() - 1))}">
-      <circle th:if="${m.score.hasScore()}" th:attr="cx=${x}, cy=${4 + 72 * (1 - m.score.composite / 1000.0)}" r="3" fill="var(--accent)"/>
+      <circle th:if="${m.score.hasScore()}" th:attr="cx=${x}, cy=${4 + 72 * (1 - m.score.composite / 100.0)}" r="3" fill="var(--accent)"/>
       <text th:attr="x=${x}" y="92" text-anchor="middle" th:text="${#strings.substring(m.label(), 0, 3)}">Jan</text>
     </th:block>
   </svg>

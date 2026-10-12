@@ -66,7 +66,7 @@ public class AuthController {
     }
 
     /** A representative score for the landing-page preview; not a real person. */
-    static final AiScore SAMPLE_SCORE = new AiScore(742, 68, 81, 84, 57, 92, 41, 39, AiScore.Confidence.FULL, false,
+    static final AiScore SAMPLE_SCORE = new AiScore(74, 68, 81, 84, 57, 92, 41, 39, AiScore.Confidence.FULL, false,
             List.of(new AiScore.Flag("strength", "You lead the work and check the output — the pattern employers pay for.")));
 
     /** JSON-LD for search engines: what Sharpen is, who made it, that it is free and open source. */
@@ -82,7 +82,7 @@ public class AuthController {
            "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
            "license":"https://www.gnu.org/licenses/agpl-3.0.html",
            "codeRepository":"https://github.com/bhushanladde02/sharpen",
-           "featureList":["Log AI sessions in 15 seconds","Monthly AI usage report (PDF)","AI score 0–1000 across independence, effectiveness, verification, growth and breadth","Public AI profile for employers","Directory of public profiles","Browser extension and CSV/API import"],
+           "featureList":["Log AI sessions in 15 seconds","Monthly AI usage report (PDF)","AI score 0–100 across independence, effectiveness, verification, growth and breadth","Public AI profile for employers","Directory of public profiles","Browser extension and CSV/API import"],
            "author":{"@id":"%1$s/#author"}},
           {"@type":"Person","@id":"%1$s/#author","name":"Bhushan Arun Ladde",
            "url":"https://github.com/bhushanladde02","jobTitle":"Senior Software Engineer"}

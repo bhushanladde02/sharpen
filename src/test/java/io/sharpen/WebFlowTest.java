@@ -58,7 +58,8 @@ class WebFlowTest {
     void publicPagesAreOpenAndPrivateOnesRedirect() throws Exception {
         mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string(containsString("Sharpen")));
         // No provider configured here: the pages offer email and password only, and the OAuth endpoints do not exist.
-        mvc.perform(get("/login")).andExpect(status().isOk()).andExpect(content().string(not(containsString("Continue with"))));
+        mvc.perform(get("/login")).andExpect(status().isOk()).andExpect(content().string(not(containsString("Continue with"))))
+                .andExpect(content().string(containsString("Use AI a lot. Stay the one who thinks.")));
         mvc.perform(get("/register")).andExpect(content().string(not(containsString("Sign up with"))));
         mvc.perform(get("/dashboard")).andExpect(status().is3xxRedirection());
         mvc.perform(get("/api/v1/me")).andExpect(status().isUnauthorized());
@@ -378,6 +379,60 @@ class WebFlowTest {
                 people.register("idle@example.com", "password123", "Idle Person", AccountType.INDIVIDUAL));
         org.junit.jupiter.api.Assertions.assertEquals(0, reportService.catchUp(last));
         org.junit.jupiter.api.Assertions.assertTrue(reportRepo.findByPersonIdAndYearMonth(idle.getId(), last.toString()).isEmpty());
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired tools.jackson.databind.ObjectMapper json;
+
+    @Test
+    void reportsStoredOnTheOldScaleAreConverted() throws Exception {
+        // A report frozen while the score ran 0-1000: composites, the change and the "Score up/down" title were ten
+        // times larger, and there was no "scale". Start-up converts it once; reading converts it even before that.
+        Person old = people.byEmail("old-scale@example.com").orElseGet(() ->
+                people.register("old-scale@example.com", "password123", "Old Scale", AccountType.INDIVIDUAL));
+        var asOld = user(old.getEmail()).roles("INDIVIDUAL");
+        YearMonth month = YearMonth.from(LocalDate.now()).minusMonths(1);
+        String[][] sessions = {{month.minusMonths(1).atDay(5).toString(), "30", "false"}, {month.atDay(5).toString(), "90", "true"}};
+        for (String[] x : sessions) {
+            mvc.perform(post("/sessions").with(csrf()).with(asOld)
+                            .param("occurredOn", x[0]).param("context", "PROFESSIONAL").param("tool", "Claude")
+                            .param("taskCategory", "CODING").param("durationMinutes", "40").param("promptCount", "4")
+                            .param("humanContributionPct", x[1]).param("outcome", "4").param("verifiedOutput", x[2]))
+                    .andExpect(status().is3xxRedirection());
+        }
+        var stored = reportService.generate(old, month);
+        var fresh = reportService.read(stored);
+        int now = fresh.month().score().composite(), before = fresh.previous().score().composite();
+        assertTrue(now <= 100 && before <= 100 && now != before, "now " + now + ", before " + before);
+        assertEquals(100, fresh.scale());
+
+        var legacy = (tools.jackson.databind.node.ObjectNode) json.readTree(stored.getPayload());
+        legacy.remove("scale");
+        ((tools.jackson.databind.node.ObjectNode) legacy.get("month").get("score")).put("composite", now * 10);
+        ((tools.jackson.databind.node.ObjectNode) legacy.get("previous").get("score")).put("composite", before * 10);
+        ((tools.jackson.databind.node.ObjectNode) legacy.get("delta")).put("score", (now - before) * 10);
+        legacy.withArray("insights").addObject().put("kind", now > before ? "up" : "down")
+                .put("title", (now > before ? "Score up " : "Score down ") + Math.abs(now - before) * 10 + " points").put("body", "b");
+        stored.setPayload(json.writeValueAsString(legacy));
+        stored.setAiScore(now * 10);
+        reportRepo.save(stored);
+
+        assertEquals(now, reportService.read(reportRepo.findById(stored.getId()).orElseThrow()).month().score().composite(), "read converts");
+        reportService.upgradeStoredReportsToScale100();
+        var converted = reportRepo.findById(stored.getId()).orElseThrow();
+        assertEquals(now, converted.getAiScore());
+        var model = reportService.read(converted);
+        assertEquals(100, model.scale());
+        assertEquals(now, model.month().score().composite());
+        assertEquals(before, model.previous().score().composite());
+        assertEquals(now - before, model.delta().score());
+        assertTrue(model.insights().stream().anyMatch(i -> i.title().equals(
+                (now > before ? "Score up " : "Score down ") + Math.abs(now - before) + (Math.abs(now - before) == 1 ? " point" : " points"))));
+        String once = converted.getPayload();
+        reportService.upgradeStoredReportsToScale100();   // never twice
+        assertEquals(once, reportRepo.findById(stored.getId()).orElseThrow().getPayload());
+        assertEquals(now, reportRepo.findById(stored.getId()).orElseThrow().getAiScore());
+        mvc.perform(get("/reports/" + month).with(asOld)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("of 100<")));
     }
 
     @Test

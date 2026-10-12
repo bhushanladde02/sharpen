@@ -62,7 +62,7 @@ class AiScoreServiceTest {
         assertThat(s.independence()).isEqualTo(85);
         assertThat(s.verification()).isEqualTo(100);
         assertThat(s.breadth()).isEqualTo(100);
-        assertThat(s.composite()).isGreaterThan(800);
+        assertThat(s.composite()).isGreaterThan(80);
         assertThat(s.relianceRisk()).isFalse();
         assertThat(s.band()).isEqualTo("Expert");
     }
@@ -75,7 +75,7 @@ class AiScoreServiceTest {
         }
         AiScore s = service.compute(list);
         assertThat(s.relianceRisk()).isTrue();
-        assertThat(s.composite()).isLessThan(400);
+        assertThat(s.composite()).isLessThan(40);
         assertThat(s.flags()).anyMatch(f -> f.kind().equals("risk"));
     }
 

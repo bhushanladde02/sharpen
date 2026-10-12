@@ -89,7 +89,7 @@ public class GlobalModelAttributes {
     /** Default description for search engines and link previews; controllers override for specific pages. */
     public static final String DEFAULT_DESCRIPTION =
             "Sharpen is a free, open-source AI profile: track how you work with AI at work and at home, get a monthly "
-            + "report and an AI score (0–1000) that rewards independence, verification and learning — never volume — "
+            + "report and an AI score (0–100) that rewards independence, verification and learning — never volume — "
             + "and share a public profile that shows employers how you actually use AI.";
 
     @ModelAttribute("pageDescription")

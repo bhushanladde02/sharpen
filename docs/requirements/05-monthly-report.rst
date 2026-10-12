@@ -47,7 +47,7 @@ In order, top to bottom:
    model* with an instruction to reclaim one task type.
 5. **Tools / task types / sources** — minutes share per tool (top 6) and per task type; count of sessions per
    source (logged, extension, import).
-6. **What stood out** — rule-based insights: score change ≥ 25 points either way; dominant tool; dominant task
+6. **What stood out** — rule-based insights: score change ≥ 3 points either way; dominant tool; dominant task
    type and whether the spread is good; lopsided professional/personal balance (≥ 80 %); all score flags except
    the provisional one.
 7. **Next month, try** — up to three nudges chosen by the weakest dimensions:

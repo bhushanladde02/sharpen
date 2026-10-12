@@ -43,7 +43,7 @@ public class DashboardController {
         model.addAttribute("score", stats.rollingScore(me, today));
         model.addAttribute("month", trend.get(trend.size() - 1));
         model.addAttribute("trend", trend);
-        model.addAttribute("trendPath", Charts.linePath(trend.stream().map(m -> m.score().hasScore() ? m.score().composite() : -1).toList(), 1000, 320, 80));
+        model.addAttribute("trendPath", Charts.linePath(trend.stream().map(m -> m.score().hasScore() ? m.score().composite() : -1).toList(), 100, 320, 80));
         model.addAttribute("unrated", sessions.needingAssessment(me, 3));
         model.addAttribute("recent", sessions.page(me, 0, 6).getContent());
         model.addAttribute("total", sessions.count(me));

@@ -69,10 +69,10 @@
     },
     {
       id: 'score', chip: 'What is the AI score?',
-      keys: ['score', 'points', '1000', 'band', 'independence', 'effectiveness', 'verification', 'growth', 'breadth', 'provisional',
+      keys: ['score', 'points', '100', '1000', 'band', 'independence', 'effectiveness', 'verification', 'growth', 'breadth', 'provisional',
              'how is it calculated', 'calculated', 'rating', 'strong', 'sharp'],
       answer: function () {
-        return '<p>The AI score runs from 0 to 1000 and rewards <b>how</b> you work with AI, never how much. Five parts: ' +
+        return '<p>The AI score runs from 0 to 100 and rewards <b>how</b> you work with AI, never how much. Five parts: ' +
                '<b>independence</b> (how much of the thinking stayed yours), <b>effectiveness</b> (did it help), <b>verification</b> ' +
                '(did you check the output), <b>growth</b> (are you learning) and <b>breadth</b> (range of tasks and tools).</p>' +
                '<p>It is computed over the last 90 days and is marked <i>provisional</i> until you have logged enough sessions. ' +

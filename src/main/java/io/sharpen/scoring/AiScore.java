@@ -45,8 +45,8 @@ public record AiScore(
         if (composite >= 80) return "Expert";
         if (composite >= 65) return "Strong";
         if (composite >= 50) return "Developing";
-        if (composite >= 35) return "Dependent";
-        return "At risk";
+        if (composite >= 35) return "Building";
+        return "Starting";
     }
 
     public boolean hasScore() { return confidence != Confidence.NONE; }

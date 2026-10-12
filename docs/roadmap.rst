@@ -23,6 +23,8 @@ in order — each step a small, tested change:
    independence part rewards judgement rather than typing everything by hand.
 #. **A way in without an account — done 12 October.** The 60-second habits check at ``/check``, with a
    shareable result, as the main route for new visitors (home page, header, footer, Help).
+#. **The funnel — done 12 October.** Register signs you in; first-run states; visitor call to action on profiles;
+   neutral band names; honest form defaults; accessibility 100. See the pilot log, day 27.
 #. **Ten seconds a day.** A once-a-day check-in: rate *one* session (sampled), four taps, pre-filled by the
    extension. Less logging, less fatigue, less temptation to rate everything top.
 #. **Evidence.** Optionally attach a link (pull request, document) or one sentence of what was learned, written at

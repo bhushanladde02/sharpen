@@ -17,7 +17,9 @@ Accounts
      - Where
    * - FR-1
      - A visitor must be able to register with name, email, password and an account type of *Individual* or
-       *Company*. Email is unique (case-insensitive).
+       *Company* (chosen first; ``/register?type=company`` preselects it). Email is unique (case-insensitive).
+       Registering signs the person in and takes an individual straight to logging their first session, a company
+       to the candidates view — nobody retypes what they just entered.
      - Done
      - ``AuthController``, ``PersonService``
    * - FR-2

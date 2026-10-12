@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class SpamGuard {
 
     /** A form has to have been open at least this long — bots post within milliseconds. */
-    static final long MIN_SECONDS = 4;
+    static final long MIN_SECONDS = 2;   // a password manager fills a form in about a second; a bot in far less
     /** …and no longer than this, so a token cannot be harvested and replayed for weeks. */
     static final long MAX_SECONDS = 24 * 3600;
     /** Messages one address may send per hour; the sixth is refused with a polite error, not stored. */

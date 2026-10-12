@@ -11,7 +11,7 @@ Glossary
       outcome 1–5. Only assessed sessions count toward the score.
 
    Band
-      The label for a composite: Expert, Strong, Developing, Dependent, At risk.
+      The label for a composite: Expert, Strong, Developing, Building, Starting.
 
    Brain-active check
       The report panel that states how much of the month's work stayed human, with a one-sentence verdict.

@@ -68,7 +68,8 @@ Composite
 
 ``composite = round(Σ weight × dimension)`` → 0–100, the same scale as each dimension (the weights add up to 1).
 
-Bands: **Expert** ≥ 80 · **Strong** ≥ 65 · **Developing** ≥ 50 · **Dependent** ≥ 35 · **At risk** below.
+Bands: **Expert** ≥ 80 · **Strong** ≥ 65 · **Developing** ≥ 50 · **Building** ≥ 35 · **Starting** below. (Until 12 October 2026 the lower two were
+*Dependent* and *At risk* — accurate, but a public label nobody would choose to carry.)
 
 Until 12 October 2026 the composite was ten times larger (0–1000, bands at 800/650/500/350). The extra digit
 suggested a precision the answers behind it do not have, and the profile page said "of 1000" next to dimensions
@@ -113,7 +114,7 @@ Ten professional sessions of 45 minutes, human contribution 85 %, all verified, 
 Eight professional sessions of 30 minutes, human contribution 15 %, never verified, never learned, outcome 4:
 
 * Independence 15 · Effectiveness ≈ 0.7×75 + 0.3×100 ≈ 82 · Verification 0 · Growth 0 · Breadth ≈ 22
-* Composite ≈ 4.5 + 16.5 + 0 + 0 + 2.2 ≈ **23 → At risk**, with the reliance-risk flag (the model did the work
+* Composite ≈ 4.5 + 16.5 + 0 + 0 + 2.2 ≈ **23 → Starting**, with the reliance-risk flag (the model did the work
   and nothing was checked). The same sessions with every output verified own 15 + 85 × 0.7 ≈ 75, score 61
   (*Developing*) and carry no reliance-risk flag.
 

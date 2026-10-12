@@ -16,19 +16,20 @@
   <meta property="og:title" th:content="${ogTitle} ?: 'Sharpen — the AI profile'" content="Sharpen — the AI profile">
   <meta property="og:description" th:content="${pageDescription}" content="Sharpen — the AI profile.">
   <meta property="og:url" th:content="${canonicalUrl}" content="https://sharpenscore.com/">
-  <meta property="og:image" th:content="'https://' + ${siteHost} + '/img/og.png'" content="/img/og.png">
+  <meta property="og:image" th:content="${canonicalHost} + '/img/og.png'" content="/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" th:content="${ogTitle} ?: 'Sharpen — the AI profile'" content="Sharpen — the AI profile">
   <meta name="twitter:description" th:content="${pageDescription}" content="Sharpen — the AI profile.">
-  <meta name="twitter:image" th:content="'https://' + ${siteHost} + '/img/og.png'" content="/img/og.png">
+  <meta name="twitter:image" th:content="${canonicalHost} + '/img/og.png'" content="/img/og.png">
   <th:block th:if="${structuredData}"><script type="application/ld+json" th:utext="${structuredData}"></script></th:block>
   <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
   <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" th:href="@{/img/favicon.ico}">
   <link rel="apple-touch-icon" sizes="180x180" th:href="@{/img/apple-touch-icon.png}">
   <!-- Fonts are self-hosted (static/fonts, SIL OFL 1.1): rendering a page makes no request to anyone but this site. -->
   <link rel="preload" th:href="@{/fonts/manrope-latin-wght-normal.woff2}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" th:href="@{/fonts/bricolage-grotesque-latin-opsz-normal.woff2}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" th:href="@{/fonts/fonts.css}">
   <link rel="stylesheet" th:href="@{/css/sharpen.css}">
 </head>
@@ -38,10 +39,10 @@
   <header class="topbar">
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <span class="grow"></span>
-    <nav class="nav" th:if="${me == null}"><a th:href="@{/check}" class="wide-only">60-second check</a><a th:href="@{/p}" class="wide-only">Public profiles</a><a th:href="@{/insights}" class="wide-only">Insights</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
+    <nav class="nav" th:if="${me == null}"><a th:href="@{/check}" class="wide-only">60-second check</a><a th:href="@{/p}" class="wide-only">Public profiles</a><a th:href="@{/insights}" class="wide-only" th:if="${insightsPublished}">Insights</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
     <label class="menu-toggle" for="nav-open" aria-label="Menu" th:if="${me != null}"><span></span></label>
   </header>
-  <input type="checkbox" id="nav-open" aria-hidden="true">
+  <input type="checkbox" id="nav-open" aria-label="Menu" th:if="${me != null}">
 
   <!-- Drawer on mobile, sidebar on desktop -->
   <aside class="drawer">
@@ -66,7 +67,7 @@
     </div>
   </aside>
 
-  <main class="main">
+  <div class="main">
     <div th:if="${flash}" class="flash" th:text="${flash}">Saved.</div>
     <th:block th:replace="${content}"/>
     <footer class="footer site-footer">
@@ -82,7 +83,7 @@
         <th:block th:if="${me == null}"> · <a th:href="@{/login}">Sign in</a> · <a th:href="@{/register}">Create account</a></th:block>
       </span>
     </footer>
-  </main>
+  </div>
 
   <!-- Sharpen Help: a rule-based guide (no AI, no API, nothing leaves the browser). Logic in /js/help.js. -->
   <div id="help-widget" class="help-widget" th:classappend="${me == null or me.company} ? 'no-tabbar'"

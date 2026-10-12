@@ -33,8 +33,11 @@ public final class HabitCheck {
     public record DimensionScore(String label, int value) {}
 
     /** A scored result. {@code code} is the nine answer indexes, the part of the address that makes it shareable. */
+    /** One of the nine answers as given, so the result page can say what each number came from. */
+    public record Answer(int number, String dimension, String question, String chosen, int points) {}
+
     public record Result(String code, int composite, String band, List<DimensionScore> dimensions,
-                         String type, String typeLine, String tip) {}
+                         String type, String typeLine, String tip, List<Answer> answers) {}
 
     private static final Pattern CODE = Pattern.compile("[0-3]{9}");
 
@@ -96,11 +99,13 @@ public final class HabitCheck {
         if (!valid(code)) return null;
         double[] sum = new double[Dimension.values().length];
         int[] count = new int[Dimension.values().length];
+        List<Answer> answers = new ArrayList<>();
         for (int i = 0; i < QUESTIONS.size(); i++) {
             Question q = QUESTIONS.get(i);
-            int points = q.options().get(code.charAt(i) - '0').points();
-            sum[q.dimension().ordinal()] += points;
+            Option chosen = q.options().get(code.charAt(i) - '0');
+            sum[q.dimension().ordinal()] += chosen.points();
             count[q.dimension().ordinal()]++;
+            answers.add(new Answer(q.number(), q.dimension().label, q.text(), chosen.text(), chosen.points()));
         }
         List<DimensionScore> dims = new ArrayList<>();
         int[] value = new int[sum.length];
@@ -113,7 +118,7 @@ public final class HabitCheck {
         }
         int c = (int) Math.round(composite);
         String[] type = type(c, value);
-        return new Result(code, c, band(c), dims, type[0], type[1], tip(value));
+        return new Result(code, c, band(c), dims, type[0], type[1], tip(value), answers);
     }
 
     /** The same bands as the AI score. */
@@ -121,8 +126,8 @@ public final class HabitCheck {
         if (c >= 80) return "Expert";
         if (c >= 65) return "Strong";
         if (c >= 50) return "Developing";
-        if (c >= 35) return "Dependent";
-        return "At risk";
+        if (c >= 35) return "Building";
+        return "Starting";
     }
 
     /** A name for the pattern: the overall level first, then whichever human habit is strongest. */

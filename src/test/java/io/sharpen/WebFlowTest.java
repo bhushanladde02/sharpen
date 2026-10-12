@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -141,10 +142,15 @@ class WebFlowTest {
         communityService.invalidate();
         var c = communityService.stats();
         String landing = mvc.perform(get("/")).andReturn().getResponse().getContentAsString();
-        assertTrue(landing.contains(c.visits() == 1 ? ">visit to Sharpen<" : ">visits to Sharpen<"));
-        assertTrue(landing.contains(c.pageViews() == 1 ? ">page viewed<" : ">pages viewed<"));
-        assertTrue(landing.contains("data-one=\"visit to Sharpen\" data-many=\"visits to Sharpen\""), "the live refresh knows both forms");
-        assertEquals(c.countries() >= 3, landing.contains(">countries visiting<"), "countries appear from three");
+        // The strip only shows once there are 100 visits to show; tiny numbers are not social proof
+        if (c.visits() >= 100) {
+            assertTrue(landing.contains(">visits to Sharpen<"));
+            assertTrue(landing.contains(c.pageViews() == 1 ? ">page viewed<" : ">pages viewed<"));
+            assertTrue(landing.contains("data-one=\"visit to Sharpen\" data-many=\"visits to Sharpen\""), "the live refresh knows both forms");
+            assertEquals(c.countries() >= 3, landing.contains(">countries visiting<"), "countries appear from three");
+        } else {
+            assertTrue(!landing.contains("visits to Sharpen"), "no counter strip below 100 visits");
+        }
         String menu = mvc.perform(get("/dashboard").with(user(me.getEmail()).roles("INDIVIDUAL"))).andReturn().getResponse().getContentAsString();
         assertTrue(menu.contains(c.members() == 1 ? ">member<" : ">members<"), "menu label matches " + c.members());
         assertTrue(menu.contains("data-one=\"member\" data-many=\"members\""), "the live refresh knows both forms");
@@ -202,7 +208,8 @@ class WebFlowTest {
                         .param("firstName", "New").param("middleName", "Q.").param("lastName", "Person")
                         .param("email", "new@example.com").param("password", "password123").param("accountType", "INDIVIDUAL"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login?registered"));
+                .andExpect(redirectedUrl("/sessions/new?welcome"))
+                .andExpect(authenticated().withUsername("new@example.com"));   // signed in by registering
         Person created = people.byEmail("new@example.com").orElseThrow();
         org.junit.jupiter.api.Assertions.assertEquals("New Q. Person", created.getDisplayName());
         org.junit.jupiter.api.Assertions.assertEquals("Person", created.getLastName());

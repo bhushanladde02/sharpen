@@ -153,8 +153,8 @@ public class ProfileController {
         }
         AccountDeletionService.Removed gone = deletion.delete(me);
         try { request.logout(); } catch (jakarta.servlet.ServletException ignored) {}
-        redirect.addFlashAttribute("flash", "Your account, " + gone.sessions() + " sessions and " + gone.reports()
-                + " reports are deleted. Thank you for trying Sharpen.");
+        redirect.addFlashAttribute("flash", "Your account, " + gone.sessions() + (gone.sessions() == 1 ? " session and " : " sessions and ") + gone.reports()
+                + (gone.reports() == 1 ? " report are deleted. " : " reports are deleted. ") + "Thank you for trying Sharpen.");
         return "redirect:/";
     }
 

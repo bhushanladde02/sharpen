@@ -12,6 +12,9 @@
     </div>
   </div>
 
+  <div class="flash" th:if="${param.welcome}" style="max-width:760px">Your account is ready. Log your first AI session below — the one you had most
+    recently is fine. After eight rated sessions your score is reliable; until then it is marked provisional.</div>
+
   <form th:action="${mode == 'new'} ? @{/sessions} : @{/sessions/{id}(id=${entry.id})}" th:object="${form}" method="post" class="stack" style="max-width:760px">
     <div class="card stack">
       <h2>What happened</h2>

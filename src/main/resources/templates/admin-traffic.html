@@ -25,6 +25,19 @@
     </select>
   </form>
 
+  <section class="card goal" style="margin-bottom:1rem">
+    <h2>Target: <span th:text="${goal.membersTarget}">50</span> members and <span th:text="${goal.checksTarget}">500</span> people through the 60-second check
+      by <span th:text="${#temporals.format(goal.to, 'd MMMM')}">12 November</span>
+      <span class="muted" style="font-weight:600;font-size:.8rem" th:text="'· ' + ${goal.daysLeft} + ' days left'">· 30 days left</span></h2>
+    <table class="insight-bars" aria-label="Progress towards the target">
+      <tr><th scope="row">Members</th><td class="bar"><span class="fill" th:style="'width:' + ${goal.membersPercent()} + '%'"></span></td>
+        <td class="num"><b th:text="${goal.members}">1</b> / <span th:text="${goal.membersTarget}">50</span></td></tr>
+      <tr><th scope="row">Checks completed</th><td class="bar"><span class="fill" th:style="'width:' + ${goal.checksPercent()} + '%'"></span></td>
+        <td class="num"><b th:text="${goal.checks}">0</b> / <span th:text="${goal.checksTarget}">500</span></td></tr>
+    </table>
+    <p class="muted" style="margin:.6rem 0 0;font-size:.8rem">Members are individual accounts; checks are distinct browsers that reached a result page since the check went live. Set on 12 October 2026; when it is hit, double it.</p>
+  </section>
+
   <div class="grid four" style="margin-bottom:1rem">
     <div class="card stat"><span class="label">Page views</span><span class="value num" th:text="${#numbers.formatInteger(s.views, 1, 'COMMA')}">0</span></div>
     <div class="card stat"><span class="label">Visitors (daily unique)</span><span class="value num" th:text="${#numbers.formatInteger(s.visitors, 1, 'COMMA')}">0</span></div>

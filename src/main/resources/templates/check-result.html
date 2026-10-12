@@ -24,6 +24,13 @@
       </div>
       <p class="muted" style="margin:1rem 0 0;font-size:.8rem">From your nine answers, weighted like the Sharpen score
         (independence 30%, the rest 20% each, breadth 10%). A self-check, not a test.</p>
+      <details class="geo-all" style="margin-top:.8rem">
+        <summary>Where each number comes from</summary>
+        <ul class="plain" style="margin-top:.6rem">
+          <li th:each="a : ${r.answers}"><b th:text="${a.dimension}">Independence</b> · <span th:text="${a.question}">Q</span>
+            <br><span class="muted">You said: </span><i th:text="${a.chosen}">answer</i> <span class="muted" th:text="'(' + ${a.points} + ' of 3)'">(2 of 3)</span></li>
+        </ul>
+      </details>
     </div>
 
     <div class="stack">
@@ -39,7 +46,8 @@
           <a class="btn small" th:href="${xShare}" target="_blank" rel="noopener">Share on X</a>
           <a class="btn small" th:href="@{/check}">Retake</a>
         </div>
-        <label style="margin-top:.8rem">Link<textarea class="code" rows="1" readonly onclick="this.select()" th:text="${shareUrl}"></textarea></label>
+        <label style="margin-top:.8rem">Link<textarea class="code" id="share-link" rows="1" readonly onclick="this.select()" th:text="${shareUrl}"></textarea></label>
+        <button class="btn small" type="button" style="margin-top:.5rem" onclick="var t=document.getElementById('share-link');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(function(){this.textContent='Copied'}.bind(this),function(){document.execCommand('copy');this.textContent='Copied'}.bind(this))">Copy link</button>
       </div>
     </div>
   </div>

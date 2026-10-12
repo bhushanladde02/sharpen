@@ -15,7 +15,7 @@
         <a class="btn" th:href="@{/check}">Take the 60-second check</a>
       </div>
       <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
-      <div class="counter-strip">
+      <div class="counter-strip" th:if="${community.visits >= 100}">
         <!-- Real totals from Sharpen's own page-view count (bots excluded; one browser counts once a day). -->
         <div title="Visits since counting began — one browser counts once a day; bots are not counted"><b class="num" data-count="visits" th:text="${#numbers.formatInteger(community.visits, 1, 'COMMA')}">0</b><span data-unit="visits" data-one="visit to Sharpen" data-many="visits to Sharpen" th:text="${community.visits == 1} ? 'visit to Sharpen' : 'visits to Sharpen'">visits to Sharpen</span></div>
         <div><b class="num" data-count="pageViews" th:text="${#numbers.formatInteger(community.pageViews, 1, 'COMMA')}">0</b><span data-unit="pageViews" data-one="page viewed" data-many="pages viewed" th:text="${community.pageViews == 1} ? 'page viewed' : 'pages viewed'">pages viewed</span></div>
@@ -39,8 +39,8 @@
       <p>Logging is the only thing we ask of you. Everything else — the score, the report, the profile — is built from it.</p>
     </div>
     <div class="steps">
-      <div class="step"><h3>Log a session</h3><p>Date, tool, task, minutes — then four honest questions: how much was yours, did you check it, did you learn, was it useful. The browser extension and usage exports fill in the volume for you.</p></div>
-      <div class="step"><h3>Read your month</h3><p>On the 1st you get a report: where the time went, how much of the thinking stayed human, and three concrete things to try next month. On screen and as a PDF.</p></div>
+      <div class="step"><h3>Log a session</h3><p>Date, tool, task, minutes — then four honest questions: how much was yours, did you check it, did you learn, was it useful. A usage export from your AI tool can fill in the volume for you.</p></div>
+      <div class="step"><h3>Read your month</h3><p>On the 1st a report is ready on your dashboard: where the time went, how much of the thinking stayed human, and three concrete things to try next month. On screen and as a PDF.</p></div>
       <div class="step"><h3>Share it, if you want</h3><p>Your profile stays private until you switch it on. Then it shows the score, the trend and the tools you use — nothing else — and says plainly that the ratings are your own.</p></div>
     </div>
   </section>
@@ -90,7 +90,7 @@
         <p class="eyebrow">For companies</p>
         <h2 style="font-family:var(--display);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.5rem">Better interview conversations about AI</h2>
         <p class="muted">Public profiles show how candidates say they work with AI — what they check, what they learn, where they lean on the model. They are self-rated, not tested: use them to ask sharper questions, not to rank people.</p>
-        <a class="btn" th:href="@{/register}">Create a company account</a>
+        <a class="btn" th:href="@{/register(type='company')}">Create a company account</a>
       </div>
       <div class="card">
         <div class="cand">

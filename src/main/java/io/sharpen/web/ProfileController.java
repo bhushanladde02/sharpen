@@ -246,7 +246,7 @@ public class ProfileController {
         AiScore sc = stats.rollingScore(p, today);
         model.addAttribute("score", sc);
         model.addAttribute("trend", trend);
-        model.addAttribute("trendPath", Charts.linePath(trend.stream().map(m -> m.score().hasScore() ? m.score().composite() : -1).toList(), 1000, 320, 80));
+        model.addAttribute("trendPath", Charts.linePath(trend.stream().map(m -> m.score().hasScore() ? m.score().composite() : -1).toList(), 100, 320, 80));
         model.addAttribute("reportCount", history.size());
         model.addAttribute("sessionCount", sessions.count(p));
         model.addAttribute("since", sessions.firstSessionDate(p).orElse(null));
@@ -254,7 +254,7 @@ public class ProfileController {
         String role = p.getJobTitle() == null ? "" : p.getJobTitle() + (p.getIndustry() == null ? "" : ", " + p.getIndustry()) + ". ";
         model.addAttribute("ogTitle", p.getDisplayName() + " — AI profile on Sharpen");
         model.addAttribute("pageDescription", p.getDisplayName() + "'s AI profile. " + role
-                + (sc.hasScore() ? "AI score " + sc.composite() + " of 1000 (" + sc.band() + ") over the last 90 days" : "Building an AI score")
+                + (sc.hasScore() ? "AI score " + sc.composite() + " of 100 (" + sc.band() + ") over the last 90 days" : "Building an AI score")
                 + " — independence, effectiveness, verification, growth and breadth, from " + sessions.count(p) + " logged sessions."
                 + (p.getHeadline() == null ? "" : " \u201c" + p.getHeadline() + "\u201d"));
         return "profile";

@@ -53,7 +53,7 @@ public class AiScoreService {
         double growth = weightedMean(assessed, totalWeight, s -> s.isLearnedSomething() ? 100.0 : 0.0);
         double breadth = breadth(assessed);
 
-        double composite10 = W_INDEPENDENCE * independence + W_EFFECTIVENESS * effectiveness
+        double composite = W_INDEPENDENCE * independence + W_EFFECTIVENESS * effectiveness
                 + W_VERIFICATION * verification + W_GROWTH * growth + W_BREADTH * breadth;
 
         boolean relianceRisk = relianceRisk(assessed);
@@ -63,7 +63,7 @@ public class AiScoreService {
                 sessions.size() - assessed.size());
 
         return new AiScore(
-                (int) Math.round(composite10 * 10),
+                (int) Math.round(composite),   // 0-100, like each dimension (the weights add up to 1)
                 round(independence), round(effectiveness), round(verification), round(growth), round(breadth),
                 sessions.size(), assessed.size(), confidence, relianceRisk, flags);
     }

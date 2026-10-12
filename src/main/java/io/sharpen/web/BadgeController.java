@@ -50,8 +50,8 @@ public class BadgeController {
         boolean scored = score.hasScore();
         String number = scored ? Integer.toString(score.composite()) : "—";
         String band = scored ? score.band() : "not yet scored";
-        String accent = !scored ? "#7c8794" : score.composite() >= 800 ? "#1f9d55" : score.composite() >= 650 ? "#2857d9"
-                : score.composite() >= 500 ? "#c98a00" : "#c0392b";
+        String accent = !scored ? "#7c8794" : score.composite() >= 80 ? "#1f9d55" : score.composite() >= 65 ? "#2857d9"
+                : score.composite() >= 50 ? "#c98a00" : "#c0392b";
         String who = esc(name.length() > 22 ? name.substring(0, 21) + "…" : name);
         return """
             <svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64" role="img" aria-label="Sharpen AI score %1$s, %2$s, %3$s">

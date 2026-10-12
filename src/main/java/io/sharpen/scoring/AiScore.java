@@ -3,7 +3,8 @@ package io.sharpen.scoring;
 import java.util.List;
 
 /**
- * The AI score for a set of sessions. Composite is 0-1000; each dimension is 0-100.
+ * The AI score for a set of sessions. The composite and each dimension are 0-100 (the composite was 0-1000
+ * until 12 October 2026; stored reports from before are converted by {@code ReportService}).
  *
  * <ul>
  *   <li><b>independence</b> — how much of the work the person did themselves (human contribution)</li>
@@ -41,18 +42,18 @@ public record AiScore(
 
     public String band() {
         if (confidence == Confidence.NONE) return "Not yet scored";
-        if (composite >= 800) return "Expert";
-        if (composite >= 650) return "Strong";
-        if (composite >= 500) return "Developing";
-        if (composite >= 350) return "Dependent";
+        if (composite >= 80) return "Expert";
+        if (composite >= 65) return "Strong";
+        if (composite >= 50) return "Developing";
+        if (composite >= 35) return "Dependent";
         return "At risk";
     }
 
     public boolean hasScore() { return confidence != Confidence.NONE; }
 
-    /** stroke-dashoffset for the r=52 score ring (circumference ≈ 326.7): full circle at 1000. */
+    /** stroke-dashoffset for the r=52 score ring (circumference ≈ 326.7): full circle at 100. */
     public String ringOffset() {
         double c = 2 * Math.PI * 52;
-        return String.format(java.util.Locale.ROOT, "%.1f", c * (1 - Math.min(1000, Math.max(0, composite)) / 1000.0));
+        return String.format(java.util.Locale.ROOT, "%.1f", c * (1 - Math.min(100, Math.max(0, composite)) / 100.0));
     }
 }

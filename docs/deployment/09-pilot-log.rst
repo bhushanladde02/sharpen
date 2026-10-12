@@ -730,6 +730,26 @@ Day 8 — Wednesday 16 September: which build is this?
    Docs tables now wrap their text (``_static/tables.css``) instead of scrolling sideways with most of each
    sentence out of view — every page with a wide table benefits.
 
+#. **The sign-in page says what Sharpen is for.** (Day 26, Sunday 11 October.) The line under *Sign in* read
+   "Sharpen is an independent project by Bhushan Arun Ladde — the source is public", added during the
+   Safe Browsing review to show who runs the site. It now carries the product's own line, *Use AI a lot. Stay
+   the one who thinks.*, the same as the home page. Who runs it and the public source are still on every page,
+   in the footer (© Bhushan Arun Ladde · AGPL-3.0 · Source on GitHub), so nothing the review relied on is lost.
+
+#. **The AI score is out of 100.** (Day 27, Monday 12 October.) The profile page showed "544 of 1000" beside five
+   dimensions each out of 100, and the chart's "1000" label did not fit its box. The composite is now the
+   weighted mean of the dimensions itself, 0–100 (``AiScoreService``), with bands at 80/65/50/35, the ring, the
+   score chart, the badge colours, the PDF ("AI SCORE (0–100)"), the landing example (74), the search-engine
+   descriptions and the Help answer to match; the "Score up/down" insight now needs a change of 3 points instead
+   of 25. Reports already stored hold the old numbers, so on start-up ``ReportService`` converts each one once —
+   both months' composites, the change, the insight title and the ``ai_score`` column — and marks it
+   ``"scale": 100``; reading converts too, so nothing shows the old scale in between. Proved on PostgreSQL with
+   the previous release: it generated a real September report (824, previous month 489, "+335"); the new release
+   started on the same database, logged "Converted 1 stored monthly reports", and the page and PDF showed 82 of
+   100, "+33 vs August" and "Score up 33 points". A new test does the same on H2 and fails if the conversion is
+   removed (it then reads 660 instead of 66). API clients reading ``/api/v1/me/score`` now get ``composite`` on
+   0–100. 52 tests.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

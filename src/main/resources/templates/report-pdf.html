@@ -40,7 +40,7 @@
   <table>
     <tr>
       <td style="width:34%; border:1px solid #d7dde5;">
-        <div class="label">AI SCORE (0–1000)</div>
+        <div class="label">AI SCORE (0–100)</div>
         <div class="score" th:text="${s.hasScore()} ? ${s.composite} : '—'">720</div>
         <div><span class="band" th:text="${s.band()}">Strong</span>
           <span th:if="${d.score != null}" class="muted" th:text="' ' + (${d.score} >= 0 ? '+' : '') + ${d.score} + ' vs ' + ${r.previous.label()}"> +12</span></div>

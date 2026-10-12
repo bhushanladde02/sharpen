@@ -19,7 +19,7 @@ Sharpen is a small web service where an individual keeps a log of how they work 
 and gets back three things:
 
 * **A monthly report** of what they used, for what, and how much of the thinking stayed theirs.
-* **An AI score (0–1000)** that rewards *independence, verification and learning*, never hours or prompt
+* **An AI score (0–100)** that rewards *independence, verification and learning*, never hours or prompt
   volume. Using AI more does not raise it; using it well does.
 * **A public AI profile** — a LinkedIn-style page with only the AI-related facts, which they can share with an
   employer.
@@ -88,7 +88,7 @@ What it is not
 
 Sharpen is a working prototype in a free pilot. It does not monitor anyone: nothing is recorded unless the
 person logs it, the browser extension records only minutes and prompt counts (never text), and every profile
-is private until its owner makes it public. It is not a certification, and a score of 800 is not a hiring
+is private until its owner makes it public. It is not a certification, and a score of 80 is not a hiring
 decision — it is a structured, comparable signal about a habit that otherwise goes unmeasured.
 
 Try it

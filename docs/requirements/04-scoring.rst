@@ -63,9 +63,16 @@ Each dimension is 0–100.
 Composite
 ---------
 
-``composite = round(10 × Σ weight × dimension)`` → 0–1000.
+``composite = round(Σ weight × dimension)`` → 0–100, the same scale as each dimension (the weights add up to 1).
 
-Bands: **Expert** ≥ 800 · **Strong** ≥ 650 · **Developing** ≥ 500 · **Dependent** ≥ 350 · **At risk** below.
+Bands: **Expert** ≥ 80 · **Strong** ≥ 65 · **Developing** ≥ 50 · **Dependent** ≥ 35 · **At risk** below.
+
+Until 12 October 2026 the composite was ten times larger (0–1000, bands at 800/650/500/350). The extra digit
+suggested a precision the answers behind it do not have, and the profile page said "of 1000" next to dimensions
+out of 100. Every number is now out of 100. Monthly reports stored before the change are converted once at
+start-up (``ReportService.upgradeStoredReportsToScale100``: the two composites, the change between them, the
+*Score up/down* insight and ``monthly_report.ai_score``) and marked ``"scale": 100`` so it never happens twice; the
+rest of a frozen report was already on its final scale.
 
 Confidence and flags
 --------------------

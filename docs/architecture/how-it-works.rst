@@ -118,7 +118,7 @@ is captured automatically, judgement stays human, and the score cannot be gamed 
 
 ``AiScoreService`` then computes five dimensions over the rated rows in the window (90 days for the dashboard and
 profile, the calendar month for reports), each a minute-weighted mean or rate, and combines them with fixed
-weights into a 0–1000 composite plus flags. The full specification is in :doc:`../requirements/04-scoring`.
+weights into a 0–100 composite plus flags. The full specification is in :doc:`../requirements/04-scoring`.
 
 The monthly report
 ------------------
@@ -326,7 +326,7 @@ How to explain it in two minutes
 
 *Sharpen is a single Spring Boot application. You log an AI session in fifteen seconds — or the browser
 extension and usage imports log the volume for you — and answer four questions: how much was yours, did you
-check it, did you learn, was it useful. Those answers, minute-weighted, become five dimensions and a 0–1000
+check it, did you learn, was it useful. Those answers, minute-weighted, become five dimensions and a 0–100
 score that never rewards hours. On the first of every month a scheduled job freezes a report with a
 brain-active check and three things to try; you can download it as a PDF. Your public profile shows only
 AI-related facts, and companies can rank candidates by independence or verification instead of prompt volume.

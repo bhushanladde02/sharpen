@@ -123,10 +123,67 @@ public class ReportService {
 
     public ReportModel read(MonthlyReport report) {
         try {
-            return json.readValue(report.getPayload(), ReportModel.class);
+            String upgraded = upgradedPayload(report.getPayload());
+            return json.readValue(upgraded != null ? upgraded : report.getPayload(), ReportModel.class);
         } catch (JacksonException e) {
             throw new IllegalStateException("Stored report is unreadable", e);
         }
+    }
+
+    /**
+     * Once, at start-up: reports stored while the AI score ran 0–1000 are rewritten on the 0–100 scale — the
+     * composites (this month, last month), the change between them, the "Score up/down N points" insight and the
+     * {@code ai_score} column — and marked {@code "scale": 100} so they are never converted twice. Everything else in
+     * a report (the five dimensions, minutes, sessions, text) was already on its final scale and stays as it was
+     * frozen. {@link #read} applies the same conversion, so a report opened before this has run still reads right.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void upgradeStoredReportsToScale100() {
+        int n = 0;
+        for (MonthlyReport r : reports.findAll()) {
+            String upgraded = upgradedPayload(r.getPayload());
+            if (upgraded == null) continue;
+            r.setPayload(upgraded);
+            r.setAiScore((int) Math.round(r.getAiScore() / 10.0));
+            reports.save(r);
+            n++;
+        }
+        if (n > 0) log.info("Converted {} stored monthly reports to the 0-100 AI score", n);
+    }
+
+    /** The payload rewritten on the 0–100 scale, or null when it already is (or cannot be read as a report). */
+    String upgradedPayload(String payload) {
+        tools.jackson.databind.JsonNode root;
+        try {
+            root = json.readTree(payload);
+        } catch (JacksonException e) {
+            return null;
+        }
+        if (!(root instanceof tools.jackson.databind.node.ObjectNode report) || report.has("scale")) return null;
+        Integer now = rescaleComposite(report.get("month")), before = rescaleComposite(report.get("previous"));
+        if (report.get("delta") instanceof tools.jackson.databind.node.ObjectNode delta && delta.hasNonNull("score")) {
+            delta.put("score", now != null && before != null ? now - before : (int) Math.round(delta.get("score").asInt() / 10.0));
+        }
+        if (report.get("insights") instanceof tools.jackson.databind.node.ArrayNode insights && now != null && before != null) {
+            for (tools.jackson.databind.JsonNode i : insights) {
+                if (i instanceof tools.jackson.databind.node.ObjectNode insight && i.path("title").asString("").startsWith("Score ")) {
+                    int d = now - before;
+                    insight.put("title", (d >= 0 ? "Score up " : "Score down ") + Math.abs(d) + (Math.abs(d) == 1 ? " point" : " points"));
+                }
+            }
+        }
+        report.put("scale", ReportModel.SCALE);
+        return json.writeValueAsString(report);
+    }
+
+    /** Divides a month's stored composite by ten (0–1000 → 0–100) in place; returns the new value, or null. */
+    private static Integer rescaleComposite(tools.jackson.databind.JsonNode month) {
+        if (month != null && month.get("score") instanceof tools.jackson.databind.node.ObjectNode score && score.has("composite")) {
+            int value = (int) Math.round(score.get("composite").asInt() / 10.0);
+            score.put("composite", value);
+            return value;
+        }
+        return null;
     }
 
     /** Builds the report live, without storing it. */
@@ -152,7 +209,7 @@ public class ReportService {
 
         return new ReportModel(person.getDisplayName(), person.getHandle(), person.getHeadline(),
                 month.toString(), current.label(), Instant.now().toString(),
-                current, hasPrev ? previous : null, delta, brain, insights, next);
+                current, hasPrev ? previous : null, delta, brain, insights, next, ReportModel.SCALE);
     }
 
     static BrainActive brainActive(List<UsageSession> list, AiScore score) {
@@ -184,8 +241,8 @@ public class ReportService {
         }
         if (hasPrev && s.hasScore() && prev.score().hasScore()) {
             int d = s.composite() - prev.score().composite();
-            if (d >= 25) out.add(new Insight("up", "Score up " + d + " points", "Better than " + prev.label() + " on the dimensions you control."));
-            else if (d <= -25) out.add(new Insight("down", "Score down " + Math.abs(d) + " points", "Check independence and verification below — those move the score most."));
+            if (d >= 3) out.add(new Insight("up", "Score up " + d + " points", "Better than " + prev.label() + " on the dimensions you control."));
+            else if (d <= -3) out.add(new Insight("down", "Score down " + Math.abs(d) + " points", "Check independence and verification below — those move the score most."));
         }
         if (!cur.tools().isEmpty()) {
             MonthSummary.Share t = cur.tools().get(0);

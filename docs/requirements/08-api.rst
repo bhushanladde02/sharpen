@@ -25,7 +25,7 @@ Endpoints
    .. code-block:: json
 
       {
-        "composite": 721, "independence": 61, "effectiveness": 79, "verification": 82,
+        "composite": 72, "independence": 61, "effectiveness": 79, "verification": 82,
         "growth": 58, "breadth": 100, "sessionCount": 70, "assessedCount": 68,
         "confidence": "FULL", "relianceRisk": false,
         "flags": [{"kind": "assess", "message": "2 imported sessions not rated yet — …"}]

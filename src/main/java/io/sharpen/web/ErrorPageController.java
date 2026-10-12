@@ -21,6 +21,7 @@ public class ErrorPageController implements ErrorController {
             case 404 -> { title = "Page not found"; hint = "There is nothing at this address. Check the link, or start from the home page."; }
             case 403 -> { title = "That request was refused"; hint = "Usually the page you submitted from was open for a while (or the site restarted) and its security token expired. Go back, reload the page and try again."; }
             case 401 -> { title = "Please sign in"; hint = "You need to be signed in to see this page."; }
+            case 400 -> { title = "That address did not make sense"; hint = "Part of the address — a month, a number — was not in the form expected. Check the link and try again."; }
             case 405 -> { title = "Wrong kind of request"; hint = "This address does not accept that kind of request."; }
             case 413 -> { title = "File too large"; hint = "The upload is bigger than the site accepts. Try a smaller file."; }
             default -> { title = status >= 500 ? "Something went wrong" : "Request failed"; hint = status >= 500

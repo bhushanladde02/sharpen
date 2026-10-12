@@ -149,8 +149,11 @@ public class ExportService {
     }
 
     /** RFC 4180: quote when the value has a comma, quote or line break; double the quotes inside. */
-    static String csv(String v) {
+    public static String csv(String v) {
         if (v == null || v.isEmpty()) return "";
+        // A cell starting with = + - @ or a tab is a formula to Excel and LibreOffice; a leading apostrophe makes it text.
+        char c = v.charAt(0);
+        if (c == '=' || c == '+' || c == '-' || c == '@' || c == '\t' || c == '\r') v = "'" + v;
         boolean needs = v.indexOf(',') >= 0 || v.indexOf('"') >= 0 || v.indexOf('\n') >= 0 || v.indexOf('\r') >= 0;
         return needs ? '"' + v.replace("\"", "\"\"") + '"' : v;
     }

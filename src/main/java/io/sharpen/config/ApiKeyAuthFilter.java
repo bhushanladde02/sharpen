@@ -18,6 +18,8 @@ import java.util.List;
 @Component
 public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
+    private final io.sharpen.service.WindowLimiter limiter = new io.sharpen.service.WindowLimiter(600, 60, 20_000);
+
     public static final String HEADER = "X-Api-Key";
 
     private final PersonRepository people;
@@ -34,6 +36,13 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        if (!limiter.allow(request.getRemoteAddr())) {   // 600 requests a minute per address is far above any client's need
+            response.setStatus(429);
+            response.setHeader("Retry-After", "60");
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\":\"too many requests\"}");
+            return;
+        }
         String key = request.getHeader(HEADER);
         if (key == null) {
             String auth = request.getHeader("Authorization");

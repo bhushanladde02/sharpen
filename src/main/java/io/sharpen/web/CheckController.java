@@ -1,7 +1,6 @@
 package io.sharpen.web;
 
 import io.sharpen.service.HabitCheck;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +18,13 @@ import java.util.Map;
  */
 @Controller
 public class CheckController {
+
+    private final String base;
+
+    /** Share links are built from the configured host, never from the request's Host header. */
+    public CheckController(@org.springframework.beans.factory.annotation.Value("${sharpen.site-host:localhost:8080}") String siteHost) {
+        this.base = (siteHost.startsWith("localhost") || siteHost.startsWith("127.") ? "http://" : "https://") + siteHost;
+    }
 
     @GetMapping("/check")
     public String questions(Model model) {
@@ -43,11 +49,10 @@ public class CheckController {
     }
 
     @GetMapping("/check/r/{code}")
-    public String shared(@PathVariable String code, Model model, HttpServletRequest request) {
+    public String shared(@PathVariable String code, Model model) {
         HabitCheck.Result r = HabitCheck.score(code);
         if (r == null) return "redirect:/check";
-        String host = request.getHeader("Host");
-        String url = "https://" + (host != null && !host.isBlank() ? host : request.getServerName()) + "/check/r/" + r.code();
+        String url = base + "/check/r/" + r.code();
         String title = HabitCheck.shareTitle(r);
         model.addAttribute("r", r);
         model.addAttribute("ogTitle", title);

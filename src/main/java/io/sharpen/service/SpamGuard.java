@@ -47,10 +47,12 @@ public class SpamGuard {
         new SecureRandom().nextBytes(secret);
     }
 
-    /** Value for the hidden "t" field when the form is rendered: seconds + signature. */
+    /** Tokens already accepted, so one rendered form submits once; bounded like the address counters. */
+    private final Map<String, Long> used = new ConcurrentHashMap<>();   // token → accepted at (epoch seconds)
+
+    /** Value for the hidden "t" field when the form is rendered: seconds + a nonce + signature over both. */
     public String token() {
-        long now = System.currentTimeMillis() / 1000;
-        return now + "." + sign(Long.toString(now));
+        return tokenIssuedAgo(0);
     }
 
     /** Why a submission is refused, or null when it may be stored. */
@@ -69,6 +71,12 @@ public class SpamGuard {
         if (age < MIN_SECONDS) return Refusal.TOO_FAST;
         if (age > MAX_SECONDS) return Refusal.EXPIRED;
         if (address != null && !allow(form + "|" + address)) return Refusal.RATE_LIMITED;
+        long now = System.currentTimeMillis() / 1000;
+        if (used.putIfAbsent(token, now) != null) return Refusal.EXPIRED;   // a replayed token: the form has to be opened again
+        if (used.size() > 50_000) {
+            used.entrySet().removeIf(e -> now - e.getValue() > MAX_SECONDS);
+            if (used.size() > 50_000) used.clear();
+        }
         return null;
     }
 
@@ -97,11 +105,12 @@ public class SpamGuard {
     /** Seconds since the epoch when the token was issued, or -1 if it is missing or the signature is wrong. */
     long issuedAt(String token) {
         if (token == null) return -1;
-        int dot = token.indexOf('.');
-        if (dot <= 0) return -1;
-        String ts = token.substring(0, dot), sig = token.substring(dot + 1);
-        if (!sign(ts).equals(sig)) return -1;
-        try { return Long.parseLong(ts); } catch (NumberFormatException e) { return -1; }
+        int last = token.lastIndexOf('.');
+        if (last <= 0) return -1;
+        String body = token.substring(0, last), sig = token.substring(last + 1);   // body = seconds.nonce
+        if (!sign(body).equals(sig)) return -1;
+        int dot = body.indexOf('.');
+        try { return Long.parseLong(dot < 0 ? body : body.substring(0, dot)); } catch (NumberFormatException e) { return -1; }
     }
 
     private String sign(String s) {
@@ -117,6 +126,9 @@ public class SpamGuard {
     /** For tests: a valid token that claims to have been issued {@code seconds} ago. */
     public String tokenIssuedAgo(long seconds) {
         long then = System.currentTimeMillis() / 1000 - seconds;
-        return then + "." + sign(Long.toString(then));
+        byte[] nonce = new byte[6];
+        new SecureRandom().nextBytes(nonce);
+        String body = then + "." + HexFormat.of().formatHex(nonce);
+        return body + "." + sign(body);
     }
 }

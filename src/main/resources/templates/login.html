@@ -10,6 +10,7 @@
     <p class="muted" style="margin-top:.25rem" th:unless="${demoData}">Use AI a lot. Stay the one who thinks.</p>
     <div th:if="${param.error}" class="notice" style="margin-bottom:1rem">Email or password did not match.<th:block th:if="${!#lists.isEmpty(socialProviders)}"> If you created your account with
       <th:block th:each="p, it : ${socialProviders}"><th:block th:text="${p.label}">Google</th:block><th:block th:unless="${it.last}"> or </th:block></th:block>, use that button.</th:block></div>
+    <div th:if="${param.locked}" class="notice" style="margin-bottom:1rem">Too many sign-in attempts. Wait 15 minutes and try again — or use one of the buttons above if you connected a provider.</div>
     <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
     <div th:if="${param.registered}" class="flash">Account created. Sign in to continue.</div>
     <div th:if="${param.logout}" class="flash">Signed out.</div>

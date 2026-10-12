@@ -42,7 +42,8 @@ Ordered by what unblocks a public launch.
 1. **Migrations** — done (NFR-10): dated scripts in ``db/migrations/`` applied by the deploy script through a
    ``schema_migration`` ledger; Flyway only if the scripts ever need more than "apply once, in order".
 2. **Email** — verification, password reset, report delivery (FR-5, MR-6).
-3. **Edge hardening** — TLS, HSTS, rate limiting (SE-8, SE-9).
+3. **Edge hardening** — TLS, HSTS, rate limiting (SE-8, SE-9): done; what remains is a nonce-based CSP in
+   place of ``'unsafe-inline'`` (SE-15) and per-key API limits.
 4. **Company gating and audit** — invite / domain verification, profile-view log (CV-6, CV-7).
 5. **Score caching** — rolling score on ``person``, refreshed on session change (CV-4).
 6. **Scheduler lock** — ShedLock or a database lease so the monthly job runs once per cluster.

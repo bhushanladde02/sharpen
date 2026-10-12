@@ -78,7 +78,7 @@ public class TrafficController {
             LocalDate to = ym.atEndOfMonth().isAfter(today) ? today : ym.atEndOfMonth();
             return new LocalDate[]{ym.atDay(1), to};
         }
-        if (days != null && days > 0) return new LocalDate[]{today.minusDays(days - 1L), today};
+        if (days != null && days > 0) return new LocalDate[]{today.minusDays(Math.min(days, 3660) - 1L), today};   // ten years is plenty
         return new LocalDate[]{traffic.firstDay(), today};
     }
 

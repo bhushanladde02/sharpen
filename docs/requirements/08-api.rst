@@ -59,5 +59,6 @@ Conventions
 
 * Dates: ``yyyy-MM-dd`` preferred; ISO date-time and epoch accepted.
 * Enumerations are case-insensitive on input and upper-case on output.
+* More than 600 requests a minute from one address are answered ``429`` with ``Retry-After: 60`` (SE-9).
 * Release 1 adds rate limiting per key, ``GET /sessions`` for export, and ``GET /reports/{yyyy-MM}`` returning the
   stored report JSON.

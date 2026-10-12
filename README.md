@@ -218,7 +218,7 @@ What is deliberately left out of the prototype and what to add before a public r
 
 - **Migrations** — done without Flyway: dated scripts in `db/migrations/` applied once each by `deploy/remote-deploy.sh` through a `schema_migration` ledger. Revisit only if scripts ever need more than "apply once, in order".
 - **Email** — verification on sign-up, password reset, and the monthly report as an email (the PDF service already exists).
-- **Rate limiting** on `/api/v1/**` and `/register`; put the app behind TLS.
+- **Rate limiting** — done in memory (sign-in lockout, sign-up/contact spam guard, 600/min per address on the API); per-key API limits still to add. TLS is at the edge (Caddy).
 - **Auth for companies** — invite-only company accounts or domain verification, and an audit log of profile views.
 - **Extension store listing** — icons, privacy policy, and a settings page; the capture logic is done.
 - **Provider connectors** — pull usage from OpenAI/Anthropic admin APIs on a schedule instead of CSV uploads.

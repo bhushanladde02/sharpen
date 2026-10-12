@@ -62,12 +62,24 @@ Security controls (prototype)
    * - SE-6
      - Uploads capped at 10 MB; CSV parsed in memory with no external process.
    * - SE-7
-     - The H2 console is enabled only in the dev profile and disabled in ``postgres``.
+     - The H2 console is enabled only in the dev profile and disabled in ``postgres`` — and the security rules
+       that open ``/h2-console`` (permit-all, no CSRF, frames allowed) exist only when
+       ``spring.h2.console.enabled`` is true, so a profile mix-up cannot expose it: in production the path is an
+       ordinary protected address that redirects to the login form. A test runs with the console off and checks
+       that.
    * - SE-8
      - Behind the proxy, client address and scheme come from forwarded headers only when sent by a private-network
        proxy (Tomcat remote-IP valve); rate limits and visitor counting use that address, so a client-supplied
        ``X-Forwarded-For`` cannot reset a limit. The session cookie is ``Secure`` over https, ``HttpOnly`` and
        ``SameSite=Lax``. Tested against the real server in ``ProxyHeadersTest``.
+   * - SE-9
+     - Rate limits, all in memory and per instance (``WindowLimiter``: at most *N* per window, bounded map).
+       **Sign-in**: ten wrong passwords for one account, or forty from one address, in fifteen minutes lock that
+       account or address for the rest of the window (``LoginThrottle``, ``/login?locked``); the count is checked
+       *before* the password, so a locked account costs no BCrypt work, and a correct sign-in clears the account's
+       count but not the address's. **Sign-up and contact**: honeypot, signed timestamp and a per-address hourly
+       limit (``SpamGuard``). **API**: 600 requests a minute per address, then ``429`` with ``Retry-After: 60``,
+       before the key is looked up. Addresses come from SE-8.
    * - SE-13
      - Google/GitHub/LinkedIn sign-in: Spring Security checks state, nonce and (Google, LinkedIn) the ID token's signature, issuer,
        audience and expiry. No automatic merge by email — Sharpen never verified sign-up emails, so merging would
@@ -83,12 +95,41 @@ Security controls (prototype)
        parsed (no DNS lookups from attacker-supplied text). The monthly download is capped at 64 MB, must parse
        into at least 100,000 ranges with under 1 % unreadable lines before it replaces the current list, and is
        written to a temporary file and moved into place atomically. Off in development and tests.
+   * - SE-15
+     - **Content Security Policy** on every page: ``default-src 'self'``; scripts, styles, fonts, images and
+       fetches only from Sharpen itself (``img-src`` also ``data:`` for the inline SVG marks); ``object-src
+       'none'``; ``base-uri 'self'``; ``frame-ancestors 'self'``; ``form-action 'self'`` plus the three sign-in
+       providers, because Chrome applies ``form-action`` to the redirect a form ends at and *Settings → Connect* is a
+       form that ends at Google, GitHub or LinkedIn. ``'unsafe-inline'`` is still allowed for the few inline
+       scripts and ``style=`` attributes; replacing it with per-request nonces is the next step. Sent by
+       ``SecurityConfig``; a test asserts the header.
+   * - SE-16
+     - **Form tokens are single-use.** The signed timestamp in the sign-up and contact forms carries a random nonce,
+       and a token that has been accepted once is refused the second time (``SpamGuard``, "form open too long"), so
+       one token cannot be harvested and replayed to make many submissions inside its window.
+   * - SE-17
+     - **Uploads are checked before they are decoded.** A profile picture's dimensions are read from the file
+       header first and anything over 50 million pixels is refused, so a tiny file that declares a huge canvas (a
+       decompression bomb) never allocates its canvas. The 10 MB cap (SE-6) stays.
+   * - SE-18
+     - **Role gates match the account types.** ``/dashboard``, ``/sessions/**``, ``/reports/**`` and ``/import/**``
+       require ``INDIVIDUAL`` in the security rules, not only in each controller, so a company account gets a 403
+       there rather than relying on every handler to check. Bad input is a 400, not a 500: a malformed month or
+       number in an address (``/reports/garbage``) is answered with the plain *That address did not make sense*
+       page, and error pages never echo exception messages (``server.error.include-message: never``). CSV exports
+       prefix a cell that starts with ``=``, ``+``, ``-``, ``@``, tab or return with ``'`` so a note cannot become a
+       formula when the file is opened in a spreadsheet. The share link on a habits-check result is built from the
+       configured host, never from the request's ``Host`` header. The Traffic page's ``days`` is clamped to ten
+       years.
 
 Release 1 additions
 -------------------
 
 * TLS termination and HSTS at the edge — done (Caddy); the app side of the proxy is SE-8.
-* Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9) — ``/register`` and the contact form are done (``SpamGuard``).
+* Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9) — done, in memory; per-key API limits and a
+  limit on PDF generation are still to come.
+* A nonce-based CSP in place of ``'unsafe-inline'`` (SE-15); binding the admin account to an id rather than an
+  email; narrowing the extension's host permissions.
 * Email verification and password reset with expiring tokens (SE-10).
 * Company account gating and profile-view audit log (SE-11, see CV-6 / CV-7).
 * Dependency scanning in CI and a documented data-retention policy (SE-12) — retention is now documented on

@@ -782,6 +782,16 @@ Day 8 — Wednesday 16 September: which build is this?
    counts 76, not 20, and beats "I typed 90 % and checked nothing" overall (a test pins exactly that). Monthly
    reports already frozen keep their numbers. 61 tests.
 
+#. **Google: flag cleared, change of address done.** (Day 27, Monday 12 October.) Two items open since September,
+   both closed. Google's public Safe Browsing status shows ``sharpenscore.com`` as *No unsafe content found*
+   (updated 8 October) and ``sharpen-ai.duckdns.org`` as *No available data*; Search Console's *Security issues*
+   says *No issues detected* on both properties, so the "Possible phishing detected on user login" flag from day 3
+   is gone. From the Mac, all four old addresses (``http``/``https`` of the DuckDNS name and of ``www``) answer
+   ``301 -> https://sharpenscore.com/``. With that, *Settings → Change of address* on the DuckDNS property passed
+   validation (*301-redirect from homepage* and *Verification for both sites*) and the move was confirmed:
+   Search Console shows *This site is currently moving*, ``sharpen-ai.duckdns.org`` → ``sharpenscore.com``, started
+   12 October. Google now transfers the old name's search history to the new domain over the coming weeks.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -795,8 +805,8 @@ Open items (as of day 25)
 * Reboot the A1 at a quiet moment: its login says *System restart required* (kernel updates). All three containers
   are ``restart: unless-stopped``, so ``sudo reboot`` brings the site back by itself in about a minute; then
   ``curl -s https://sharpenscore.com/api/v1/health``.
-* Google Safe Browsing: review requested 9 Sept via Search Console — check the result on both properties.
-* Search Console *Change of address* (old property → ``sharpenscore.com``): retry after Google's fetch cache clears.
+* Keep the DuckDNS name pointing at the A1 and its 301s in ``deploy/caddy-extra/`` for at least 180 days after the
+  12 October change of address (Google's advice), and do not press *Cancel move* in Search Console.
 * Cloudflare account: change the password (it appeared in a screenshot) and turn on two-factor authentication.
 * Java 25 (LTS): move ``pom.xml``, CI and both Dockerfiles together when convenient — not via bot PRs.
 * Extension: icons and a store listing; the privacy policy URL is ``https://sharpenscore.com/privacy``.

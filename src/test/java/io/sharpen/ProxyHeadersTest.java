@@ -78,7 +78,7 @@ class ProxyHeadersTest {
             HttpResponse<String> r = register("spoof" + i, "10.9.9." + i + ", 198.51.100." + i + ", 203.0.113.50");
             assertEquals(302, r.statusCode(), "attempt " + i + " should be accepted");
             String location = r.headers().firstValue("Location").orElse("");
-            assertTrue(location.contains("/login?registered") && !location.startsWith("http:"), location);
+            assertTrue(location.contains("/sessions/new") && !location.startsWith("http:"), location);   // signed in, straight to the first session
         }
         HttpResponse<String> sixth = register("spoof6", "192.0.2.99, 203.0.113.50");
         assertEquals(200, sixth.statusCode());

@@ -40,6 +40,10 @@ public interface PageViewRepository extends JpaRepository<PageView, Long> {
     @Query("select count(distinct v.country) from PageView v where v.country is not null and v.country <> 'ZZ'")
     long countriesReached();
 
+    /** [views, visitors] of habits-check results, all time — every result is recorded under one path. */
+    @Query("select count(v), count(distinct v.visitor) from PageView v where v.path = '/check/r/…'")
+    List<Object[]> checkResults();
+
     @Query("select min(v.viewDay) from PageView v")
     LocalDate firstDay();
 }

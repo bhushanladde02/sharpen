@@ -16,13 +16,21 @@ public class GlobalModelAttributes {
     private final SessionService sessions;
     private final io.sharpen.service.CommunityService community;
     private final io.sharpen.auth.SocialRegistrations social;
+    private final io.sharpen.service.InsightsService insights;
 
     public GlobalModelAttributes(PersonService people, SessionService sessions, io.sharpen.service.CommunityService community,
-                                 io.sharpen.auth.SocialRegistrations social) {
+                                 io.sharpen.auth.SocialRegistrations social, io.sharpen.service.InsightsService insights) {
         this.people = people;
         this.sessions = sessions;
         this.community = community;
         this.social = social;
+        this.insights = insights;
+    }
+
+    /** Insights is in the menus only once there is something on it (ten people); the footer links it regardless. */
+    @ModelAttribute("insightsPublished")
+    public boolean insightsPublished() {
+        return insights.current().published();
     }
 
     /** The "Continue with …" providers this deployment offers (empty until a client id and secret are configured). */
@@ -81,10 +89,25 @@ public class GlobalModelAttributes {
         return PRIVATE_PREFIXES.stream().anyMatch(uri::startsWith);
     }
 
-    /** Absolute, canonical URL of the current page (https, no query string) for canonical/og:url tags. */
+    /**
+     * The configured public origin ({@code sharpen.site-host}), e.g. {@code https://sharpenscore.com} or
+     * {@code http://localhost:8080}. Canonical, og:url and og:image tags are built from this, never from the
+     * request's {@code Host} header, so a crafted header cannot change what a crawler is told the page's URL is.
+     */
+    @org.springframework.beans.factory.annotation.Value("${sharpen.site-host:localhost:8080}")
+    private String configuredSiteHost;
+
+    @ModelAttribute("canonicalHost")
+    public String canonicalHost() {
+        String host = configuredSiteHost == null || configuredSiteHost.isBlank() ? "localhost:8080" : configuredSiteHost.trim();
+        boolean local = host.startsWith("localhost") || host.startsWith("127.");
+        return (local ? "http://" : "https://") + host;
+    }
+
+    /** Absolute, canonical URL of the current page (configured origin + path, no query string) for canonical/og:url tags. */
     @ModelAttribute("canonicalUrl")
     public String canonicalUrl(jakarta.servlet.http.HttpServletRequest request) {
-        return "https://" + siteHost(request) + request.getRequestURI();
+        return canonicalHost() + request.getRequestURI();
     }
 
     /** Default description for search engines and link previews; controllers override for specific pages. */

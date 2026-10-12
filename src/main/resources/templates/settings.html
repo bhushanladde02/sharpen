@@ -17,7 +17,7 @@
         <div><label for="lastName">Last name</label><input type="text" id="lastName" th:field="*{lastName}" required maxlength="60" autocomplete="family-name">
           <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
       </div>
-      <div th:unless="${me.company}"><label for="handle">Public URL handle</label><input type="text" id="handle" th:field="*{handle}" required maxlength="60" pattern="[a-z0-9-]+">
+      <div th:unless="${me.company}"><label for="handle">Public URL handle</label><input type="text" id="handle" th:field="*{handle}" required maxlength="60" pattern="[a-z0-9\-]+">
         <div class="help" th:text="${siteHost} + '/p/' + *{handle}">host/p/handle</div>
         <div class="error" th:if="${#fields.hasErrors('handle')}" th:errors="*{handle}"></div></div>
       <input type="hidden" th:if="${me.company}" th:field="*{handle}">

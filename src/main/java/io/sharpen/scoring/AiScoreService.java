@@ -142,6 +142,7 @@ public class AiScoreService {
             flags.add(new Flag("assess", unassessed + " imported session" + (unassessed == 1 ? "" : "s")
                     + " not rated yet — they do not count until you rate them."));
         }
+        if (assessed.size() < 3) return flags;   // habit flags need a few sessions before they mean anything
         if (relianceRisk) {
             flags.add(new Flag("risk", "Over half of your professional AI time was work the model did and nobody checked."));
         }

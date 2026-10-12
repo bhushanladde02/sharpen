@@ -5,6 +5,13 @@ import io.sharpen.scoring.AiScore;
 import io.sharpen.service.PersonService;
 import io.sharpen.service.SpamGuard;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import jakarta.validation.Valid;
@@ -104,15 +111,17 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerForm(Model model) {
+    public String registerForm(@RequestParam(required = false) String type, Model model) {
         RegisterForm f = new RegisterForm();
+        if ("company".equalsIgnoreCase(type)) f.setAccountType(AccountType.COMPANY);   // "Create a company account" lands here
         f.setT(spam.token());
         model.addAttribute("form", f);
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding, HttpServletRequest request) {
+    public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding, HttpServletRequest request,
+                           HttpServletResponse response) {
         // Same three checks as the contact form: honeypot, signed timestamp, per-address limit. A bot that filled
         // the invisible field is shown the "registered" page and gets no account; the rest re-show the form.
         SpamGuard.Refusal refusal = spam.check(form.getWebsite(), form.getT(), clientAddress(request), "register");
@@ -134,16 +143,25 @@ public class AuthController {
             if (form.getLastName().isBlank()) binding.rejectValue("lastName", "required", "Last name is required");
         }
         if (binding.hasErrors()) { form.setT(spam.token()); return "register"; }
+        io.sharpen.domain.Person created;
         try {
             String name = type == AccountType.COMPANY ? form.getCompanyName()
                     : io.sharpen.domain.Person.joinName(form.getFirstName(), form.getMiddleName(), form.getLastName());
-            people.register(form.getEmail(), form.getPassword(), name, type);
+            created = people.register(form.getEmail(), form.getPassword(), name, type);
         } catch (IllegalArgumentException e) {
             binding.rejectValue("email", "exists", e.getMessage());
             form.setT(spam.token());
             return "register";
         }
-        return "redirect:/login?registered";
+        // The person just typed their email and password: sign them in rather than ask for both again. Same
+        // principal shape as the login form (named by email, one role), so everything downstream is unchanged.
+        if (request.getSession(false) == null) request.getSession(true); else request.changeSessionId();   // fresh id: no fixation
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(created.getEmail(), null,
+                List.of(new SimpleGrantedAuthority(type == AccountType.COMPANY ? "ROLE_COMPANY" : "ROLE_INDIVIDUAL"))));
+        SecurityContextHolder.setContext(context);
+        new HttpSessionSecurityContextRepository().saveContext(context, request, response);
+        return type == AccountType.COMPANY ? "redirect:/candidates" : "redirect:/sessions/new?welcome";
     }
 
     /** The client's address; see {@code CommunityController.clientAddress} for why the header is not read here. */

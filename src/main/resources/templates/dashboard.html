@@ -7,7 +7,7 @@
     <div>
       <p class="eyebrow">Rolling 90 days</p>
       <h1 th:text="'Hello, ' + ${me.givenName}">Hello</h1>
-      <p th:text="${month.label()} + ' so far: ' + ${month.sessions} + ' sessions, ' + ${month.hours()} + ' h, ' + ${month.prompts} + ' prompts'">This month</p>
+      <p th:text="${month.label()} + ' so far: ' + ${month.sessions} + (${month.sessions == 1} ? ' session, ' : ' sessions, ') + ${month.hours()} + ' h, ' + ${month.prompts} + (${month.prompts == 1} ? ' prompt' : ' prompts')">This month</p>
     </div>
     <div class="row actions">
       <a class="btn" th:href="@{/reports}">Monthly reports</a>
@@ -16,6 +16,15 @@
   </div>
 
   <div class="stack">
+    <div class="card first-run" th:if="${total == 0}">
+      <h2>Nothing logged yet — start with one session</h2>
+      <p>Pick the AI session you had most recently: tool, what it was for, how long, and four honest answers. Fifteen
+        seconds. Your score appears after the first one and is marked provisional until you have rated eight.</p>
+      <div class="row" style="gap:.5rem">
+        <a class="btn primary" th:href="@{/sessions/new}">Log my first session</a>
+        <a class="btn" th:href="@{/import}">Import from a tool</a>
+      </div>
+    </div>
     <div th:if="${!#lists.isEmpty(unrated)}" class="notice row between">
       <span th:text="${unratedCount} + ' session' + (${unratedCount} == 1 ? '' : 's') + ' from the extension or an import need a 15-second rating before they count.'">Unrated</span>
       <a class="btn small" th:href="@{/sessions/{id}/edit(id=${unrated[0].id})}">Rate now</a>

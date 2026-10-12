@@ -52,7 +52,8 @@
       <div class="card">
         <h2>How to read this</h2>
         <div th:replace="~{fragments :: flags(${score})}"></div>
-        <p class="muted" th:if="${#lists.isEmpty(score.flags)}">No flags. The score is based on enough rated sessions to be reliable.</p>
+        <p class="muted" th:if="${#lists.isEmpty(score.flags) and score.hasScore()}">No flags. The score is based on enough rated sessions to be reliable.</p>
+        <p class="muted" th:if="${!score.hasScore()}" th:text="${owner} ? 'Nothing logged yet. Your score and its flags appear after your first rated session.' : 'No rated sessions yet, so there is no score to read.'">Nothing logged yet.</p>
       </div>
     </div>
     <div class="card honest" id="reading">
@@ -84,6 +85,18 @@
           <label>Link<textarea class="code" rows="1" readonly onclick="this.select()" th:text="${url}"></textarea></label>
         </div>
         <p class="help">Click a box to select it, then copy. LinkedIn does not embed images from links, so there post the link — LinkedIn shows the profile's preview card.</p>
+      </div>
+    </div>
+
+    <div class="card check-next" th:unless="${owner}">
+      <div>
+        <h2>Want to know yours?</h2>
+        <p class="muted">The 60-second check gives you the same five numbers from nine questions, no account needed. A free
+          account keeps a private log and turns it into a monthly report.</p>
+      </div>
+      <div class="row" style="gap:.5rem">
+        <a class="btn primary" th:href="@{/check}">Take the 60-second check</a>
+        <a class="btn" th:href="@{/register}">Create my profile</a>
       </div>
     </div>
 

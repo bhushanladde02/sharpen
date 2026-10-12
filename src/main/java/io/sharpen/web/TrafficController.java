@@ -32,7 +32,20 @@ public class TrafficController {
     private final PersonService people;
     private final PdfService pdf;
     private final CountryLookup countries;
+    private final io.sharpen.repo.PageViewRepository views;
     private final String adminEmail;
+
+    /**
+     * The growth target the owner set on 12 October 2026 (see the pilot log, day 27): members and completed
+     * habits checks by a date. Shown on the Traffic page with progress, so the number is never out of sight.
+     */
+    public record Goal(LocalDate from, LocalDate to, long membersTarget, long members, long checksTarget, long checks,
+                       long daysLeft) {
+        public int membersPercent() { return (int) Math.min(100, 100 * members / Math.max(1, membersTarget)); }
+        public int checksPercent() { return (int) Math.min(100, 100 * checks / Math.max(1, checksTarget)); }
+    }
+    static final LocalDate GOAL_FROM = LocalDate.of(2026, 10, 12), GOAL_TO = LocalDate.of(2026, 11, 12);
+    static final long GOAL_MEMBERS = 50, GOAL_CHECKS = 500;
 
     /** One slice of the "where visitors come from" pie; {@code slot} picks its colour (1–5, or "other"). */
     public record Slice(String label, long visitors, String percent, String path, String slot) {}
@@ -41,11 +54,12 @@ public class TrafficController {
     static final int PIE_COUNTRIES = 5;
 
     public TrafficController(TrafficService traffic, PersonService people, PdfService pdf, CountryLookup countries,
-                             @Value("${sharpen.admin-email:}") String adminEmail) {
+                             io.sharpen.repo.PageViewRepository views, @Value("${sharpen.admin-email:}") String adminEmail) {
         this.traffic = traffic;
         this.people = people;
         this.pdf = pdf;
         this.countries = countries;
+        this.views = views;
         this.adminEmail = adminEmail == null ? "" : adminEmail.trim().toLowerCase(Locale.ROOT);
     }
 
@@ -88,6 +102,9 @@ public class TrafficController {
         model.addAttribute("months", months);
         model.addAttribute("pie", pie(s.places()));
         model.addAttribute("geo", countries.status());
+        long checks = ((Number) views.checkResults().get(0)[1]).longValue();
+        model.addAttribute("goal", new Goal(GOAL_FROM, GOAL_TO, GOAL_MEMBERS, s.members(), GOAL_CHECKS, checks,
+                Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(ZoneOffset.UTC), GOAL_TO))));
         return "admin-traffic";
     }
 

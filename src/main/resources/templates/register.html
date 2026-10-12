@@ -6,7 +6,7 @@
   <div class="auth card lift">
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <h1>Create your account</h1>
-    <p class="muted" style="margin-top:.25rem">Individuals get a dashboard, monthly reports and a public AI profile. Companies get the candidate view.</p>
+    <p class="muted" style="margin-top:.25rem">Free. Your profile stays private until you choose to share it.</p>
     <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
     <div th:if="${!#lists.isEmpty(socialProviders)}">
       <p class="muted-3" style="font-size:.8rem;margin:.9rem 0 0">Quickest for individuals — your name and verified email come from the provider. Company accounts use the form below.</p>
@@ -16,12 +16,15 @@
       <input type="hidden" th:field="*{t}">
       <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" th:field="*{website}" tabindex="-1" autocomplete="off"></div>
       <div class="error" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</div>
-      <div id="person-names" class="grid names">
+      <fieldset class="type-choice">
+        <legend>I am</legend>
+        <label class="type-option"><input type="radio" th:field="*{accountType}" value="INDIVIDUAL"><span><b>An individual</b><small>Track my own AI use: dashboard, monthly reports, a profile I can share.</small></span></label>
+        <label class="type-option"><input type="radio" th:field="*{accountType}" value="COMPANY"><span><b>A company</b><small>Browse the public profiles of people who chose to share them.</small></span></label>
+      </fieldset>
+      <div id="person-names" class="grid names two">
         <div><label for="firstName">First name</label>
           <input type="text" id="firstName" th:field="*{firstName}" maxlength="60" autocomplete="given-name" required>
           <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div></div>
-        <div><label for="middleName">Middle name</label>
-          <input type="text" id="middleName" th:field="*{middleName}" maxlength="60" autocomplete="additional-name" placeholder="optional"></div>
         <div><label for="lastName">Last name</label>
           <input type="text" id="lastName" th:field="*{lastName}" maxlength="60" autocomplete="family-name" required>
           <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div></div>
@@ -41,13 +44,6 @@
         <input type="password" id="password" th:field="*{password}" required minlength="8" autocomplete="new-password">
         <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
       </div>
-      <div>
-        <label for="accountType">Account type</label>
-        <select id="accountType" th:field="*{accountType}">
-          <option value="INDIVIDUAL">Individual — track my AI usage</option>
-          <option value="COMPANY">Company — review candidates</option>
-        </select>
-      </div>
       <div class="row between">
         <button class="btn primary block" type="submit">Create account</button>
         <a th:href="@{/login}">I already have one</a>
@@ -57,15 +53,16 @@
     <script>
       // Show the name fields that match the account type; the server checks the same rule.
       (function () {
-        var type = document.getElementById('accountType'), person = document.getElementById('person-names'),
+        var radios = document.querySelectorAll('input[name=accountType]'), person = document.getElementById('person-names'),
             company = document.getElementById('company-name');
         function sync() {
-          var c = type.value === 'COMPANY'; person.hidden = c; company.hidden = !c;
+          var c = document.querySelector('input[name=accountType]:checked'); c = c && c.value === 'COMPANY';
+          person.hidden = c; company.hidden = !c;
           // only the visible fields are required, so the browser's own check points at the right box
           document.getElementById('firstName').required = !c; document.getElementById('lastName').required = !c;
           document.getElementById('companyName').required = c;
         }
-        type.addEventListener('change', sync); sync();
+        radios.forEach(function (r) { r.addEventListener('change', sync); }); sync();
       })();
     </script>
   </div>

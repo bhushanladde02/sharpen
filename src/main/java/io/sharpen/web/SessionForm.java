@@ -15,14 +15,14 @@ public class SessionForm {
     /** ISO so the value round-trips through {@code <input type="date">}, which only accepts yyyy-MM-dd. */
     @NotNull @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate occurredOn = LocalDate.now();
     @NotNull private UsageContext context = UsageContext.PROFESSIONAL;
-    @NotBlank @Size(max = 60) private String tool = "Claude";
+    @NotBlank @Size(max = 60) private String tool = "";
     @NotNull private TaskCategory taskCategory = TaskCategory.CODING;
     @Min(0) @Max(1440) private int durationMinutes = 30;
     @Min(0) @Max(2000) private int promptCount = 5;
     @Min(0) @Max(100) private int humanContributionPct = 50;
-    private boolean verifiedOutput = true;
+    private boolean verifiedOutput = false;   // nothing flattering is pre-ticked: the person says what happened
     private boolean learnedSomething = false;
-    @Min(1) @Max(5) private int outcome = 4;
+    @Min(1) @Max(5) private int outcome = 3;
     @Size(max = 500) private String notes;
 
     public static SessionForm from(UsageSession s) {

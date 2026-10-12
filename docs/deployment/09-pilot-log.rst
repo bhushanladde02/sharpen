@@ -792,6 +792,40 @@ Day 8 — Wednesday 16 September: which build is this?
    Search Console shows *This site is currently moving*, ``sharpen-ai.duckdns.org`` → ``sharpenscore.com``, started
    12 October. Google now transfers the old name's search history to the new domain over the coming weeks.
 
+#. **A target, and the audit that followed it.** (Day 27, continued.) The owner's brief: make the site the best
+   experience it can be and grow the customer base. Target set: **50 members and 500 people through the 60-second
+   check by 12 November 2026**, doubled when hit; the Traffic page now shows it with progress bars. Three agents
+   audited the running site — every page at desktop and phone width, light and dark; Lighthouse on seven public
+   pages; and the launch copy. Performance was already 98–100 and SEO clean; the gaps were the sign-up funnel and
+   accessibility (86). Fixed the same day, 61 tests still green:
+
+   * **Registering signs you in** and lands on *Log your first session* with a welcome note (a company lands on
+     Candidates). Before, a new account was sent back to the login form to retype both fields — the single biggest
+     leak. Account type is chosen first, as two cards; ``?type=company`` preselects it from the home page; middle
+     name left to Settings.
+   * **First-run states.** An empty dashboard opens with "Nothing logged yet — start with one session" and two
+     buttons instead of a wall of zeros; an empty profile no longer claims "enough rated sessions to be reliable".
+   * **A public profile now asks the visitor in**: a card with *Take the 60-second check* / *Create my profile* — the
+     page people arrive at from a shared badge had no call to action at all.
+   * **Band names** for the lower two levels are *Building* (35–49) and *Starting* (below), instead of *Dependent*
+     and *At risk*: accurate words, but no one would put a profile labelled "Dependent" on a page recruiters read.
+   * **Honest defaults** on the session form: nothing flattering is pre-ticked (verified off, outcome 3, tool
+     empty) — a form saved untouched used to log a verified, useful, half-human session. Habit flags wait for three
+     rated sessions. The anti-bot timer no longer rejects password managers (4 s → 2 s).
+   * **The result page explains itself**: *Where each number comes from* lists all nine answers with their points,
+     and the link has a *Copy* button. The landing page no longer promises an extension that is not in a store or a
+     report that "you get" (it is ready on the dashboard); the counter strip hides below 100 visits; *Insights*
+     leaves the menus until it is published. Login gains a "forgot your password" line. Validation errors read as
+     sentences (``messages.properties``) instead of ``must not be blank``. Pluralisation, month names on the
+     reports page, "Save a snapshot" instead of "Generate", and the handle pattern that Chrome rejected.
+   * **Accessibility 86 → 100** on every page: ``--ink-3`` and chip colours re-stepped for 4.5:1, prose links
+     underlined, one ``<main>`` landmark per page, the menu checkbox no longer hidden from assistive tech, 40 px
+     tap targets, the Help button icon-only on phones with clearance so it never covers a button, canonical and
+     ``og:`` URLs from configuration rather than the ``Host`` header, Bricolage preloaded.
+
+   The launch kit — Show HN, Product Hunt, three Reddit posts, two LinkedIn posts, a dev.to article, directory
+   blurbs and a four-week calendar — is written and waits for the owner to post it; the code cannot do that part.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

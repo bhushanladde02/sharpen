@@ -77,7 +77,7 @@ public class SecurityConfig {
                     .failureHandler(socialHandlers.failure()));
         }
         http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/feedback", "/p", "/p/**", "/profiles", "/insights", "/privacy", "/css/**", "/js/**", "/img/**", "/fonts/**", "/favicon.ico", "/robots.txt", "/sitemap.xml",
+                        .requestMatchers("/", "/login", "/register", "/feedback", "/check", "/check/**", "/p", "/p/**", "/profiles", "/insights", "/privacy", "/css/**", "/js/**", "/img/**", "/fonts/**", "/favicon.ico", "/robots.txt", "/sitemap.xml",
                                 "/error", "/h2-console/**").permitAll()
                         .requestMatchers("/candidates/**").hasRole("COMPANY")
                         .anyRequest().authenticated())

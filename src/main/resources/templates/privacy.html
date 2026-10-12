@@ -65,12 +65,16 @@
 
     <section id="public">
       <h2>What other people can see</h2>
-      <p><b>Your public profile</b> — on by default for individuals, and switched off in <a th:href="@{/settings}">Settings</a>
-        in one click — shows your name, picture, headline, job title, industry, location and experience; your AI score, its
+      <p><b>Your public profile</b> — off until you switch it on in <a th:href="@{/settings}">Settings</a> (accounts made
+        before 12 October 2026 keep the setting they had), and off again in one click — shows your name, picture, headline, job title, industry, location and experience; your AI score, its
         parts and its flags; a month-by-month trend of sessions and work/personal split; and the tools you use. It never
         shows your email, your notes, or individual sessions. A public profile appears in the <a th:href="@{/p}">directory</a>,
         in search engines, in the candidate view for company accounts, and through your score badge. Switch it off and
-        all four stop at once: your profile address shows only "no public profile here", the badge stops loading, it drops out of the directory and the sitemap, and companies no longer see you.</p>
+        all four stop at once: your profile address shows only "no public profile here", the badge stops loading, it drops out of the directory and the sitemap, and companies no longer see you.
+        The profile says that the score comes from your own ratings and that Sharpen does not check them.</p>
+      <p><b>The 60-second check</b> at <a th:href="@{/check}">/check</a> stores nothing: your nine answers are written into
+        the result's address and nowhere else, so only people you give that link to can see the result, and it says
+        nothing about who you are. Opening it is counted like any page view.</p>
       <p><b>Site totals</b> on the home page — visits, pages viewed and how many countries visitors came from — are
         counts over everyone and say nothing about any one visit.</p>
       <p><b>Community insights</b> on <a th:href="@{/insights}">/insights</a> add up everyone's <i>rated</i> sessions over

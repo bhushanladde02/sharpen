@@ -55,6 +55,23 @@
         <p class="muted" th:if="${#lists.isEmpty(score.flags)}">No flags. The score is based on enough rated sessions to be reliable.</p>
       </div>
     </div>
+    <div class="card honest" id="reading">
+      <h2>What this score is — and what it isn't</h2>
+      <div class="grid two">
+        <div>
+          <p><b>It is a self-assessment.</b> <span th:text="${person.displayName}">Name</span> rated each logged AI session
+            themselves: how much of the work was theirs, whether they checked the output, whether they learned something,
+            how it turned out. Sharpen weights the answers by minutes and adds them up; it does not check them.</p>
+          <p class="muted">It shows habits over time — whether checking and learning are part of how this person works with AI.</p>
+        </div>
+        <div>
+          <p><b>It is not proof of skill</b>, a certification, or a way to rank people. Use it to start a conversation, for
+            example: <i>"Tell me about a time the model was wrong and you caught it."</i></p>
+          <p class="muted">Flags above say when the score rests on few sessions or on uniformly perfect ratings.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="card share-card" th:if="${owner}" id="share">
       <h2>Share your score</h2>
       <p th:if="${!person.publicProfile}" class="muted">Switch on <a th:href="@{/settings}">Public profile</a> first — the badge only works for public profiles.</p>

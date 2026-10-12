@@ -435,10 +435,70 @@ class WebFlowTest {
                 .andExpect(content().string(containsString("of 100<")));
     }
 
+    @Autowired io.sharpen.repo.PersonRepository personRepo;
+
+    @Test
+    void theHabitsCheckNeedsNoAccountAndStoresNothing() throws Exception {
+        long people = personRepo.count();
+        mvc.perform(get("/check")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("How sharp is your AI use?")))
+                .andExpect(content().string(containsString("name=\"q9\"")))
+                .andExpect(content().string(containsString("index, follow")));
+        // incomplete answers go back to the questions
+        mvc.perform(get("/check/result").param("q1", "3")).andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/check?incomplete"));
+        var q = get("/check/result");
+        for (int i = 1; i <= 9; i++) q = q.param("q" + i, "1");
+        mvc.perform(q).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/check/r/111111111"));
+        // the result page: score, type, share links, sign-up nudge — and kept out of search engines
+        mvc.perform(get("/check/r/111111111").header("User-Agent", "Mozilla/5.0 check").header("Host", "sharpenscore.com"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("on the AI habits check")))
+                .andExpect(content().string(containsString("https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsharpenscore.com%2Fcheck%2Fr%2F111111111")))
+                .andExpect(content().string(containsString("Start my private log")))
+                .andExpect(content().string(containsString("noindex, nofollow")));
+        mvc.perform(get("/check/r/99")).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/check"));
+        assertEquals(people, personRepo.count(), "taking the check creates nothing");
+        // the traffic page counts all results as one line, not one per answer set
+        traffic.flush();
+        mvc.perform(get("/admin/traffic").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("/check/r/…")))
+                .andExpect(content().string(not(containsString("/check/r/111111111"))));
+        mvc.perform(get("/sitemap.xml")).andExpect(content().string(containsString("/check</loc>")));
+        mvc.perform(get("/")).andExpect(content().string(containsString("Take the 60-second check")));
+    }
+
+    @Test
+    void newProfilesArePrivateUntilTheOwnerSharesThem() throws Exception {
+        Person fresh = people.byEmail("fresh@example.com").orElseGet(() ->
+                people.register("fresh@example.com", "password123", "Fresh Person", AccountType.INDIVIDUAL));
+        assertTrue(!fresh.isPublicProfile(), "a new account starts private");
+        var asFresh = user(fresh.getEmail()).roles("INDIVIDUAL");
+        // a visitor finds nothing: no profile, no badge, not in the directory
+        mvc.perform(get("/p/" + fresh.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("What this score is"))));
+        mvc.perform(get("/p/" + fresh.getHandle() + "/badge.svg")).andExpect(status().isNotFound());
+        mvc.perform(get("/p")).andExpect(content().string(not(containsString("Fresh Person"))));
+        // the owner can preview exactly what others would see, with the honesty note
+        mvc.perform(get("/p/" + fresh.getHandle()).with(asFresh)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Private — only you can see this")))
+                .andExpect(content().string(containsString("It is a self-assessment.")))
+                .andExpect(content().string(containsString("It is not proof of skill")));
+        // Settings explains what going public shows before the person ticks the box
+        mvc.perform(get("/settings").with(asFresh)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Make my AI profile public")))
+                .andExpect(content().string(containsString("Preview exactly what others would see")));
+        // and the candidates view says the scores are self-rated
+        mvc.perform(get("/candidates").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("self-rated")));
+    }
+
     @Test
     void scoreBadgeIsPublicOnlyForPublicProfiles() throws Exception {
         var asMe = user(me.getEmail()).roles("INDIVIDUAL");
-        // public profile (the default): anyone can fetch the badge, it carries the score and the name, and caches an hour
+        mvc.perform(post("/settings").with(csrf()).with(asMe).param("firstName", "Flow").param("lastName", "Tester")
+                        .param("handle", me.getHandle()).param("publicProfile", "true")).andExpect(status().is3xxRedirection());
+        // public profile: anyone can fetch the badge, it carries the score and the name, and caches an hour
         String svg = mvc.perform(get("/p/" + me.getHandle() + "/badge.svg")).andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", containsString("image/svg+xml")))
                 .andExpect(header().string("Cache-Control", containsString("max-age=3600")))
@@ -697,7 +757,7 @@ class WebFlowTest {
         mvc.perform(get("/privacy")).andExpect(status().isOk())
                 .andExpect(content().string(containsString("What is never collected")))
                 .andExpect(content().string(containsString("Anything you type into ChatGPT")))
-                .andExpect(content().string(containsString("on by default for individuals")))
+                .andExpect(content().string(containsString("off until you switch it on")))
                 .andExpect(content().string(containsString("no more than 14 days")));
         mvc.perform(get("/sitemap.xml")).andExpect(content().string(containsString("/privacy</loc>")));
         mvc.perform(get("/register")).andExpect(content().string(containsString("href=\"/privacy\"")));

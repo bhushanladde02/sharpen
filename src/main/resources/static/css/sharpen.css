@@ -194,7 +194,7 @@ img, svg { max-width: 100%; }
 .flag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; margin-top: .45rem; flex: none; background: var(--ink-3); }
 .flag.strength::before, .flag.up::before { background: var(--good); }
 .flag.risk::before, .flag.down::before { background: var(--bad); }
-.flag.verify::before, .flag.growth::before, .flag.assess::before, .flag.confidence::before { background: var(--warn); }
+.flag.verify::before, .flag.growth::before, .flag.assess::before, .flag.confidence::before, .flag.uniform::before { background: var(--warn); }
 .flag.tool::before, .flag.task::before, .flag.balance::before, .flag.breadth::before { background: var(--accent); }
 .flag b { display: block; }
 
@@ -536,3 +536,33 @@ ul.geo-legend li.head span:first-of-type { text-align: left; }
 ul.geo-notes { list-style: none; margin: .9rem 0 0; padding: 0; font-size: .8rem; display: grid; gap: .3rem; }
 @media (max-width: 899px) { .geo-body { grid-template-columns: auto minmax(0, 1fr); } .geo-continents { grid-column: 1 / -1; } }
 @media (max-width: 539px) { .geo-body { grid-template-columns: minmax(0, 1fr); } }
+
+/* Honesty notes: what a self-rated score can and cannot show (profile, candidates), and the consent text beside the
+   public-profile switch. Calm, not alarming: the information is the point, not a warning. */
+.notice.soft { background: var(--accent-soft); color: var(--ink); font-weight: 500; line-height: 1.5; }
+.card.honest p { margin: 0 0 .6rem; line-height: 1.55; }
+.card.honest .grid { gap: .5rem 1.5rem; }
+.consent .help { margin: .35rem 0 0 1.6rem; max-width: 70ch; line-height: 1.5; }
+ul.plain { margin: .5rem 0 0; padding-left: 1.1rem; display: grid; gap: .45rem; color: var(--ink-2); line-height: 1.5; }
+#honest h3 { font-size: 1rem; margin: 0; }
+
+/* The 60-second AI habits check (/check) and its shareable result. Big tap targets: most people take it on a phone. */
+.check-form { max-width: 760px; }
+.check-q { border: 1px solid var(--line); margin: 0; }
+.check-q legend { float: left; width: 100%; font-weight: 700; font-size: 1rem; padding: 0; margin-bottom: .8rem; display: flex; gap: .6rem; line-height: 1.4; }
+.check-q legend + .check-options { clear: both; }   /* a floated legend sits inside the card instead of on its border */
+.check-q legend .num { color: var(--accent); }
+.check-options { display: grid; gap: .45rem; }
+@media (min-width: 640px) { .check-options { grid-template-columns: 1fr 1fr; } }
+.check-option { display: flex; gap: .6rem; align-items: center; padding: .7rem .8rem; border: 1px solid var(--line);
+  border-radius: var(--radius-s); cursor: pointer; font-weight: 500; min-height: 44px; transition: border-color .15s, background .15s; }
+.check-option:hover { border-color: var(--accent); }
+.check-option:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.check-option input { margin: 0; accent-color: var(--accent); }
+.check-submit { background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: .75rem 1rem; box-shadow: var(--shadow); gap: .75rem; }
+.check-score { display: flex; align-items: baseline; gap: .6rem; margin-bottom: 1rem; }
+.check-score .big { font-family: var(--display); font-size: 3.2rem; letter-spacing: -.04em; line-height: 1; }
+.check-score .of { color: var(--ink-2); font-weight: 600; }
+.check-next { display: flex; gap: 1rem 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.check-next > div { max-width: 62ch; }

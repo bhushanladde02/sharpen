@@ -43,7 +43,7 @@ before, and how good the outcome was. From these, over a rolling 90-day window, 
      - Question it answers
    * - Independence
      - 30 %
-     - How much of the work was the person's own judgement rather than the model's?
+     - How much of the finished work does the person own — what they did, plus model work they checked?
    * - Effectiveness
      - 20 %
      - Did they get good outcomes without a hundred prompts to get there?
@@ -57,20 +57,23 @@ before, and how good the outcome was. From these, over a rolling 90-day window, 
      - 10 %
      - Do they use AI across different kinds of work and tools?
 
-Two flags matter more than the number. **Provisional** means fewer than eight rated sessions — not enough
+Three flags matter more than the number. **Provisional** means fewer than eight rated sessions — not enough
 evidence yet. **Reliance risk** means that in more than half of their professional AI time the model did most
-of the work; that is the person you want to ask harder questions in the interview.
+of the work and nothing was checked. **Uniform ratings** means every session got the top answers — read the
+score as generous. Each is a reason to ask a harder question in the interview, not a verdict.
 
-Why it is hard to fake
-----------------------
+What it can and cannot tell you
+-------------------------------
 
-Only sessions the person has rated count. Usage imported automatically — from a browser extension or a
-provider's usage export — shows up as volume but cannot move the score until the four questions are answered,
-one session at a time. There is no way to bulk-upload a good score, and logging more sessions of low-quality
-work lowers it rather than raising it. The score is self-reported, like a résumé — but unlike a résumé it is
-structured, dated, consistent across candidates, and the incentives point toward honesty: claiming 100 %
-human contribution on every session is exactly what a reliance-risk pattern looks like when the effectiveness
-and verification numbers do not back it up.
+The score is **self-rated**: every input is the candidate's own answer, and Sharpen does not check it. Someone
+who rates generously will score higher than someone who rates honestly, and nothing on Sharpen can tell the two
+apart for certain. So do not use the score to rank or reject anyone.
+
+What it does give you: a dated, structured record of how a person *says* they work with AI — whether checking
+and learning show up month after month, which tools and kinds of work, where they lean on the model — and a
+specific place to start an interview conversation. Only rated sessions count, volume cannot raise the score,
+there is no way to bulk-upload one, and a profile where every session got the top answers is labelled as such.
+Ask for a story behind the numbers: *"Tell me about a time the model was wrong and you caught it."*
 
 What you can do with it today
 -----------------------------

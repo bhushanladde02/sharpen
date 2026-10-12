@@ -24,7 +24,8 @@
   <div>
     <div class="row" style="margin-bottom:.6rem">
       <span class="band" th:classappend="${s.confidence.name() == 'LOW'} ? 'low'" th:text="${s.band()}">Strong</span>
-      <small class="muted" th:if="${s.hasScore()}" th:text="${s.assessedCount} + ' rated session' + (${s.assessedCount} == 1 ? '' : 's')">42 rated sessions</small>
+      <small class="muted" th:if="${s.hasScore()}" title="Each session was rated by the person who logged it; Sharpen does not check the answers"
+             th:text="${s.assessedCount} + ' session' + (${s.assessedCount} == 1 ? '' : 's') + ', self-rated'">42 sessions, self-rated</small>
     </div>
     <div class="dims">
       <div class="dim" th:each="d : ${ {

@@ -4,7 +4,8 @@ Sharpen tracks how a person works with AI, at work and at home, and turns it int
 
 1. **A monthly report** — what you used, for what, how much of the thinking stayed yours, and three concrete things to try next month. On screen and as a PDF.
 2. **An AI score (0–100)** that rewards independence, verification and learning — never hours or prompt volume — so the incentive is to stay sharp, not to use more AI.
-3. **A public AI profile** (`/p/<handle>`) — a LinkedIn-style page with only the AI-related facts. `/p` is the open directory of every public profile — search as you type, tool and industry filters, profile pictures; companies get the ranked, filterable candidates view on top of it.
+3. **A public AI profile** (`/p/<handle>`), private until you switch it on — a LinkedIn-style page with only the AI-related facts, labelled self-rated. `/p` is the open directory of every public profile — search as you type, tool and industry filters, profile pictures; companies get a sortable candidates view on top of it.
+4. **A 60-second habits check** (`/check`) — nine questions, no account, nothing stored; a score out of 100 on the same five parts, a pattern and one thing to try, with a shareable result link.
 
 Java 21 · Spring Boot 4.1 · Thymeleaf · Spring Data JPA · Spring Security · H2 (dev) / PostgreSQL (prod) · openhtmltopdf.
 
@@ -103,7 +104,7 @@ transaction and signs the browser out; feedback the person left stays but is unl
 to send.
 
 **[/privacy](https://sharpenscore.com/privacy)** says all of this in plain language, written from the code: what is
-stored, what a public profile shows (profiles are public by default for individuals), what is never collected, the
+stored, what a public profile shows (profiles are private until their owner makes them public), what is never collected, the
 single session cookie, the extension and its opt-in history import, where the server is, retention (deletion is
 immediate; backups are kept at most 14 days) and the person's rights. No page contacts any host but Sharpen's own —
 even the fonts (Manrope, Bricolage Grotesque, IBM Plex Mono, SIL OFL 1.1) are self-hosted under `static/fonts`.
@@ -126,13 +127,13 @@ Five dimensions, each 0–100, minute-weighted over rated sessions in the window
 
 | Dimension | Weight | From |
 |---|---|---|
-| Independence | 30% | human contribution % |
+| Independence | 30% | ownership: human share, plus 70% of the model's share when the output was checked |
 | Effectiveness | 20% | outcome (1–5) blended with prompts-per-useful-result |
 | Verification | 20% | share of sessions where the output was checked |
 | Growth | 20% | share of sessions where the person can now do something new |
 | Breadth | 10% | distinct task types and tools |
 
-Composite = weighted sum × 10. Fewer than 8 rated sessions → "provisional". More than half of professional minutes in sessions where the model did most of the work → "reliance risk" flag. See `AiScoreService` for the exact formulas; `AiScoreServiceTest` pins the properties (hours never raise the score, long sessions weigh more, unrated sessions are ignored).
+Composite = weighted sum, 0–100. Fewer than 8 rated sessions → "provisional". More than half of professional minutes in sessions where the model did most of the work *and nobody checked it* → "reliance risk" flag. Every rated session given the top answers → "uniform ratings" flag (read as a generous self-assessment). The score is self-rated and every profile says so. See `AiScoreService` for the exact formulas; `AiScoreServiceTest` pins the properties (hours never raise the score, long sessions weigh more, unrated sessions are ignored).
 
 ## Documentation
 

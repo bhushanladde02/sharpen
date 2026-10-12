@@ -33,10 +33,10 @@ Goals
      - Per-session self-assessment, effectiveness (outcome per prompt), breakdown by tool and task type, and
        rule-based insights.
    * - G3
-     - Give companies an honest per-person AI score so they can hire people who can work on their own, and spend
-       fewer tokens on people who cannot.
-     - Company accounts browse public profiles, ranked and sortable by dimension; volume is displayed but never
-       used to rank.
+     - Give companies an honest, clearly self-rated picture of how a candidate works with AI, as a starting point
+       for interview conversations — not a ranking.
+     - Company accounts browse public profiles, sortable by dimension, with a plain statement that the scores are
+       self-rated; volume is displayed but never used to sort.
    * - G4
      - Be the "LinkedIn of AI": a profile that carries only AI-related facts — no feed, no endorsements, no noise.
      - The public profile shows headline, title, industry, experience, tools, score, trend and month-by-month

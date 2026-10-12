@@ -23,6 +23,17 @@
   // "customer representative" beats "customer" alone. The best topic above the threshold answers.
   var topics = [
     {
+      id: 'check', chip: '60-second check',
+      keys: ['check', 'quiz', 'test myself', 'self test', 'self-test', 'try it', 'without signing up', 'without an account',
+             'how sharp', 'habits check', 'assessment'],
+      answer: function () {
+        return '<p>The <a href="/check">60-second AI habits check</a> asks nine questions — who does the first thinking, ' +
+               'whether you check the output, whether you learn — and gives you a score out of 100 with the same five parts as a ' +
+               'Sharpen profile, your pattern and one thing to try. No sign-up, nothing stored: your answers live only in the result\'s link, ' +
+               'which you can share.</p>';
+      }
+    },
+    {
       id: 'enroll', chip: 'How do I enrol?',
       keys: ['enrol', 'enroll', 'register', 'registration', 'sign up', 'signup', 'join', 'create account', 'create an account',
              'new account', 'get started', 'getting started', 'how to start', 'how do i start', 'begin', 'onboard', 'account'],
@@ -73,7 +84,7 @@
              'how is it calculated', 'calculated', 'rating', 'strong', 'sharp'],
       answer: function () {
         return '<p>The AI score runs from 0 to 100 and rewards <b>how</b> you work with AI, never how much. Five parts: ' +
-               '<b>independence</b> (how much of the thinking stayed yours), <b>effectiveness</b> (did it help), <b>verification</b> ' +
+               '<b>independence</b> (the work you own: what you did, plus model work you checked), <b>effectiveness</b> (did it help), <b>verification</b> ' +
                '(did you check the output), <b>growth</b> (are you learning) and <b>breadth</b> (range of tasks and tools).</p>' +
                '<p>It is computed over the last 90 days and is marked <i>provisional</i> until you have logged enough sessions. ' +
                'Logging more hours does not raise it; verifying and doing your own thinking does.' +
@@ -87,7 +98,7 @@
       answer: function () {
         if (company) return '<p>Company accounts have no public profile; you see everyone else\'s in <a href="/candidates">Candidates</a>.</p>';
         return '<p>Your name (first, middle, last), headline, title and everything else on the profile is edited under <a href="/settings">Settings</a>.</p>' +
-               '<p>Your profile is private until you switch it on: <a href="/settings">Settings</a> → tick <b>Public profile</b> → Save. ' +
+               '<p>Your profile is private until you switch it on: <a href="/settings">Settings</a> → tick <b>Make my AI profile public</b> → Save. ' +
                'It then appears at <code>/p/' + handle + '</code> and in the <a href="/p">public directory</a>, and companies can find you. ' +
                'Untick it any time to make it private again.</p>' +
                '<p>Only AI-related facts you chose are shown — score, trend, tools, headline, title, industry, location. Never your sessions or email.</p>';
@@ -142,7 +153,7 @@
       answer: function () {
         return '<p>Sharpen stores only what you log or type. No third-party analytics, no advertising, no cookies beyond the one that keeps you signed in, ' +
                'and no requests to anyone else — even the fonts are served by Sharpen; page views are counted server-side without identifying anyone, with the visitor\'s country looked up on the server — the address itself is not kept.</p>' +
-               '<p>Your sessions, email and reports are never public. The public profile — on by default, off in <a href="/settings">Settings</a> in one click — shows only the AI-related facts you chose.</p>' +
+               '<p>Your sessions, email and reports are never public. Your profile is private until you switch it on in <a href="/settings">Settings</a>; then it shows only the AI-related facts listed there, and you can switch it off again in one click.</p>' +
                '<p><b>Taking your data out:</b> <a href="/settings">Settings</a> → <b>Your data</b> → <b>Sessions (CSV)</b> (opens in a spreadsheet and ' +
                'imports into another Sharpen account) or <b>Everything (JSON)</b> (profile, sessions, reports). Instant, no request needed.</p>' +
                '<p><b>Deleting your account:</b> <a href="/settings#delete">Settings</a> → <b>Delete account</b> → enter your password. ' +
@@ -172,7 +183,9 @@
       keys: ['company', 'companies', 'hire', 'hiring', 'recruit', 'recruiter', 'candidates', 'candidate', 'team'],
       answer: function () {
         return '<p>Create a <b>Company</b> account at <a href="/register">Create account</a>. You get the <a href="/candidates">Candidates</a> view — ' +
-               'everyone with a public profile, ranked by AI score, filterable by tool, industry and score — and each candidate\'s full public profile.</p>';
+               'everyone who made their profile public, sortable by AI score and its parts, searchable by tool, industry and location — and each candidate\'s full public profile.</p>' +
+               '<p>The scores are <b>self-rated</b>: each person answers four questions about their own sessions, and Sharpen does not check them. ' +
+               'Use a profile to ask better interview questions, not to rank or reject anyone.</p>';
       }
     },
     {

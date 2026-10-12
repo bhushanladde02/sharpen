@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>How sharp is your AI use? A 60-second check — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><p class="eyebrow">60 seconds · no sign-up · nothing stored</p>
+      <h1>How sharp is your AI use?</h1>
+      <p>Nine questions about how you actually work with AI — not how much. You get a score out of 100, the same five
+        parts as a Sharpen profile, your pattern, and one thing to try this week.</p></div>
+  </div>
+
+  <div class="notice" th:if="${param.incomplete}" style="margin-bottom:1rem">Answer all nine questions to see your result.</div>
+
+  <form class="stack check-form" method="get" th:action="@{/check/result}">
+    <fieldset class="card check-q" th:each="q : ${questions}">
+      <legend><span class="num" th:text="${q.number}">1</span> <span th:text="${q.text}">Question</span></legend>
+      <div class="check-options">
+        <label class="check-option" th:each="o, it : ${q.options}">
+          <input type="radio" required th:name="'q' + ${q.number}" th:value="${it.index}">
+          <span th:text="${o.text}">Option</span>
+        </label>
+      </div>
+    </fieldset>
+    <div class="row between check-submit">
+      <p class="muted" style="margin:0;font-size:.85rem">Your answers go only into the result's link. Sharpen keeps nothing.</p>
+      <button class="btn primary" type="submit">See my result</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

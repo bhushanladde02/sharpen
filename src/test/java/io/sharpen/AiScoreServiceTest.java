@@ -59,7 +59,7 @@ class AiScoreServiceTest {
         }
         AiScore s = service.compute(list);
         assertThat(s.confidence()).isEqualTo(AiScore.Confidence.FULL);
-        assertThat(s.independence()).isEqualTo(85);
+        assertThat(s.independence()).isEqualTo(96);   // 85 own + 70 % of the checked 15
         assertThat(s.verification()).isEqualTo(100);
         assertThat(s.breadth()).isEqualTo(100);
         assertThat(s.composite()).isGreaterThan(80);
@@ -77,6 +77,53 @@ class AiScoreServiceTest {
         assertThat(s.relianceRisk()).isTrue();
         assertThat(s.composite()).isLessThan(40);
         assertThat(s.flags()).anyMatch(f -> f.kind().equals("risk"));
+    }
+
+    @Test
+    void modelWrittenButCheckedWorkIsNotARelianceRisk() {
+        // Developer A from the review: the model writes the boilerplate, the person tests it and ships good code.
+        List<UsageSession> list = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            list.add(session(30, 15, true, false, 5, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true));
+        }
+        AiScore s = service.compute(list);
+        assertThat(s.relianceRisk()).isFalse();
+        assertThat(s.flags()).noneMatch(f -> f.kind().equals("risk"));
+    }
+
+    @Test
+    void checkedModelWorkCountsAsOwnedAndBeatsUncheckedHandWork() {
+        // Developer A: the model writes 80 %, A tests it. Developer B: writes 90 % by hand, checks nothing.
+        List<UsageSession> a = new ArrayList<>(), b = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            a.add(session(40, 20, true, false, 4, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true));
+            b.add(session(40, 90, false, false, 4, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true));
+        }
+        AiScore sa = service.compute(a), sb = service.compute(b);
+        assertThat(sa.independence()).isEqualTo(76);
+        assertThat(sb.independence()).isEqualTo(90);
+        assertThat(sa.composite()).isGreaterThan(sb.composite());
+        assertThat(sa.relianceRisk()).isFalse();
+        // Unchecked, model-written work still owns only the human share
+        assertThat(AiScoreService.ownership(session(40, 20, false, false, 4, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true))).isEqualTo(20.0);
+    }
+
+    @Test
+    void allTopAnswersAreFlaggedAsAGenerousSelfAssessment() {
+        List<UsageSession> perfect = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            perfect.add(session(30, 90, true, true, 5, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true));
+        }
+        AiScore s = service.compute(perfect);
+        assertThat(s.flags()).anyMatch(f -> f.kind().equals("uniform"));
+
+        // One ordinary session among them is enough: honest ratings vary
+        List<UsageSession> varied = new ArrayList<>(perfect);
+        varied.set(3, session(30, 90, true, false, 4, TaskCategory.CODING, "Claude", UsageContext.PROFESSIONAL, true));
+        assertThat(service.compute(varied).flags()).noneMatch(f -> f.kind().equals("uniform"));
+
+        // Too few sessions to say anything
+        assertThat(service.compute(perfect.subList(0, 5)).flags()).noneMatch(f -> f.kind().equals("uniform"));
     }
 
     @Test

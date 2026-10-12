@@ -31,7 +31,14 @@
       </div>
       <div th:unless="${me.company}"><label for="primaryTools">Other tools you use (optional, comma-separated)</label><input type="text" id="primaryTools" th:field="*{primaryTools}" maxlength="300" placeholder="Claude, ChatGPT, GitHub Copilot">
         <div class="help">Tools from your logged sessions are shown on your profile automatically; add here only ones you use but have not logged yet.</div></div>
-      <label class="check" th:unless="${me.company}"><input type="checkbox" th:field="*{publicProfile}"> Public profile — visible at your URL and in the candidates list</label>
+      <div th:unless="${me.company}" class="consent">
+        <label class="check"><input type="checkbox" th:field="*{publicProfile}"> Make my AI profile public</label>
+        <p class="help">Off until you switch it on. When on, anyone with your link, the public directory, search engines and
+          company accounts can see: your name, picture, headline, job title, industry, location and experience; your AI
+          score, its five parts and its flags; your monthly trend and the tools you use. Never your email, notes or
+          individual sessions. Switch it off at any time and all of that disappears at once.
+          <a th:href="@{/p/{h}(h=${me.handle})}">Preview exactly what others would see</a>.</p>
+      </div>
       <div><button class="btn primary" type="submit">Save</button></div>
     </form>
 

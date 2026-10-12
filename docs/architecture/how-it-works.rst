@@ -289,6 +289,11 @@ What we chose not to use
   ``self_assessed`` rows count, so the community numbers obey the same rule as the score and an import cannot
   move them. Private and public profiles contribute alike, because nothing on the page can be traced to either;
   ``AccountDeletionService`` invalidates the cache so a deleted account leaves the aggregate at once.
+* **A way in that needs no account.** ``/check`` is a nine-question habits check (``HabitCheck``) scored on the
+  same five parts and weights as the real score. It is the part of Sharpen a stranger can try in a minute and
+  share — the shareable result is the growth loop — so it stores nothing: the answers are the nine digits of the
+  result's address. ``TrafficService`` counts every result under one path (``/check/r/…``) so the Traffic page
+  shows how many people took it, not thousands of one-view addresses.
 * **Countries without a third party.** The traffic page's *Where visitors come from* card needs each visitor's
   country, which usually means sending addresses to a geolocation service or embedding its script. Instead
   ``CountryLookup`` holds DB-IP's free *IP to Country Lite* list in memory — about 700,000 ranges as sorted
@@ -328,8 +333,9 @@ How to explain it in two minutes
 extension and usage imports log the volume for you — and answer four questions: how much was yours, did you
 check it, did you learn, was it useful. Those answers, minute-weighted, become five dimensions and a 0–100
 score that never rewards hours. On the first of every month a scheduled job freezes a report with a
-brain-active check and three things to try; you can download it as a PDF. Your public profile shows only
-AI-related facts, and companies can rank candidates by independence or verification instead of prompt volume.
+brain-active check and three things to try; you can download it as a PDF. Your profile stays private until you
+make it public; then it shows only AI-related facts, says plainly that the score is self-rated, and gives companies
+a place to start an interview conversation about how someone works with AI rather than how much.
 Under the hood it is Spring MVC and Thymeleaf for pages, Spring Security with a form chain and an API-key chain,
 Spring Data JPA over three tables, H2 in development and PostgreSQL in production, all in one jar you run with
 ``java -jar``.*

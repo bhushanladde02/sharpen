@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title th:text="${ogTitle} + ' — Sharpen'">AI habits check — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head">
+    <div><p class="eyebrow">AI habits check · result</p>
+      <h1 th:text="${r.type}">The Editor</h1>
+      <p th:text="${r.typeLine}">The AI drafts, you check.</p></div>
+  </div>
+
+  <div class="grid two">
+    <div class="card lift check-result">
+      <div class="check-score">
+        <div class="big num" th:text="${r.composite}">68</div>
+        <div class="of">of 100 · <span th:text="${r.band}">Strong</span></div>
+      </div>
+      <div class="dims">
+        <div class="dim" th:each="d : ${r.dimensions}">
+          <span class="label" th:text="${d.label}">Independence</span>
+          <div class="track"><div class="fill" th:style="'width:' + ${d.value} + '%'"></div></div>
+          <span class="v num" th:text="${d.value}">72</span>
+        </div>
+      </div>
+      <p class="muted" style="margin:1rem 0 0;font-size:.8rem">From your nine answers, weighted like the Sharpen score
+        (independence 30%, the rest 20% each, breadth 10%). A self-check, not a test.</p>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <h2>One thing to try</h2>
+        <p th:text="${r.tip}">Run one test in every session.</p>
+      </div>
+      <div class="card">
+        <h2>Share it</h2>
+        <p class="muted" style="margin-top:-.3rem">Ask a colleague how they score — the link opens your result and the check.</p>
+        <div class="row" style="gap:.5rem">
+          <a class="btn small" th:href="${linkedinShare}" target="_blank" rel="noopener">Share on LinkedIn</a>
+          <a class="btn small" th:href="${xShare}" target="_blank" rel="noopener">Share on X</a>
+          <a class="btn small" th:href="@{/check}">Retake</a>
+        </div>
+        <label style="margin-top:.8rem">Link<textarea class="code" rows="1" readonly onclick="this.select()" th:text="${shareUrl}"></textarea></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card check-next" style="margin-top:1rem">
+    <div>
+      <h2>Answers from memory are a guess. Your real sessions are not.</h2>
+      <p class="muted">Sharpen keeps a private log of how you work with AI — fifteen seconds a session, or automatic with
+        the browser extension — and turns it into the same five numbers every month, so you can see whether the habit
+        is really changing. Free, open source, private until you choose to share.</p>
+    </div>
+    <a class="btn primary" th:href="@{/register}">Start my private log</a>
+  </div>
+</main>
+</body>
+</html>

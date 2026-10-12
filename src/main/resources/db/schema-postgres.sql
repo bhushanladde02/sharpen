@@ -17,7 +17,7 @@ create table person (
     years_experience integer,
     location         varchar(120),
     primary_tools    varchar(300),
-    public_profile   boolean      not null default true,
+    public_profile   boolean      not null default false,
     api_key          varchar(64)  not null,
     created_at       timestamp(6) with time zone not null default now(),
     avatar_version   integer      not null default 0

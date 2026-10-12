@@ -38,7 +38,8 @@ Glossary
       0–100 %: how much of the finished work came from the person rather than the model.
 
    Independence
-      Weighted mean of human contribution; 30 % of the score.
+      Weighted mean of ownership — the person's own share of the work plus 70 % of the model's share when the
+      output was verified; 30 % of the score.
 
    Needs rating
       A session that arrived without an assessment (extension, provider export, partial CSV). Shown with a
@@ -49,7 +50,11 @@ Glossary
 
    Reliance risk
       Flag set when more than half of professional minutes were spent in sessions where the model did most of
-      the work (human contribution below 30 %).
+      the work (human contribution below 30 %) and the output was not verified.
+
+   Uniform ratings
+      Flag set when every one of at least eight rated sessions got the top answers; it says to read the score as a
+      generous self-assessment.
 
    Rolling score
       The score over the last 90 days ending today; what the dashboard, profile and candidates show.

@@ -67,7 +67,7 @@ public class Person {
     private String primaryTools;
 
     @Column(name = "public_profile", nullable = false)
-    private boolean publicProfile = true;
+    private boolean publicProfile = false;   // private until the person chooses to share (since 12 October 2026)
 
     /** Used by the browser extension and usage importers. Sent as the X-Api-Key header. */
     @Column(name = "api_key", nullable = false, length = 64)

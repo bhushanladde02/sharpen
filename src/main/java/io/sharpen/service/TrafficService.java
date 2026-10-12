@@ -103,6 +103,7 @@ public class TrafficService {
         String referrer = referrerHost(referrerHeader);
         String lang = acceptLanguage == null ? null : acceptLanguage.split("[,;]")[0].trim();
         if (lang != null && (lang.isEmpty() || lang.length() > 16)) lang = null;
+        if (path.startsWith("/check/r/")) path = "/check/r/…";   // one line for all habits-check results, not one per answer set
         buffer.add(new PageView(day, path.length() > 200 ? path.substring(0, 200) : path, referrer,
                 visitorHash(day, address, userAgent), lang, signedIn, countries.country(address)));
     }

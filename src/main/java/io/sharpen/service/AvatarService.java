@@ -68,9 +68,26 @@ public class AvatarService {
     }
 
     /** Decode → square crop → scale → JPEG. Package-private for tests. */
+    /** Largest picture decoded, in pixels: 50 megapixels is far beyond any phone photo and a safe heap size. */
+    static final long MAX_PIXELS = 50_000_000L;
+
     static byte[] normalise(MultipartFile file) {
         BufferedImage src;
         try {
+            // Read the dimensions from the header first: a small file can declare a 30,000 × 30,000 image, and
+            // decoding that would take gigabytes of memory before any size check ran.
+            try (var in = ImageIO.createImageInputStream(file.getInputStream())) {
+                var readers = in == null ? null : ImageIO.getImageReaders(in);
+                if (readers == null || !readers.hasNext()) throw new InvalidImage("That doesn't look like a JPEG or PNG picture. HEIC photos from a phone need to be exported as JPEG first.");
+                var reader = readers.next();
+                try {
+                    reader.setInput(in);
+                    long pixels = (long) reader.getWidth(0) * reader.getHeight(0);
+                    if (pixels > MAX_PIXELS) throw new InvalidImage("That picture is too large (over 50 megapixels). Export a smaller copy.");
+                } finally {
+                    reader.dispose();
+                }
+            }
             src = ImageIO.read(file.getInputStream());
         } catch (IOException e) {
             throw new InvalidImage("Couldn't read that file as an image.");

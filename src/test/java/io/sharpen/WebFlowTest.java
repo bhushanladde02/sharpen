@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:h2:mem:sharpen-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
         "sharpen.demo-data=false",
         "sharpen.admin-email=flow@example.com",
+        "spring.h2.console.enabled=false",
         "sharpen.geo.file=src/test/resources/geo/test-countries.csv"
 })
 class WebFlowTest {
@@ -87,17 +88,17 @@ class WebFlowTest {
                 .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
         mvc.perform(post("/feedback").with(csrf()).param("message", "BOT FOUR").param("t", "1700000000.deadbeefdeadbeefdeadbeef"))
                 .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
-        // Rate limit: the sixth message from one address inside an hour is refused
+        // Rate limit: the sixth message from one address inside an hour is refused (each with its own token — a token is single-use)
         for (int i = 0; i < 5; i++)
             mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("203.0.113.9"); return r; })
-                    .param("message", "burst " + i).param("t", ok)).andExpect(status().is3xxRedirection());
+                    .param("message", "burst " + i).param("t", guard.tokenIssuedAgo(10))).andExpect(status().is3xxRedirection());
         mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("203.0.113.9"); return r; })
-                        .param("message", "burst 6").param("t", ok)).andExpect(status().isOk())
+                        .param("message", "burst 6").param("t", guard.tokenIssuedAgo(10))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("a lot of messages")));
         // A vendor pitch that passes the checks is stored but folded under "Likely spam" in the inbox
         mvc.perform(post("/feedback").with(csrf()).with(r -> { r.setRemoteAddr("198.51.100.4"); return r; })
                 .param("message", "Hi sharpenscore.com, we can place your website on Google 1st page. May I send you a quote & price list?")
-                .param("email", "ananya@rocketseo.example").param("t", ok)).andExpect(status().is3xxRedirection());
+                .param("email", "ananya@rocketseo.example").param("t", guard.tokenIssuedAgo(10))).andExpect(status().is3xxRedirection());
 
         mvc.perform(get("/admin/feedback").with(user(company.getEmail()).roles("COMPANY"))).andExpect(status().isNotFound());
         String inbox = mvc.perform(get("/admin/feedback").with(user(me.getEmail()).roles("INDIVIDUAL"))).andExpect(status().isOk())
@@ -445,6 +446,44 @@ class WebFlowTest {
     @Autowired io.sharpen.repo.PersonRepository personRepo;
 
     @Test
+    void securityEdges() throws Exception {
+        // A spam token is accepted once: the second submission with the same token is refused and stores nothing
+        String once = guard.tokenIssuedAgo(10);
+        mvc.perform(post("/feedback").with(csrf()).param("message", "First use of the token, a real message").param("t", once))
+                .andExpect(status().is3xxRedirection());
+        mvc.perform(post("/feedback").with(csrf()).param("message", "Replayed token").param("t", once))
+                .andExpect(status().isOk()).andExpect(content().string(containsString("open too long")));
+        // A company account cannot log sessions or reach the individual pages
+        var asCompany = user(company.getEmail()).roles("COMPANY");
+        mvc.perform(get("/sessions").with(asCompany)).andExpect(status().isForbidden());
+        mvc.perform(post("/sessions").with(csrf()).with(asCompany).param("occurredOn", "2026-10-01").param("context", "PROFESSIONAL")
+                .param("tool", "Claude").param("taskCategory", "CODING").param("durationMinutes", "10").param("promptCount", "1")
+                .param("humanContributionPct", "50").param("outcome", "3")).andExpect(status().isForbidden());
+        mvc.perform(get("/reports").with(asCompany)).andExpect(status().isForbidden());
+        mvc.perform(get("/import").with(asCompany)).andExpect(status().isForbidden());
+        // Garbage in a month or a number is a 400 with the friendly page, not a 500
+        var asMe = user(me.getEmail()).roles("INDIVIDUAL");
+        mvc.perform(get("/reports/garbage").with(asMe)).andExpect(status().isBadRequest());   // (MockMvc does not render the error page)
+        mvc.perform(get("/admin/traffic").param("month", "nope").with(asMe)).andExpect(status().isBadRequest());
+        mvc.perform(get("/admin/traffic").param("days", "99999999").with(asMe)).andExpect(status().isOk());   // clamped, not hung
+        // No H2 console openings in the rules when the console is off (as in production)
+        mvc.perform(get("/h2-console/")).andExpect(status().is3xxRedirection());
+        // Ten wrong passwords lock the account for a while; the eleventh is not even checked
+        for (int i = 0; i < 10; i++) {
+            mvc.perform(post("/login").with(csrf()).param("username", "nobody@example.com").param("password", "wrong" + i))
+                    .andExpect(redirectedUrl("/login?error"));
+        }
+        mvc.perform(post("/login").with(csrf()).param("username", "Nobody@Example.com").param("password", "wrong"))
+                .andExpect(redirectedUrl("/login?locked"));
+        mvc.perform(get("/login").param("locked", "")).andExpect(content().string(containsString("Too many sign-in attempts")));
+        // Every page carries a content-security policy
+        mvc.perform(get("/")).andExpect(header().string("Content-Security-Policy", containsString("default-src 'self'")));
+        // A formula at the start of a value is exported as text
+        assertEquals("'=cmd|' /C calc'!A1", io.sharpen.service.ExportService.csv("=cmd|' /C calc'!A1"));
+        assertEquals("plain", io.sharpen.service.ExportService.csv("plain"));
+    }
+
+    @Test
     void theHabitsCheckNeedsNoAccountAndStoresNothing() throws Exception {
         long people = personRepo.count();
         mvc.perform(get("/check")).andExpect(status().isOk())
@@ -461,7 +500,7 @@ class WebFlowTest {
         mvc.perform(get("/check/r/111111111").header("User-Agent", "Mozilla/5.0 check").header("Host", "sharpenscore.com"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("on the AI habits check")))
-                .andExpect(content().string(containsString("https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsharpenscore.com%2Fcheck%2Fr%2F111111111")))
+                .andExpect(content().string(containsString("https://www.linkedin.com/sharing/share-offsite/?url=http%3A%2F%2Flocalhost%3A8080%2Fcheck%2Fr%2F111111111")))   // configured host, not the Host header
                 .andExpect(content().string(containsString("Start my private log")))
                 .andExpect(content().string(containsString("noindex, nofollow")));
         mvc.perform(get("/check/r/99")).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/check"));

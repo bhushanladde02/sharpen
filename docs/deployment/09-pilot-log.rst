@@ -826,8 +826,42 @@ Day 8 — Wednesday 16 September: which build is this?
    The launch kit — Show HN, Product Hunt, three Reddit posts, two LinkedIn posts, a dev.to article, directory
    blurbs and a four-week calendar — is written and waits for the owner to post it; the code cannot do that part.
 
-Open items (as of day 25)
+#. **The request that was refused, and the security pass instead.** (Day 27, continued.) The owner asked for
+   "AI agents from all over the world" to create accounts with names and pictures, log sessions and leave
+   feedback, so the site would look used. Declined, with the reasons on record: those would be fabricated people,
+   not users; they would seed the public counters, the Insights thresholds and the candidates list with invented
+   data, which is exactly what ``/privacy`` and the *Honest about what it measures* panel promise never happens;
+   and a visitor who noticed would not come back. What *was* worth doing from that request is the last clause —
+   "make sure about site security, AI agents should not spoil it" — so an agent audited the code as an attacker
+   would, and the findings were fixed the same day. Two were serious: the **H2 database console was reachable in
+   the default profile** (``/h2-console`` permitted, CSRF off, frames on — harmless in production only because the
+   ``postgres`` profile turns the console off, which is one setting away from an exposed database), and **the
+   sign-in form had no throttle** at all, so a password list could be run against any account at BCrypt speed.
+   Now the console's rules exist only when ``spring.h2.console.enabled`` is true, and sign-in locks an account
+   after ten wrong passwords (an address after forty) for fifteen minutes, checked before the password is hashed.
+   Then the medium ones: a **Content Security Policy** on every page (scripts, styles, fonts, images and fetches
+   from Sharpen only; ``form-action`` lists the three sign-in providers because Chrome applies it to where a form's
+   redirect ends, and *Settings → Connect* ends at Google); the **sign-up and contact tokens are single-use** (a
+   nonce, and a used set) instead of replayable for their whole window; a profile picture's **dimensions are read
+   from the header before it is decoded**, refusing anything over 50 million pixels — a 2 KB file could declare a
+   canvas that allocates gigabytes. And the small ones: 600 API requests a minute per address, then ``429``;
+   ``/dashboard``, ``/sessions``, ``/reports`` and ``/import`` need the ``INDIVIDUAL`` role in the security rules,
+   not just in the controllers; CSV exports neutralise cells that start with ``=``/``+``/``-``/``@``; a malformed
+   month in an address is a 400 page, not a 500 stack; error pages never include exception messages; the
+   habits-check share link uses the configured host, not the request's; the Traffic page's ``days`` is clamped. Each
+   has a test (``securityEdges``), and the lot was tried against the real jar on PostgreSQL: console → login
+   redirect, CSP header present, eleventh wrong password → *locked*, bad API key → 401. 62 tests. Noted and not
+   done: a nonce-based CSP to drop ``'unsafe-inline'``; a limit on PDF generation; the admin account is still
+   chosen by email; the extension's host permissions are broader than its three sites. Requirements SE-7, SE-9 and
+   SE-15–18; README and roadmap updated. The robustness test the owner wanted can still happen — locally, with
+   synthetic accounts that never reach the live database — and a single clearly labelled example profile on the
+   live site is the honest version of "show what it looks like".
+
+Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Security, remaining from the day-27 audit: nonce-based CSP (SE-15), a PDF-generation limit, bind the admin
+  account to an id rather than an email, narrow the extension's host permissions.
 
 * A sign-in form left open across a restart shows the 403 page — it could send the person back to a fresh
   form with a note instead.

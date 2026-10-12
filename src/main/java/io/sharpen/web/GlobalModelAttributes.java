@@ -136,4 +136,11 @@ public class GlobalModelAttributes {
         Optional<Person> me = people.current();
         return me.isPresent() && !me.get().isCompany() ? sessions.countNeedingAssessment(me.get()) : 0;
     }
+
+    /** A month or number that is not one ({@code /reports/garbage}, {@code ?days=abc}) is the caller's mistake, not a crash. */
+    @org.springframework.web.bind.annotation.ExceptionHandler({java.time.format.DateTimeParseException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
+    public void badInput(jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        response.sendError(400);   // rendered by ErrorPageController like any other status
+    }
 }

@@ -57,7 +57,7 @@ server:
   compression:
     enabled: true
   error:
-    include-message: always
+    include-message: never   # the error page writes its own hints; framework messages never reach a visitor
 
 sharpen:
   demo-data: true

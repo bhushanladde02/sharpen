@@ -72,7 +72,8 @@ public class GlobalModelAttributes {
 
     /** Pages that are personal to the signed-in user must never be indexed, even if a crawler gets a login page. */
     private static final java.util.List<String> PRIVATE_PREFIXES = java.util.List.of(
-            "/dashboard", "/sessions", "/import", "/reports", "/settings", "/admin", "/candidates", "/login", "/register", "/feedback", "/error");
+            "/dashboard", "/sessions", "/import", "/reports", "/settings", "/admin", "/candidates", "/login", "/register", "/feedback", "/error",
+            "/check/r/", "/check/result");   // a habits-check result is one person's answers: shareable, not for search
 
     @ModelAttribute("noindex")
     public boolean noindex(jakarta.servlet.http.HttpServletRequest request) {

@@ -8,6 +8,30 @@ Everything marked *Done* in :doc:`requirements/03-functional`: accounts, session
 ingestion routes, the score, dashboard, monthly report with PDF, public profile, company candidates view, API,
 Chrome extension scaffold, Docker shape, tests, this documentation.
 
+Making the score worth trusting (from October 2026)
+---------------------------------------------------
+
+Two outside reviews in October 2026 agreed: the idea is sound and the build is real, but a score made only of a
+person's own answers is a good mirror and a weak credential, and an employer marketplace is premature. The plan,
+in order — each step a small, tested change:
+
+#. **Honest framing — done 12 October.** Profiles private until their owner shares them; "self-rated" on every
+   score; a *what this score is and isn't* panel on profiles; a candidates-page note not to rank on it; the
+   reliance-risk flag only for unchecked model work (so testing generated code is not penalised); a
+   *uniform ratings* flag; a home-page section on what the score can and cannot do.
+#. **Ownership — done 12 October.** Model-written work the person verified counts 70 % as theirs, so the
+   independence part rewards judgement rather than typing everything by hand.
+#. **A way in without an account — done 12 October.** The 60-second habits check at ``/check``, with a
+   shareable result, as the main route for new visitors (home page, header, footer, Help).
+#. **Ten seconds a day.** A once-a-day check-in: rate *one* session (sampled), four taps, pre-filled by the
+   extension. Less logging, less fatigue, less temptation to rate everything top.
+#. **Evidence.** Optionally attach a link (pull request, document) or one sentence of what was learned, written at
+   the time; the profile shows how many sessions carry evidence, separately from the self-rated score.
+#. **Something objective.** A short, fixed *spot the AI's mistake* exercise (planted bugs in AI-written code,
+   hallucinated APIs), graded by the server and shown as its own result next to the self-rated score.
+#. **Measure what matters.** Week-2 return rate on the Traffic page, and ten conversations with real users and
+   hiring managers before anything employer-facing is extended.
+
 Release 1
 ---------
 

@@ -20,8 +20,10 @@ URL: ``/p/{handle}``. Readable without an account when the profile is public.
    * - PP-2
      - No session-level data, notes, prompts or tokens are shown publicly.
    * - PP-3
-     - Public by default at registration; a private profile shows a neutral "no public profile here" page to
-       everyone except the owner and disappears from the candidates list.
+     - Private at registration (since 12 October 2026; earlier accounts keep their setting). Going public is an
+       explicit choice in Settings, next to a list of exactly what becomes visible and a link to preview it. A
+       private profile shows a neutral "no public profile here" page to everyone except the owner and disappears
+       from the directory and the candidates list. Every profile states that its score is self-rated.
    * - PP-4
      - Handles are lower-case letters, digits and dashes; unique; changing one changes the URL (no redirect from
        the old handle in the prototype).

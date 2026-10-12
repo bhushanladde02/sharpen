@@ -48,6 +48,7 @@ public class DemoDataLoader {
             demo.setYearsExperience(9);
             demo.setLocation("Sacramento, CA");
             demo.setPrimaryTools("Claude, GitHub Copilot, ChatGPT");
+            demo.setPublicProfile(true);   // demo profiles are public so the directory has something to show
             people.save(demo);
             seed(sessions, demo, new Random(7), today, 120, 62, 0.78, 0.45, 4.0);
 
@@ -58,6 +59,7 @@ public class DemoDataLoader {
             dep.setYearsExperience(4);
             dep.setLocation("Austin, TX");
             dep.setPrimaryTools("ChatGPT, Gemini");
+            dep.setPublicProfile(true);   // demo profiles are public so the directory has something to show
             people.save(dep);
             seed(sessions, dep, new Random(11), today, 120, 24, 0.35, 0.15, 3.6);
 
@@ -68,6 +70,7 @@ public class DemoDataLoader {
             strong.setYearsExperience(7);
             strong.setLocation("Remote (Chicago)");
             strong.setPrimaryTools("Claude, Cursor, Perplexity");
+            strong.setPublicProfile(true);   // demo profiles are public so the directory has something to show
             people.save(strong);
             seed(sessions, strong, new Random(23), today, 120, 78, 0.9, 0.6, 4.3);
 

@@ -750,6 +750,38 @@ Day 8 — Wednesday 16 September: which build is this?
    removed (it then reads 660 instead of 66). API clients reading ``/api/v1/me/score`` now get ``composite`` on
    0–100. 52 tests.
 
+#. **Honest about what the score is.** (Day 27, Monday 12 October.) Two outside reviews arrived the same day. Both
+   liked the problem and the build and both put the score's credibility at the bottom: every input is the person's
+   own answer, nothing checks it, so it is a fair mirror and a poor hiring credential, and pitching it to employers
+   for ranking overreaches. First step of the resulting plan (:doc:`../roadmap`, *Making the score worth
+   trusting*): **new profiles start private** (migration ``2026-10-12-private-by-default.sql`` changes only the
+   column default — existing profiles keep their setting) and the switch in Settings now lists exactly what
+   becomes visible, with a link to preview it; every score says **"self-rated"**; profiles carry a *what this
+   score is — and what it isn't* panel with a suggested interview question; the candidates page says not to rank
+   or reject on it; the home page gained *Honest about what it measures* and its company pitch became "better
+   interview conversations about AI". Two scoring fixes from the reviews: **reliance risk** now needs the
+   model-written work to be *unchecked* — a developer who generates boilerplate and tests it is no longer flagged
+   like one who pastes it in blind — and a new **uniform ratings** flag marks a score built on top answers in every
+   session (it does not change the number). Also corrected two leftovers from the 0–100 change: the home page's
+   company example still said 795, and the scoring docs' worked examples still multiplied by ten. Privacy page,
+   Help, requirements, glossary and the company guide updated; ``/privacy`` effective 12 October. 55 tests.
+
+#. **A way in without an account, and ownership.** (Day 27, continued.) The owner's goal is traffic, and both
+   reviews said the same thing about it: nobody signs up to log sessions on the strength of a landing page. So the
+   front door is now something a stranger can finish in a minute and pass on — the **60-second AI habits check** at
+   ``/check``: nine questions (who does the first thinking, could you redo it without AI, do you check the output,
+   who noticed the last mistake, do you learn, …) scored on the same five parts, weights and bands as the real
+   score, giving a number out of 100, a pattern (*Pilot, Editor, Soloist, Learner, Passenger*) and one thing to try.
+   Nothing is stored and no account is needed: the nine answers are the nine digits of the result's address
+   (``/check/r/303102312``), so a result can be shared on LinkedIn or X with plain links (no third-party script) and
+   reopened by anyone with the link; result pages are kept out of search engines, the question page is in the
+   sitemap. The home page's second button, the header, the footer and the Help guide point to it, and the result
+   page ends with "Start my private log". The Traffic page counts every result as one line, ``/check/r/…``. Step 3 of
+   the trust plan went in at the same time, on the owner's go-ahead: **independence now measures ownership** — the
+   person's share plus 70 % of the model's share when they checked it — so "the model wrote 80 %, I tested it"
+   counts 76, not 20, and beats "I typed 90 % and checked nothing" overall (a test pins exactly that). Monthly
+   reports already frozen keep their numbers. 61 tests.
+
 Open items (as of day 25)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

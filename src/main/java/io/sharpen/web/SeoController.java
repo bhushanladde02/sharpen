@@ -60,6 +60,7 @@ public class SeoController {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                 .append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
         url(sb, base + "/", today, "weekly", "1.0");
+        url(sb, base + "/check", today, "monthly", "0.9");
         url(sb, base + "/p", today, "daily", "0.8");
         url(sb, base + "/insights", today, "daily", "0.7");
         url(sb, base + "/privacy", today, "monthly", "0.3");

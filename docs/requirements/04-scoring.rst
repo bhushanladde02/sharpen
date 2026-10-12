@@ -44,7 +44,10 @@ Each dimension is 0–100.
      - Definition
    * - Independence
      - 0.30
-     - Weighted mean of *human contribution %* — how much of the finished work came from the person.
+     - Weighted mean of *ownership*: the person's own share of the work, plus — when they verified the output —
+       70 % of the share the model wrote. ``ownership = human + (100 − human) × 0.7`` if verified, else ``human``.
+       So letting the model write and then checking it counts; typing everything yourself without checking does not
+       beat it. (Until 12 October 2026 this was the human share alone, which rewarded avoiding AI rather than judging it.)
    * - Effectiveness
      - 0.20
      - ``0.7 × outcome + 0.3 × promptEfficiency`` where outcome maps 1–5 to 0–100 and prompt efficiency is
@@ -80,10 +83,23 @@ Confidence and flags
 * **Confidence.** *None* with no rated sessions (no score is shown); *Low / provisional* with fewer than 8 rated
   sessions; *Full* otherwise.
 * **Reliance risk.** Set when more than half of *professional* weighted minutes were in sessions with human
-  contribution below 30 %.
+  contribution below 30 % **and the output not verified**. Letting the model write most of something is not the
+  risk; passing it on unchecked is. (Until 12 October 2026 the flag ignored verification, so someone who generated
+  boilerplate and tested it was flagged like someone who pasted it in blind.)
+* **Uniform ratings.** Set when there are at least 8 rated sessions and every one of them is verified, learned
+  something and has outcome 5 of 5. Honest ratings vary, so the flag tells the reader to treat the score as a
+  generous self-assessment. It does not change the number.
 * **Flags** are short sentences shown beside the score: provisional, unrated sessions present, reliance risk,
-  verification below 50, growth below 30, strength (independence and verification both ≥ 70), narrow usage
-  (breadth below 40 with ≥ 5 sessions).
+  uniform ratings, verification below 50, growth below 30, strength (independence and verification both ≥ 70),
+  narrow usage (breadth below 40 with ≥ 5 sessions).
+
+What the score is not
+---------------------
+
+Every input is the person's own answer; Sharpen does not check them. The score is therefore a structured
+self-assessment and a record of habits over time — useful as a mirror and as a conversation starter — and not a
+measure of skill, a certification or a way to rank people. The profile, the candidates view and the home page
+say this in plain words, and profiles are private until their owner makes them public.
 
 Worked example
 --------------
@@ -91,13 +107,15 @@ Worked example
 Ten professional sessions of 45 minutes, human contribution 85 %, all verified, half learned, outcome 5, prompts
 4, spread over six task types and three tools:
 
-* Independence 85 · Effectiveness ≈ 0.7×100 + 0.3×92 ≈ 98 · Verification 100 · Growth 50 · Breadth 100
-* Composite ≈ 10 × (25.5 + 19.5 + 20 + 10 + 10) = **850 → Expert**.
+* Independence 85 + 15 × 0.7 ≈ 96 · Effectiveness ≈ 0.7×100 + 0.3×92 ≈ 98 · Verification 100 · Growth 50 · Breadth 100
+* Composite ≈ 28.7 + 19.5 + 20 + 10 + 10 ≈ **88 → Expert**.
 
 Eight professional sessions of 30 minutes, human contribution 15 %, never verified, never learned, outcome 4:
 
 * Independence 15 · Effectiveness ≈ 0.7×75 + 0.3×100 ≈ 82 · Verification 0 · Growth 0 · Breadth ≈ 22
-* Composite ≈ 10 × (4.5 + 16.5 + 0 + 0 + 2.2) ≈ **232 → At risk**, with the reliance-risk flag.
+* Composite ≈ 4.5 + 16.5 + 0 + 0 + 2.2 ≈ **23 → At risk**, with the reliance-risk flag (the model did the work
+  and nothing was checked). The same sessions with every output verified own 15 + 85 × 0.7 ≈ 75, score 61
+  (*Developing*) and carry no reliance-risk flag.
 
 Open questions for Release 1
 ----------------------------

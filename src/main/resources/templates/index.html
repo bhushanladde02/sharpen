@@ -9,10 +9,10 @@
       <h1>Use AI a lot.<br>Stay the one <em>who thinks</em>.</h1>
       <p class="lede">Sharpen tracks how you work with AI — at work and at home — and turns it into a score that
         rewards independence, verification and learning, never volume. A monthly report keeps you honest.
-        A public profile shows employers how you actually work.</p>
+        Keep it as a private mirror, or share your profile when you choose.</p>
       <div class="row cta actions">
         <a class="btn primary" th:href="@{/register}">Create your profile</a>
-        <a class="btn" th:href="@{/p}">Browse public profiles</a>
+        <a class="btn" th:href="@{/check}">Take the 60-second check</a>
       </div>
       <p class="muted-3" style="margin-top:.9rem;font-size:.85rem">Free for individuals. Nothing you type into an AI tool is ever captured.</p>
       <div class="counter-strip">
@@ -41,7 +41,7 @@
     <div class="steps">
       <div class="step"><h3>Log a session</h3><p>Date, tool, task, minutes — then four honest questions: how much was yours, did you check it, did you learn, was it useful. The browser extension and usage exports fill in the volume for you.</p></div>
       <div class="step"><h3>Read your month</h3><p>On the 1st you get a report: where the time went, how much of the thinking stayed human, and three concrete things to try next month. On screen and as a PDF.</p></div>
-      <div class="step"><h3>Share the signal</h3><p>Your public AI profile carries the score, the trend and the tools you use — nothing else. Companies compare candidates on how they work, not how much they prompt.</p></div>
+      <div class="step"><h3>Share it, if you want</h3><p>Your profile stays private until you switch it on. Then it shows the score, the trend and the tools you use — nothing else — and says plainly that the ratings are your own.</p></div>
     </div>
   </section>
 
@@ -51,7 +51,7 @@
       <p>Only sessions you rated count, weighted by minutes. Logging twice as much with the same habits gives exactly the same score.</p>
     </div>
     <div class="dimstrip">
-      <div class="d"><b>30%</b><span>Independence</span><small>How much of the finished work was yours</small></div>
+      <div class="d"><b>30%</b><span>Independence</span><small>The work you did, plus model work you checked</small></div>
       <div class="d"><b>20%</b><span>Effectiveness</span><small>Useful results per prompt spent</small></div>
       <div class="d"><b>20%</b><span>Verification</span><small>Output checked against a source or a test</small></div>
       <div class="d"><b>20%</b><span>Growth</span><small>You can now do something you couldn't</small></div>
@@ -59,17 +59,42 @@
     </div>
   </section>
 
+  <section id="honest">
+    <div class="section-head">
+      <h2>Honest about what it measures</h2>
+      <p>The score comes from your own answers. That makes it a good mirror and a poor certificate, and Sharpen says so.</p>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>What it is good for</h3>
+        <ul class="plain">
+          <li>Noticing when you start accepting answers without reading them.</li>
+          <li>Seeing, month by month, whether checking and learning are part of how you work.</li>
+          <li>Talking about your AI habits in an interview with something concrete to point at.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>What it cannot do</h3>
+        <ul class="plain">
+          <li>Prove skill. Nobody checks your answers — not Sharpen, not an employer.</li>
+          <li>Compare two people fairly on its own. Use it to start a conversation, not to rank anyone.</li>
+          <li>Hide generous ratings: a score built on uniformly perfect answers is labelled as such.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <section class="quiet">
     <div class="grid two" style="align-items:center">
       <div>
         <p class="eyebrow">For companies</p>
-        <h2 style="font-family:var(--display);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.5rem">Hire people who can work on their own</h2>
-        <p class="muted">Browse public profiles, sort by independence or verification, and see the reliance-risk flag before the first interview. Fewer tokens burned on people who can't judge what the model returns.</p>
+        <h2 style="font-family:var(--display);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.5rem">Better interview conversations about AI</h2>
+        <p class="muted">Public profiles show how candidates say they work with AI — what they check, what they learn, where they lean on the model. They are self-rated, not tested: use them to ask sharper questions, not to rank people.</p>
         <a class="btn" th:href="@{/register}">Create a company account</a>
       </div>
       <div class="card">
         <div class="cand">
-          <div class="mini"><span class="num">795</span><small>Expert</small></div>
+          <div class="mini"><span class="num">80</span><small>Expert</small></div>
           <div>
             <b>Lena Okafor</b>
             <div class="muted" style="font-size:.86rem">Data scientist; AI as a sparring partner</div>

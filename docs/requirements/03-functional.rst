@@ -320,3 +320,12 @@ Community and feedback
        and named, not mixed into the shares.
      - Done
      - ``CountryLookup``, ``CountryListUpdater``, ``TrafficService``, ``admin-traffic.html``
+   * - FR-76
+     - Anyone, without an account, can take a 60-second AI habits check at ``/check``: nine multiple-choice
+       questions scored on the same five parts, weights and bands as the AI score, giving a score out of 100, a
+       pattern (*Pilot, Editor, Soloist, Learner, Passenger*) and one thing to try. Nothing is stored: the answers
+       are only in the result's address ``/check/r/<9 digits>``, which can be shared (plain LinkedIn and X links, no
+       third-party script) and is kept out of search engines. The result says it is a self-check and invites the
+       person to start a private log.
+     - Done
+     - ``HabitCheck``, ``CheckController``, ``check.html``, ``check-result.html``

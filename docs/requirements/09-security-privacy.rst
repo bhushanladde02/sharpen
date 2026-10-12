@@ -26,8 +26,8 @@ Privacy principles
      - **Export and delete.** Release 1 must offer a full export (CSV + JSON) and account deletion that removes
        every session and report.
    * - PR-6
-     - **Say it in public, from the code.** ``/privacy`` states what is stored, what is public (profiles are public
-       by default for individuals), what is never collected, the one cookie, the extension, where the data lives,
+     - **Say it in public, from the code.** ``/privacy`` states what is stored, what is public (profiles are private
+       until their owner makes them public; earlier accounts keep their setting), what is never collected, the one cookie, the extension, where the data lives,
        retention (deletion immediate; backups at most 14 days) and the person's rights. The thresholds it quotes
        are read from ``InsightsService``; ``PrivacyController.EFFECTIVE`` is bumped with any change to a promise.
    * - PR-7

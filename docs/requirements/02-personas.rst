@@ -31,7 +31,7 @@ Individual, first day
 2. Land on the dashboard with no data; the empty state links to *Log a session* and *Import*.
 3. Log one session: date, context, tool, task type, minutes, prompts, then the four self-assessment questions.
 4. Dashboard shows a *provisional* score and the flag explaining that eight rated sessions give full confidence.
-5. Settings: fill in headline, title, tools; copy the API key for the extension; profile is public by default.
+5. Settings: fill in headline, title, tools; copy the API key for the extension; make the profile public when ready (it starts private).
 
 Individual, end of month
 ~~~~~~~~~~~~~~~~~~~~~~~~

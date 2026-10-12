@@ -4,6 +4,7 @@
 <!-- Navigation, shared by sidebar and mobile bar -->
 <nav class="nav" th:fragment="navlinks" th:with="path=${path ?: ''}">
   <th:block th:if="${me == null}">
+    <a th:href="@{/check}" th:classappend="${#strings.startsWith(path, '/check')} ? 'active'">60-second check</a>
     <a th:href="@{/p}" th:classappend="${path == '/p'} ? 'active'">Public profiles</a>
     <a th:href="@{/insights}" th:classappend="${path == '/insights'} ? 'active'">Insights</a>
     <a th:href="@{/login}">Sign in</a>

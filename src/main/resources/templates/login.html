@@ -13,6 +13,7 @@
     <div th:if="${param.locked}" class="notice" style="margin-bottom:1rem">Too many sign-in attempts. Wait 15 minutes and try again — or use one of the buttons above if you connected a provider.</div>
     <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
     <div th:if="${param.registered}" class="flash">Account created. Sign in to continue.</div>
+    <div th:if="${param.expired}" class="notice" style="margin-bottom:1rem">That page had been open for a while (or Sharpen restarted), so nothing was sent. Please sign in again.</div>
     <div th:if="${param.logout}" class="flash">Signed out.</div>
     <div th:replace="~{fragments :: socialButtons('Continue')}"></div>
     <form th:action="@{/login}" method="post" class="stack">

@@ -16,10 +16,10 @@
         <span th:if="${person.location}" th:text="'· ' + ${person.location}">· City</span>
       </div>
     </div>
-    <div class="row actions no-print">
-      <span class="chip" th:if="${owner and !person.publicProfile}">Private — only you can see this</span>
-      <a class="btn" th:if="${owner}" th:href="@{/settings}">Edit profile</a>
-      <a class="btn" th:if="${owner}" th:href="@{/reports}">Reports</a>
+    <div class="row actions no-print" th:if="${owner}">
+      <span class="chip" th:if="${!person.publicProfile}">Private — only you can see this</span>
+      <a class="btn" th:href="@{/settings}">Edit profile</a>
+      <a class="btn" th:href="@{/reports}">Reports</a>
     </div>
   </div>
 

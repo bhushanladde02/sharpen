@@ -855,7 +855,20 @@ Day 8 — Wednesday 16 September: which build is this?
    chosen by email; the extension's host permissions are broader than its three sites. Requirements SE-7, SE-9 and
    SE-15–18; README and roadmap updated. The robustness test the owner wanted can still happen — locally, with
    synthetic accounts that never reach the live database — and a single clearly labelled example profile on the
-   live site is the honest version of "show what it looks like".
+   live site is the honest version of "show what it looks like". Two layout slips the owner spotted on the live
+   site went into the same branch: a profile seen by a visitor had its name floating in the middle of the header
+   (the header is a space-between row, and the owner-only *Edit profile* slot was still there, empty); and the
+   Traffic page's *Top pages* card was stretched to the height of the column beside it, leaving a blank half-card.
+   The name now stays beside the picture whoever is looking, and that grid aligns its cards to the top.
+
+#. **A stale form goes back to the form.** (Day 29, Wednesday 14 October.) The two layout fixes above had not made
+   it into PR #62, so they went out today with one small item from the open list: a sign-in or sign-up form left
+   open across a deploy (or a long idle) used to land on the 403 page — "that request was refused" — which reads
+   like a fault when all that happened is the session, and with it the form's CSRF token, is gone. Now a form that
+   arrives with *no* session behind it is sent back to a fresh copy of itself with a one-line note (``/login?expired``,
+   ``/register?expired``; a session-less sign-out just goes home), while a token that is present but wrong is still
+   a 403 — that is the case the check exists for (``ExpiredFormHandler``, SE-19). Tried against the real jar: take
+   a token, drop the cookie, post — 302 to the note; keep the cookie, post a wrong token — 403. 62 tests.
 
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -863,8 +876,6 @@ Open items (as of day 27)
 * Security, remaining from the day-27 audit: nonce-based CSP (SE-15), a PDF-generation limit, bind the admin
   account to an id rather than an email, narrow the extension's host permissions.
 
-* A sign-in form left open across a restart shows the 403 page — it could send the person back to a fresh
-  form with a note instead.
 * Optional: Google's branding guidelines ask for the official "G" mark on a *Sign in with Google* button; add the
   asset from Google's branding page if wanted (Sharpen's buttons are plain text).
 * LinkedIn sign-in, the LinkedIn side: Company Page → developer app (verified for the page) → product *Sign In with

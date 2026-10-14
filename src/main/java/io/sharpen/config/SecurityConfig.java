@@ -68,6 +68,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webChain(HttpSecurity http, SocialRegistrations social, SocialUserServices socialUsers,
                                         SocialLoginHandlers socialHandlers, LoginThrottle loginThrottle,
+                                        io.sharpen.auth.ExpiredFormHandler expiredForms,
                                         @Value("${spring.h2.console.enabled:false}") boolean h2Console) throws Exception {
         // "Continue with Google / GitHub / LinkedIn", only for the providers configured on this deployment. Spring handles
         // the redirect, state and nonce checks and the code exchange; SocialUserServices maps the result to a person.
@@ -97,6 +98,8 @@ public class SecurityConfig {
                 .formLogin(form -> form.loginPage("/login").successHandler(loginThrottle.successHandler())
                         .failureHandler(loginThrottle).permitAll())
                 .logout(logout -> logout.logoutSuccessUrl("/").permitAll())
+                // A form whose session has gone (restart, long idle) returns to a fresh form, not the 403 page.
+                .exceptionHandling(ex -> ex.accessDeniedHandler(expiredForms))
                 .headers(h -> h
                         .frameOptions(f -> f.sameOrigin())
                         // Outbound links carry only the origin (never a profile or report URL) and only to https;

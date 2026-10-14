@@ -149,7 +149,8 @@ img, svg { max-width: 100%; }
 .card.lift { box-shadow: var(--shadow); border-color: transparent; }
 .card h2 { margin-bottom: .75rem; }
 .grid { display: grid; gap: .9rem; }
-.grid > * { min-width: 0; }   /* a long <pre> (the API key) scrolls inside its card instead of widening the page on a phone */
+.grid > * { min-width: 0; }
+.grid.top { align-items: start; }   /* cards keep their own height instead of stretching to the tallest column */   /* a long <pre> (the API key) scrolls inside its card instead of widening the page on a phone */
 .grid.two { grid-template-columns: 1fr; }
 .grid.three { grid-template-columns: 1fr; }
 .grid.four { grid-template-columns: repeat(2, 1fr); }
@@ -355,6 +356,7 @@ pre { background: var(--surface-2); padding: .8rem 1rem; border-radius: var(--ra
 .who.with-avatar > span:last-child span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; }
 .profile-head { align-items: center; }
 .profile-head > .avatar { margin-right: .25rem; }
+.profile-head > div:not(.row) { flex: 1 1 12rem; min-width: 0; }   /* the name stays beside the picture; without this a visitor's view (no action buttons) centred it */
 .avatar-edit { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; }
 .cand.with-avatar { grid-template-columns: 56px 64px 1fr; }
 @media (min-width: 640px) { .cand.with-avatar { grid-template-columns: 56px 64px 1fr auto; } }

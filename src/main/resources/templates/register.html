@@ -8,6 +8,7 @@
     <h1>Create your account</h1>
     <p class="muted" style="margin-top:.25rem">Free. Your profile stays private until you choose to share it.</p>
     <div th:if="${signInError}" class="notice" style="margin-bottom:1rem" th:text="${signInError}">Sign-in did not complete.</div>
+    <div th:if="${param.expired}" class="notice" style="margin-bottom:1rem">That form had been open for a while (or Sharpen restarted), so no account was created. Please fill it in again.</div>
     <div th:if="${!#lists.isEmpty(socialProviders)}">
       <p class="muted-3" style="font-size:.8rem;margin:.9rem 0 0">Quickest for individuals — your name and verified email come from the provider. Company accounts use the form below.</p>
       <div th:replace="~{fragments :: socialButtons('Sign up')}"></div>

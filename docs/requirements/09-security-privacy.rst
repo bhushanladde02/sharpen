@@ -121,6 +121,12 @@ Security controls (prototype)
        formula when the file is opened in a spreadsheet. The share link on a habits-check result is built from the
        configured host, never from the request's ``Host`` header. The Traffic page's ``days`` is clamped to ten
        years.
+   * - SE-19
+     - **CSRF, and what a failure looks like.** Every browser form carries a session-bound token (Spring's default).
+       A form that arrives with no session at all — the tab outlived a deploy, or sat idle past the session's life —
+       is not an attack, so it is answered with a redirect to a fresh form and a note (``/login?expired``,
+       ``/register?expired``) rather than the 403 page; a form whose session exists but whose token is wrong gets the
+       403 (``ExpiredFormHandler``). Both are tested.
 
 Release 1 additions
 -------------------

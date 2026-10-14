@@ -447,6 +447,16 @@ class WebFlowTest {
 
     @Test
     void securityEdges() throws Exception {
+        // A form posted with no session behind it (restart, long idle) goes back to a fresh form with a note,
+        // not to the 403 page; a token that exists but is wrong is still refused with 403.
+        mvc.perform(post("/login").param("username", "demo@sharpen.io").param("password", "demo1234"))
+                .andExpect(redirectedUrl("/login?expired"));
+        mvc.perform(post("/register").param("email", "x@y.z")).andExpect(redirectedUrl("/register?expired"));
+        mvc.perform(post("/sessions").param("minutes", "10")).andExpect(redirectedUrl("/login?expired"));
+        mvc.perform(post("/logout")).andExpect(redirectedUrl("/"));
+        mvc.perform(get("/login?expired")).andExpect(content().string(containsString("Please sign in again")));
+        mvc.perform(get("/register?expired")).andExpect(content().string(containsString("no account was created")));
+        mvc.perform(post("/feedback").with(csrf().useInvalidToken()).param("message", "wrong token")).andExpect(status().isForbidden());
         // A spam token is accepted once: the second submission with the same token is refused and stores nothing
         String once = guard.tokenIssuedAgo(10);
         mvc.perform(post("/feedback").with(csrf()).param("message", "First use of the token, a real message").param("t", once))

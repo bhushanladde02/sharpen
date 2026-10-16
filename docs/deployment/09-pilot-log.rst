@@ -870,11 +870,19 @@ Day 8 — Wednesday 16 September: which build is this?
    a 403 — that is the case the check exists for (``ExpiredFormHandler``, SE-19). Tried against the real jar: take
    a token, drop the cookie, post — 302 to the note; keep the cookie, post a wrong token — 403. 62 tests.
 
+#. **The PDF limit.** (Day 31, Friday 16 October.) The smallest item left from the day-27 audit: building a
+   report PDF is the one request on the site that costs real CPU, and nothing stopped a script from asking for
+   it in a loop. An account now gets 20 report PDFs in ten minutes; the twenty-first is the new 429 page (*Too many
+   requests — more downloads than the site allows in ten minutes*), on the same ``WindowLimiter`` as the sign-in and
+   API limits, keyed by account. Twenty is far above any real use — a person has at most a handful of months to
+   download — and the admin's traffic PDF is not limited (one account, already gated). A test downloads twenty and
+   checks the twenty-first. 62 tests.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Security, remaining from the day-27 audit: nonce-based CSP (SE-15), a PDF-generation limit, bind the admin
-  account to an id rather than an email, narrow the extension's host permissions.
+* Security, remaining from the day-27 audit: nonce-based CSP (SE-15), bind the admin account to an id rather than
+  an email, narrow the extension's host permissions.
 
 * Optional: Google's branding guidelines ask for the official "G" mark on a *Sign in with Google* button; add the
   asset from Google's branding page if wanted (Sharpen's buttons are plain text).

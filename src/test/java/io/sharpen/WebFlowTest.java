@@ -457,6 +457,15 @@ class WebFlowTest {
         mvc.perform(get("/login?expired")).andExpect(content().string(containsString("Please sign in again")));
         mvc.perform(get("/register?expired")).andExpect(content().string(containsString("no account was created")));
         mvc.perform(post("/feedback").with(csrf().useInvalidToken()).param("message", "wrong token")).andExpect(status().isForbidden());
+        // PDFs cost CPU: an account gets io.sharpen.web.ReportController.PDF_LIMIT in ten minutes, then the 429 page
+        Person reader = people.register("pdfs@example.com", "password1", "Pdf Reader", AccountType.INDIVIDUAL);
+        var asReader = user(reader.getEmail()).roles("INDIVIDUAL");
+        String month = YearMonth.from(LocalDate.now()).toString();
+        for (int i = 0; i < io.sharpen.web.ReportController.PDF_LIMIT; i++)
+            mvc.perform(get("/reports/" + month + ".pdf").with(asReader)).andExpect(status().isOk());
+        mvc.perform(get("/reports/" + month + ".pdf").with(asReader)).andExpect(status().isTooManyRequests());
+        mvc.perform(get("/error").requestAttr("jakarta.servlet.error.status_code", 429)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("more downloads than the site allows")));
         // A spam token is accepted once: the second submission with the same token is refused and stores nothing
         String once = guard.tokenIssuedAgo(10);
         mvc.perform(post("/feedback").with(csrf()).param("message", "First use of the token, a real message").param("t", once))

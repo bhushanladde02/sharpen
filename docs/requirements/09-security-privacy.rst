@@ -79,7 +79,8 @@ Security controls (prototype)
        *before* the password, so a locked account costs no BCrypt work, and a correct sign-in clears the account's
        count but not the address's. **Sign-up and contact**: honeypot, signed timestamp and a per-address hourly
        limit (``SpamGuard``). **API**: 600 requests a minute per address, then ``429`` with ``Retry-After: 60``,
-       before the key is looked up. Addresses come from SE-8.
+       before the key is looked up. **PDFs**: the one request that costs real CPU — an account may download 20
+       report PDFs in ten minutes, then sees the 429 page (``ReportController.PDF_LIMIT``). Addresses come from SE-8.
    * - SE-13
      - Google/GitHub/LinkedIn sign-in: Spring Security checks state, nonce and (Google, LinkedIn) the ID token's signature, issuer,
        audience and expiry. No automatic merge by email — Sharpen never verified sign-up emails, so merging would
@@ -132,8 +133,8 @@ Release 1 additions
 -------------------
 
 * TLS termination and HSTS at the edge — done (Caddy); the app side of the proxy is SE-8.
-* Rate limiting on ``/register``, ``/login`` and ``/api/**`` (SE-9) — done, in memory; per-key API limits and a
-  limit on PDF generation are still to come.
+* Rate limiting on ``/register``, ``/login``, ``/api/**`` and report PDFs (SE-9) — done, in memory; per-key API
+  limits are still to come.
 * A nonce-based CSP in place of ``'unsafe-inline'`` (SE-15); binding the admin account to an id rather than an
   email; narrowing the extension's host permissions.
 * Email verification and password reset with expiring tokens (SE-10).

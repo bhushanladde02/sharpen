@@ -35,6 +35,11 @@ Privacy principles
        advertising, no CDN — the three font families are self-hosted under ``static/fonts`` (SIL OFL 1.1). A test
        asserts that no page references ``googleapis``/``gstatic``. Visitor countries come from a list the server
        downloads monthly, not from a lookup service (SE-14).
+   * - PR-8
+     - **A friend's address is not ours to keep.** When a member asks Sharpen to email an invitation, the address
+       exists in clear only inside the message; the table keeps a SHA-256 hash (for "never twice", the opt-out list
+       and "they joined"), the inviter and the unsubscribe token. The inviter's own address is never put in the
+       email. Invitations sent from the member's own mail app or a share link never touch the server at all.
 
 Security controls (prototype)
 -----------------------------
@@ -122,6 +127,14 @@ Security controls (prototype)
        formula when the file is opened in a spreadsheet. The share link on a habits-check result is built from the
        configured host, never from the request's ``Host`` header. The Traffic page's ``days`` is clamped to ten
        years.
+   * - SE-20
+     - **Email on a member's behalf cannot become spam.** Sending is off unless a provider key is configured, and
+       then: signed-in members only; at most ten emails a day per member (``InviteService.PER_DAY``) and eighty for
+       the whole site (``sharpen.mail.daily-limit``); one email per address, ever; never to an address that already
+       has an account or that opted out; the personal line is plain text, one paragraph, 300 characters, control
+       characters dropped, HTML-escaped by the template; every email carries a one-click unsubscribe link and a
+       ``List-Unsubscribe`` header; the provider's refusal is reported to the member and nothing is recorded. Each rule
+       has a test.
    * - SE-19
      - **CSRF, and what a failure looks like.** Every browser form carries a session-bound token (Spring's default).
        A form that arrives with no session at all — the tab outlived a deploy, or sat idle past the session's life —

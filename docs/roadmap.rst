@@ -41,7 +41,8 @@ Ordered by what unblocks a public launch.
 
 1. **Migrations** — done (NFR-10): dated scripts in ``db/migrations/`` applied by the deploy script through a
    ``schema_migration`` ledger; Flyway only if the scripts ever need more than "apply once, in order".
-2. **Email** — verification, password reset, report delivery (FR-5, MR-6).
+2. **Email** — the sending path is in (``Mailer``, Resend; invitations use it, FR-77); verification, password
+   reset and report delivery (FR-5, MR-6) build on it.
 3. **Edge hardening** — TLS, HSTS, rate limiting (SE-8, SE-9): done; what remains is a nonce-based CSP in
    place of ``'unsafe-inline'`` (SE-15) and per-key API limits.
 4. **Company gating and audit** — invite / domain verification, profile-view log (CV-6, CV-7).

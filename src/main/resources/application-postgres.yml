@@ -23,3 +23,5 @@ sharpen:
   admin-email: ${SHARPEN_ADMIN_EMAIL:}
   geo:
     download: ${SHARPEN_GEO_DOWNLOAD:true}
+  mail:
+    log: false           # in production mail is either really sent (API key set) or off

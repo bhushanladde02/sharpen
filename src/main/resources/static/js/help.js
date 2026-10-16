@@ -67,6 +67,20 @@
       }
     },
     {
+      id: 'invite',
+      keys: ['invite', 'invitation', 'invite a friend', 'refer', 'referral', 'tell a friend', 'send to a friend', 'colleague', 'my link', 'join link', 'unsubscribe', 'stop emails'],
+      answer: function () {
+        var how = '<p><a href="/invite">Invite a friend</a> gives you a written invitation with your personal link <code>/join/' + (handle || 'you') + '</code>. ' +
+                  'Add their first name and a line of your own if you like, then <b>Open in my mail app</b>, <b>Copy</b>, or share it on LinkedIn, WhatsApp or X. ' +
+                  'Accounts created from your link are counted on that page.</p>' +
+                  '<p>Where this site has email switched on there is also <b>Send from Sharpen</b>: the same invitation as a proper email in your name — ' +
+                  'at most ten a day, one per address, never to someone who already has an account or who unsubscribed. Only a one-way hash of the address is kept.</p>' +
+                  '<p>Received an invitation you did not want? The <i>Stop any further invitations</i> link at the bottom of the email works with one click; Sharpen never writes to that address again.</p>';
+        if (!signedIn) how = '<p>Inviting is for members — <a href="/login">sign in</a> or <a href="/register">create an account</a> first.</p>' + how;
+        return how;
+      }
+    },
+    {
       id: 'human', chip: 'Can I talk to someone?',
       keys: ['human', 'person', 'agent', 'representative', 'rep', 'customer service', 'customer support', 'customer care', 'customer representative',
              'support team', 'help desk', 'helpdesk', 'call', 'phone', 'telephone', 'number', 'chat with', 'talk to', 'speak to', 'speak with',

@@ -80,6 +80,10 @@ public class Person {
     @Column(name = "avatar_version", nullable = false)
     private int avatarVersion = 0;
 
+    /** The member whose invitation link this account was created from, if any (see {@code InviteService}). */
+    @Column(name = "invited_by")
+    private Long invitedBy;
+
     protected Person() {}
 
     public Person(String email, String passwordHash, String displayName, String handle, AccountType accountType, String apiKey) {
@@ -97,6 +101,8 @@ public class Person {
     public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
 
     public Long getId() { return id; }
+    public Long getInvitedBy() { return invitedBy; }
+    public void setInvitedBy(Long invitedBy) { this.invitedBy = invitedBy; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }

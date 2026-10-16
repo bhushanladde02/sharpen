@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Invite a friend — Sharpen</title></head>
+<body>
+<main>
+  <div class="page-head"><div><h1>Invite a friend</h1>
+    <p>Sharpen grows when people you know join. Here is your invitation — send it however you like.</p></div></div>
+
+  <div th:if="${notice}" class="notice" style="margin-bottom:1rem" th:text="${notice}">Could not send.</div>
+
+  <div class="grid two top">
+    <form class="card stack" method="get" th:action="@{/invite}" id="invite-form">
+      <h2>Your invitation</h2>
+      <div class="grid two">
+        <div><label for="friend">Friend's first name <span class="muted-3">(optional)</span></label>
+          <input type="text" id="friend" name="friend" maxlength="60" th:value="${friend}" autocomplete="off"></div>
+        <div><label for="note">A line from you <span class="muted-3">(optional)</span></label>
+          <input type="text" id="note" name="note" th:maxlength="${noteMax}" th:value="${note}" autocomplete="off" placeholder="e.g. This is the thing I mentioned at lunch."></div>
+      </div>
+      <p class="muted-3" style="font-size:.8rem;margin:0">The invitation below updates as you type. It carries your personal link, so Sharpen can tell you when a friend joins.</p>
+      <label for="preview" class="eyebrow">Preview</label>
+      <textarea id="preview" class="invite-preview" readonly rows="12" aria-label="The invitation text" th:text="${body}"
+                th:data-subject="${text.subject}" th:data-intro="${text.intro}" th:data-tail="${text.tail}">…</textarea>
+      <div class="row" style="gap:.5rem;flex-wrap:wrap">
+        <a class="btn primary" id="mailto" th:href="${mailto}">Open in my mail app</a>
+        <button class="btn" type="button" id="copy-invite">Copy invitation</button>
+      </div>
+      <div class="row" style="gap:.5rem;flex-wrap:wrap;align-items:center">
+        <span class="muted-3" style="font-size:.85rem">Or share your link:</span>
+        <a class="btn small" th:href="${linkedinShare}" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn small" th:href="${whatsappShare}" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn small" th:href="${xShare}" target="_blank" rel="noopener">X</a>
+        <button class="btn small" type="button" id="copy-link">Copy link</button>
+      </div>
+      <p class="muted-3" style="font-size:.8rem;margin:0">Your link: <code id="join-link" th:text="${joinLink}">https://sharpenscore.com/join/you</code></p>
+    </form>
+
+    <div class="stack">
+      <div class="card">
+        <h2>Send it from Sharpen</h2>
+        <th:block th:if="${mailEnabled}">
+          <p class="muted" style="margin-top:0">Sharpen emails the same invitation, in your name, with a proper layout. The friend sees who it is from and gets one email — no reminders, no list.</p>
+          <form th:action="@{/invite}" method="post" class="stack" id="send-form">
+            <input type="hidden" name="friend" id="send-friend" th:value="${friend}">
+            <input type="hidden" name="note" id="send-note" th:value="${note}">
+            <div><label for="email">Friend's email</label>
+              <input type="email" id="email" name="email" required maxlength="190" autocomplete="off" placeholder="name@example.com"></div>
+            <button class="btn primary" type="submit">Send invitation</button>
+          </form>
+          <p class="muted-3" style="font-size:.8rem;margin:.75rem 0 0">Sharpen sends at most <span th:text="${perDay}">10</span> a day for you, one per address, never to someone who already has an account or who asked not to be written to. The address is not kept — only a one-way hash, so those rules can be applied. Each email carries a one-click unsubscribe link. <a th:href="@{/privacy#invites}">Privacy</a>.</p>
+        </th:block>
+        <th:block th:unless="${mailEnabled}">
+          <p class="muted" style="margin-top:0">Sending from Sharpen is not switched on for this site, so the invitation goes from your own mail app or the share buttons — which is also where it is most likely to be read.</p>
+        </th:block>
+      </div>
+      <div class="card">
+        <h2>From your link</h2>
+        <div class="grid two">
+          <div class="stat"><span class="label">Friends who joined</span><span class="value num" th:text="${tally.joined}">0</span></div>
+          <div class="stat" th:if="${mailEnabled}"><span class="label">Emails sent by Sharpen</span><span class="value num" th:text="${tally.emailed}">0</span>
+            <span class="sub" th:text="${tally.emailedToday} + ' today'">0 today</span></div>
+        </div>
+        <p class="muted-3" style="font-size:.8rem;margin:.5rem 0 0">Counted when an account is created from your link. Nothing about who you invited is stored beyond that count.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // The preview, the mail-app link and the hidden fields follow the two inputs; the server renders the same text.
+    (function () {
+      var friend = document.getElementById('friend'), note = document.getElementById('note'), preview = document.getElementById('preview'),
+          mailto = document.getElementById('mailto'), subject = preview.dataset.subject, intro = preview.dataset.intro, tail = preview.dataset.tail,
+          sendFriend = document.getElementById('send-friend'), sendNote = document.getElementById('send-note');
+      function build() {
+        var f = friend.value.replace(/\s+/g, ' ').trim(), n = note.value.replace(/\s+/g, ' ').trim();
+        var t = (f ? 'Hi ' + f + ',' : 'Hi,') + '\n\n' + intro + (n ? '\n\n' + n : '') + '\n\n' + tail;
+        preview.value = t;
+        preview.style.height = 'auto'; preview.style.height = (preview.scrollHeight + 2) + 'px';   // show the whole text
+        mailto.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(t);
+        if (sendFriend) { sendFriend.value = f; sendNote.value = n; }
+      }
+      friend.addEventListener('input', build); note.addEventListener('input', build); build();
+      function copy(text, btn) {
+        var done = function () { var was = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = was; }, 1500); };
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(done, function () {
+          var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+        });
+      }
+      document.getElementById('copy-invite').addEventListener('click', function () { copy(preview.value, this); });
+      document.getElementById('copy-link').addEventListener('click', function () { copy(document.getElementById('join-link').textContent, this); });
+      document.getElementById('invite-form').addEventListener('submit', function (e) { e.preventDefault(); });   // nothing to submit; the preview is live
+    })();
+  </script>
+</main>
+</body>
+</html>

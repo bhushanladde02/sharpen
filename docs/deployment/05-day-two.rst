@@ -355,3 +355,39 @@ If a provider answers *redirect_uri_mismatch* (Google), *The redirect_uri is not
 application* (GitHub) or *The redirect_uri does not match the registered value* (LinkedIn), the callback URL in
 its console differs from the one above by a character — scheme, ``www``, or a trailing slash. LinkedIn's
 *unauthorized_scope_error* means the *Sign In with LinkedIn using OpenID Connect* product is not added yet.
+
+Invitations by email
+--------------------
+
+*Invite a friend* (``/invite``) works on every deployment without any of this: the invitation opens in the member's
+own mail app, or goes out through the share buttons, carrying their personal link ``/join/<handle>``. The
+**Send from Sharpen** button — the same invitation as a proper HTML email, from Sharpen's own address — appears
+only when the site can send mail, which takes about fifteen minutes to set up once:
+
+#. **Resend account.** https://resend.com → sign up (the free plan sends 3,000 emails a month, 100 a day; Sharpen's
+   own ceiling is 80 a day, ``sharpen.mail.daily-limit``). *Domains → Add domain* → ``sharpenscore.com``. Resend
+   shows two or three DNS records: a DKIM ``TXT`` (``resend._domainkey``), an ``MX`` and ``TXT`` for the bounce
+   subdomain (``send``), and optionally DMARC. Add them in Cloudflare (*DNS → Records*, proxy **off** for these),
+   then *Verify* in Resend — usually green within a minute.
+#. **API key.** *API Keys → Create* → *Sending access* only, restricted to the domain. Copy it once; it is not shown again.
+#. **On the A1**, in ``~/sharpen/deploy/.env`` (never in Git)::
+
+       RESEND_API_KEY=re_…
+       MAIL_FROM=Sharpen <invites@sharpenscore.com>
+
+   then ``dc up -d app``. The log's first lines say ``Mail: RESEND from Sharpen <invites@sharpenscore.com>``;
+   without the key they say ``Mail: OFF`` and the send button stays hidden.
+#. **Try it** from Settings → *Invite a friend* with your own second address. The email should land in the inbox,
+   not spam (DKIM and SPF are what the DNS records were for); open the *Stop any further invitations* link once to
+   see the opt-out page.
+
+What the server keeps: one row per email sent — the inviter, the time, a SHA-256 hash of the address, and the
+unsubscribe token — and the hash of every address that opted out. The address itself is in no table and no log.
+Resend keeps its own delivery log (address, subject, status) for the retention its plan sets; its privacy notice
+is the one to read if that matters to a user. ``/privacy`` says all this (section *Invitations*).
+
+Rules the code enforces, so the feature cannot become a spam cannon: signed-in members only; ten emails a day per
+member and eighty for the site; one email per address, ever; never to an address that already has an account or
+that opted out; every email carries a one-click unsubscribe link and a ``List-Unsubscribe`` header; the sender's
+own address is never disclosed to the friend.
+

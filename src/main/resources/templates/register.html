@@ -13,8 +13,10 @@
       <p class="muted-3" style="font-size:.8rem;margin:.9rem 0 0">Quickest for individuals — your name and verified email come from the provider. Company accounts use the form below.</p>
       <div th:replace="~{fragments :: socialButtons('Sign up')}"></div>
     </div>
+    <div th:if="${inviterName}" class="flash" style="margin-top:.75rem" th:text="${inviterName} + ' invited you — welcome.'">Priya invited you — welcome.</div>
     <form th:action="@{/register}" th:object="${form}" method="post" class="stack">
       <input type="hidden" th:field="*{t}">
+      <input type="hidden" th:field="*{ref}">
       <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" th:field="*{website}" tabindex="-1" autocomplete="off"></div>
       <div class="error" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</div>
       <fieldset class="type-choice">

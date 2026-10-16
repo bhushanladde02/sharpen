@@ -61,6 +61,14 @@ server:
 
 sharpen:
   demo-data: true
+  # Email. Sharpen sends only one kind: an invitation a member asked for (InviteService). Off unless a Resend API
+  # key is set (SHARPEN_MAIL_RESEND_API_KEY; the From domain must be verified in Resend) — then every "Send from
+  # Sharpen" button appears. log: true writes the message to the log instead of sending (development and tests).
+  mail:
+    resend-api-key: ${SHARPEN_MAIL_RESEND_API_KEY:}
+    from: ${SHARPEN_MAIL_FROM:Sharpen <invites@sharpenscore.com>}
+    daily-limit: 80      # site-wide ceiling for a day; Resend's free plan allows 100
+    log: true
   # Host shown in profile links and the PDF footer; the web pages use the request's Host header instead.
   site-host: ${SHARPEN_SITE_HOST:localhost:8080}
   # The account allowed to read /admin/feedback. Set SHARPEN_ADMIN_EMAIL in production.

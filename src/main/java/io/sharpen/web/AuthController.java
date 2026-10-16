@@ -40,6 +40,10 @@ public class AuthController {
         private AccountType accountType = AccountType.INDIVIDUAL;
         private String website = "";   // honeypot — see SpamGuard
         private String t = "";         // signed timestamp — see SpamGuard
+        @Size(max = 60) private String ref = "";   // the inviter's handle, from a /join/<handle> link — see InviteService
+
+        public String getRef() { return ref; }
+        public void setRef(String v) { ref = v == null ? "" : v; }
 
         public String getWebsite() { return website; }
         public void setWebsite(String v) { website = v; }
@@ -63,11 +67,13 @@ public class AuthController {
 
     private final PersonService people;
     private final SpamGuard spam;
+    private final io.sharpen.service.InviteService invites;
 
-    public AuthController(PersonService people, SpamGuard spam,
+    public AuthController(PersonService people, SpamGuard spam, io.sharpen.service.InviteService invites,
                           @org.springframework.beans.factory.annotation.Value("${sharpen.site-host:localhost:8080}") String siteHost) {
         this.people = people;
         this.spam = spam;
+        this.invites = invites;
         String base = (siteHost.startsWith("localhost") ? "http://" : "https://") + siteHost;
         this.structuredData = STRUCTURED_DATA_TEMPLATE.formatted(base, GlobalModelAttributes.DEFAULT_DESCRIPTION);
     }
@@ -111,9 +117,12 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerForm(@RequestParam(required = false) String type, Model model) {
+    public String registerForm(@RequestParam(required = false) String type, @RequestParam(required = false) String ref, Model model) {
         RegisterForm f = new RegisterForm();
         if ("company".equalsIgnoreCase(type)) f.setAccountType(AccountType.COMPANY);   // "Create a company account" lands here
+        if (ref != null && ref.matches("[a-z0-9-]{1,60}")) {   // arrived from someone's invitation link
+            people.byHandle(ref).ifPresent(inviter -> { f.setRef(ref); model.addAttribute("inviterName", inviter.getDisplayName()); });
+        }
         f.setT(spam.token());
         model.addAttribute("form", f);
         return "register";
@@ -121,7 +130,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("form") RegisterForm form, BindingResult binding, HttpServletRequest request,
-                           HttpServletResponse response) {
+                           HttpServletResponse response, Model model) {
         // Same three checks as the contact form: honeypot, signed timestamp, per-address limit. A bot that filled
         // the invisible field is shown the "registered" page and gets no account; the rest re-show the form.
         SpamGuard.Refusal refusal = spam.check(form.getWebsite(), form.getT(), clientAddress(request), "register");
@@ -142,7 +151,7 @@ public class AuthController {
             if (form.getFirstName().isBlank()) binding.rejectValue("firstName", "required", "First name is required");
             if (form.getLastName().isBlank()) binding.rejectValue("lastName", "required", "Last name is required");
         }
-        if (binding.hasErrors()) { form.setT(spam.token()); return "register"; }
+        if (binding.hasErrors()) { form.setT(spam.token()); if (!form.getRef().isBlank()) people.byHandle(form.getRef()).ifPresent(p -> model.addAttribute("inviterName", p.getDisplayName())); return "register"; }
         io.sharpen.domain.Person created;
         try {
             String name = type == AccountType.COMPANY ? form.getCompanyName()
@@ -153,6 +162,7 @@ public class AuthController {
             form.setT(spam.token());
             return "register";
         }
+        invites.joined(created, form.getRef());   // who invited them, if anyone; marks an emailed invitation accepted
         // The person just typed their email and password: sign them in rather than ask for both again. Same
         // principal shape as the login form (named by email, one role), so everything downstream is unchanged.
         if (request.getSession(false) == null) request.getSession(true); else request.changeSessionId();   // fresh id: no fixation

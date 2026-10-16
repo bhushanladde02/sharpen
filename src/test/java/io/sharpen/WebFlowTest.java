@@ -37,7 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "sharpen.demo-data=false",
         "sharpen.admin-email=flow@example.com",
         "spring.h2.console.enabled=false",
-        "sharpen.geo.file=src/test/resources/geo/test-countries.csv"
+        "sharpen.geo.file=src/test/resources/geo/test-countries.csv",
+        "sharpen.mail.log=true",
+        "sharpen.mail.daily-limit=12"
 })
 class WebFlowTest {
 
@@ -847,5 +849,101 @@ class WebFlowTest {
         var out = new java.io.ByteArrayOutputStream();
         javax.imageio.ImageIO.write(img, "png", out);
         return out.toByteArray();
+    }
+
+    @Autowired io.sharpen.service.Mailer mailer;
+    @Autowired io.sharpen.service.InviteService inviteService;
+
+    /** Invite a friend: the page, the mail-app and share links, sending from Sharpen with every rule, unsubscribe, and the join link. */
+    @Test
+    void invites() throws Exception {
+        Person host = people.register("host@example.com", "password1", "Hana Host", AccountType.INDIVIDUAL);
+        var asHost = user(host.getEmail()).roles("INDIVIDUAL");
+
+        // The page: the invitation text carries the personal link; the mail-app link carries the same text; share links are plain
+        String join = "http://localhost:8080/join/" + host.getHandle();
+        mvc.perform(get("/invite").param("friend", "Omar").param("note", "This is the thing I mentioned at lunch.").with(asHost))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Hi Omar,")))
+                .andExpect(content().string(containsString("Hana Host is using Sharpen")))
+                .andExpect(content().string(containsString("This is the thing I mentioned at lunch.")))
+                .andExpect(content().string(containsString("Join here: " + join)))
+                .andExpect(content().string(containsString("href=\"mailto:?subject=Hana%20Host%20invited%20you%20to%20Sharpen&amp;body=Hi%20Omar%2C")))
+                .andExpect(content().string(containsString("linkedin.com/sharing/share-offsite/?url=" + java.net.URLEncoder.encode(join, "UTF-8"))))
+                .andExpect(content().string(containsString("wa.me/?text=")))
+                .andExpect(content().string(containsString("Send it from Sharpen")))
+                .andExpect(content().string(containsString("Friends who joined")));
+        // the personal note is one plain line, cut at NOTE_MAX, control characters dropped
+        org.junit.jupiter.api.Assertions.assertEquals("a b", io.sharpen.service.InviteService.clean("a\u0007\n   b"));
+        org.junit.jupiter.api.Assertions.assertEquals(io.sharpen.service.InviteService.NOTE_MAX, io.sharpen.service.InviteService.clean("x".repeat(500)).length());
+
+        // Sending from Sharpen: the email goes out (log mode), with HTML and text bodies that both carry the link and an unsubscribe
+        int before = mailer.outbox().size();
+        mvc.perform(post("/invite").with(csrf()).with(asHost).param("email", "Friend@Example.org").param("friend", "Omar").param("note", "See you Monday"))
+                .andExpect(redirectedUrl("/invite"))
+                .andExpect(flash().attribute("flash", containsString("Invitation sent to Friend@Example.org")));
+        var sent = mailer.outbox().get(mailer.outbox().size() - 1);
+        org.junit.jupiter.api.Assertions.assertEquals(before + 1, mailer.outbox().size());
+        org.junit.jupiter.api.Assertions.assertEquals("friend@example.org", sent.to());
+        org.junit.jupiter.api.Assertions.assertEquals("Hana Host invited you to Sharpen", sent.subject());
+        org.junit.jupiter.api.Assertions.assertTrue(sent.html().contains("Hi Omar,") && sent.html().contains("See you Monday")
+                && sent.html().contains("href=\"" + join + "\"") && sent.html().contains("Accept the invitation")
+                && sent.html().contains(sent.unsubscribeUrl()), "html body");
+        org.junit.jupiter.api.Assertions.assertTrue(sent.text().contains("Join here: " + join) && sent.text().contains(sent.unsubscribeUrl()), "text body");
+        org.junit.jupiter.api.Assertions.assertFalse(sent.html().contains("host@example.com"), "the inviter's address is not disclosed");
+
+        // Rules: same address twice — refused; an existing member — refused; a bad address — refused; nothing more sent
+        mvc.perform(post("/invite").with(csrf()).with(asHost).param("email", "friend@example.org"))
+                .andExpect(flash().attribute("notice", containsString("cannot email that address")));
+        mvc.perform(post("/invite").with(csrf()).with(asHost).param("email", "flow@example.com"))
+                .andExpect(flash().attribute("notice", containsString("already has a Sharpen account")));
+        mvc.perform(post("/invite").with(csrf()).with(asHost).param("email", "not-an-address"))
+                .andExpect(flash().attribute("notice", containsString("does not look like an email address")));
+        org.junit.jupiter.api.Assertions.assertEquals(before + 1, mailer.outbox().size());
+
+        // Unsubscribe: one click, then the address can never be written to again — even by someone else
+        String token = sent.unsubscribeUrl().substring(sent.unsubscribeUrl().lastIndexOf('/') + 1);
+        mvc.perform(get("/invite/unsubscribe/" + token)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("will not send invitations to this address again")));
+        mvc.perform(get("/invite/unsubscribe/not-a-real-token-at-all-x")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("That link did not work")));
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.of(io.sharpen.service.InviteService.Refusal.CANNOT_SEND),
+                inviteService.send(host, "friend@example.org", null, null));
+
+        // Per-person cap: PER_DAY in a day, then refused; the site-wide ceiling (12 in tests) after that
+        for (int i = 1; i < io.sharpen.service.InviteService.PER_DAY; i++)
+            org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.empty(), inviteService.send(host, "f" + i + "@example.org", null, null));
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.of(io.sharpen.service.InviteService.Refusal.LIMIT),
+                inviteService.send(host, "one-too-many@example.org", null, null));
+        Person other = people.register("other-host@example.com", "password1", "Otto Other", AccountType.INDIVIDUAL);
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.empty(), inviteService.send(other, "g1@example.org", null, null));
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.empty(), inviteService.send(other, "g2@example.org", null, null));
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.Optional.of(io.sharpen.service.InviteService.Refusal.SITE_LIMIT),
+                inviteService.send(other, "g3@example.org", null, null));
+        mvc.perform(get("/invite").with(asHost)).andExpect(content().string(containsString(">" + io.sharpen.service.InviteService.PER_DAY + "<")));
+
+        // The join link: a real handle lands on sign-up with the inviter named; the account created is counted as theirs,
+        // and an emailed invitation to that address is marked accepted
+        mvc.perform(get("/join/" + host.getHandle())).andExpect(redirectedUrl("/register?ref=" + host.getHandle()));
+        mvc.perform(get("/join/nobody-here")).andExpect(redirectedUrl("/register"));
+        mvc.perform(get("/register").param("ref", host.getHandle())).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Hana Host invited you")))
+                .andExpect(content().string(containsString("name=\"ref\"")));
+        mvc.perform(post("/register").with(csrf()).param("firstName", "Fay").param("lastName", "Friend").param("email", "f1@example.org")
+                        .param("password", "password1").param("accountType", "INDIVIDUAL").param("t", guard.tokenIssuedAgo(10))
+                        .param("ref", host.getHandle()))
+                .andExpect(redirectedUrl("/sessions/new?welcome"));
+        Person fay = people.byEmail("f1@example.org").orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(host.getId(), fay.getInvitedBy());
+        org.junit.jupiter.api.Assertions.assertEquals(1, inviteService.tally(host).joined());
+        mvc.perform(get("/invite").with(asHost)).andExpect(content().string(containsString("Friends who joined")));
+
+        // A visitor cannot reach the page; the unsubscribe link and join link need no account
+        mvc.perform(get("/invite")).andExpect(status().is3xxRedirection());
+
+        // Deleting the inviter removes their invitations and unlinks the people they invited
+        inviteService.forget(host.getId());
+        org.junit.jupiter.api.Assertions.assertEquals(0, inviteService.tally(host).emailed());
+        org.junit.jupiter.api.Assertions.assertNull(people.byEmail("f1@example.org").orElseThrow().getInvitedBy());
     }
 }

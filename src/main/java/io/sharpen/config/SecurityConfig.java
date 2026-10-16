@@ -88,7 +88,7 @@ public class SecurityConfig {
                     .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
         }
         http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/feedback", "/check", "/check/**", "/p", "/p/**", "/profiles", "/insights", "/privacy", "/css/**", "/js/**", "/img/**", "/fonts/**", "/favicon.ico", "/robots.txt", "/sitemap.xml",
+                        .requestMatchers("/", "/login", "/register", "/feedback", "/check", "/check/**", "/join/**", "/invite/unsubscribe/**", "/p", "/p/**", "/profiles", "/insights", "/privacy", "/css/**", "/js/**", "/img/**", "/fonts/**", "/favicon.ico", "/robots.txt", "/sitemap.xml",
                                 "/error").permitAll()
                         .requestMatchers("/candidates/**").hasRole("COMPANY")
                         // A company account has no sessions, reports or imports; it must not be able to make any.

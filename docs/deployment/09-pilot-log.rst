@@ -878,11 +878,35 @@ Day 8 — Wednesday 16 September: which build is this?
    download — and the admin's traffic PDF is not limited (one account, already gated). A test downloads twenty and
    checks the twenty-first. 62 tests.
 
+#. **Invite a friend.** (Day 31, continued.) The owner asked for a way to send invitations "with a flawless email
+   template". Two decisions first, both his: the invitation goes out *both* ways — from the member's own mail app
+   and share buttons today, and from Sharpen itself once mail is switched on — and only signed-in members can
+   invite. The reasoning for "both": Sharpen had never sent an email (no provider, no DKIM/SPF on the domain), and
+   a server that emails strangers on request is the most abusable thing a site can have, so the version that
+   needs no infrastructure had to be good on its own. It is: ``/invite`` shows the invitation as a live preview —
+   greeting, what Sharpen is in three honest sentences, the member's optional line, their personal link
+   ``/join/<handle>`` and the 60-second check — with *Open in my mail app* (``mailto:``), *Copy*, and LinkedIn /
+   WhatsApp / X share links; an account created from the link records who invited it, and the page counts
+   *Friends who joined*. The email version (``mail/invite.html``, tables and inline styles, dark-mode safe, checked
+   in a browser at desktop and phone width, plus a plain-text twin) is sent through Resend's HTTP API with no new
+   dependency (``Mailer``: off / log / Resend, chosen by whether ``SHARPEN_MAIL_RESEND_API_KEY`` is set), and only
+   under rules written as code and tests: ten a day per member, eighty a day for the site, one per address ever,
+   never to a member or to anyone who opted out, one-click unsubscribe plus ``List-Unsubscribe`` header, the
+   inviter's own address never disclosed, and the friend's address stored only as a SHA-256 hash — in no table and
+   no log in clear. Schema: ``person.invited_by``, ``invite``, ``mail_opt_out`` (migration
+   ``2026-10-16-invites.sql``, tried fresh and on top of the old schema on PostgreSQL, Hibernate validating). The
+   privacy page gained *Invitations* and *Invitations you send* (effective 16 October); requirements FR-77, PR-8,
+   SE-20; the Help guide answers "invite"; ``05-day-two.rst`` has the fifteen-minute Resend setup (two or three DNS
+   records in Cloudflare, one key in ``deploy/.env``). Until the owner does that setup the send button simply does
+   not appear, and nothing else changes. 63 tests.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Security, remaining from the day-27 audit: nonce-based CSP (SE-15), bind the admin account to an id rather than
   an email, narrow the extension's host permissions.
+* Invitations by email: create the Resend account, add its DNS records in Cloudflare, put ``RESEND_API_KEY`` in
+  ``deploy/.env`` and ``dc up -d app`` (``05-day-two.rst`` → *Invitations by email*); send one to yourself first.
 
 * Optional: Google's branding guidelines ask for the official "G" mark on a *Sign in with Google* button; add the
   asset from Google's branding page if wanted (Sharpen's buttons are plain text).

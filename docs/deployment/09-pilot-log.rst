@@ -898,7 +898,11 @@ Day 8 — Wednesday 16 September: which build is this?
    privacy page gained *Invitations* and *Invitations you send* (effective 16 October); requirements FR-77, PR-8,
    SE-20; the Help guide answers "invite"; ``05-day-two.rst`` has the fifteen-minute Resend setup (two or three DNS
    records in Cloudflare, one key in ``deploy/.env``). Until the owner does that setup the send button simply does
-   not appear, and nothing else changes. 63 tests.
+   not appear, and nothing else changes. 63 tests. CodeQL's review of the pull request flagged two patterns in
+   ``InviteService`` as "polynomial regular expression on uncontrolled data" — the email shape check and the
+   whitespace folding in the personal note, both of which could be made to backtrack on a crafted string. Both are
+   now a single pass over the characters with no pattern at all (``looksLikeAddress``, ``clean``), the note is cut
+   to a bounded length before it is touched, and the test feeds them the kind of input CodeQL described.
 
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^

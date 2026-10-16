@@ -124,7 +124,7 @@ public class InviteService {
     public Optional<Refusal> send(Person inviter, String email, String friend, String note) {
         if (!mailer.enabled()) return Optional.of(Refusal.MAIL_OFF);
         String to = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
-        if (!to.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+") || to.length() > 190) return Optional.of(Refusal.BAD_ADDRESS);
+        if (!looksLikeAddress(to)) return Optional.of(Refusal.BAD_ADDRESS);
         if (people.findByEmailIgnoreCase(to).isPresent()) return Optional.of(Refusal.ALREADY_MEMBER);
         String hash = hash(to);
         if (optOuts.existsById(hash) || invites.findByEmailHash(hash).isPresent()) return Optional.of(Refusal.CANNOT_SEND);
@@ -199,6 +199,20 @@ public class InviteService {
         people.clearInvitedBy(personId);
     }
 
+    /**
+     * The loose shape of an address — something, one {@code @}, a domain with a dot — checked with index
+     * arithmetic rather than a pattern, so no input can make it slow (CodeQL on PR #66). Delivery decides the rest.
+     */
+    public static boolean looksLikeAddress(String s) {
+        if (s.isEmpty() || s.length() > 190) return false;
+        int at = s.indexOf('@');
+        if (at < 1 || at != s.lastIndexOf('@')) return false;
+        int dot = s.lastIndexOf('.');
+        if (dot < at + 2 || dot == s.length() - 1) return false;
+        for (int i = 0; i < s.length(); i++) if (Character.isWhitespace(s.charAt(i)) || Character.isISOControl(s.charAt(i))) return false;
+        return true;
+    }
+
     /** SHA-256 of the lower-cased address — the only form in which an invitee's address is stored. */
     public static String hash(String email) {
         try {
@@ -215,9 +229,21 @@ public class InviteService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(b);
     }
 
-    /** A personal note is plain text: one paragraph, no control characters, at most {@link #NOTE_MAX} characters. */
+    /**
+     * A personal note is plain text: one paragraph, at most {@link #NOTE_MAX} characters, every run of whitespace
+     * or control characters folded to one space. A single pass over the characters — no pattern — so the length of
+     * the input is the only cost (CodeQL on PR #66); the input is cut to a bounded size first.
+     */
     public static String clean(String note) {
-        String s = note.replaceAll("[\\p{Cntrl}&&[^\\n]]", "").replaceAll("\\s*\\n\\s*", " ").trim();
-        return s.length() > NOTE_MAX ? s.substring(0, NOTE_MAX) : s;
+        String in = note.length() > NOTE_MAX * 4 ? note.substring(0, NOTE_MAX * 4) : note;
+        StringBuilder out = new StringBuilder(Math.min(in.length(), NOTE_MAX));
+        boolean space = false;
+        for (int i = 0; i < in.length() && out.length() < NOTE_MAX; i++) {
+            char c = in.charAt(i);
+            if (Character.isWhitespace(c) || Character.isISOControl(c)) { space = out.length() > 0; continue; }
+            if (space) { out.append(' '); space = false; }
+            out.append(c);
+        }
+        return out.toString();
     }
 }

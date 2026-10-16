@@ -876,6 +876,12 @@ class WebFlowTest {
         // the personal note is one plain line, cut at NOTE_MAX, control characters dropped
         org.junit.jupiter.api.Assertions.assertEquals("a b", io.sharpen.service.InviteService.clean("a\u0007\n   b"));
         org.junit.jupiter.api.Assertions.assertEquals(io.sharpen.service.InviteService.NOTE_MAX, io.sharpen.service.InviteService.clean("x".repeat(500)).length());
+        org.junit.jupiter.api.Assertions.assertEquals("", io.sharpen.service.InviteService.clean("  \t\n "));
+        // the address check is index arithmetic, not a pattern (CodeQL on PR #66): shape only, no slow inputs
+        for (String ok : new String[]{"a@b.co", "first.last+tag@sub.example.org"})
+            org.junit.jupiter.api.Assertions.assertTrue(io.sharpen.service.InviteService.looksLikeAddress(ok), ok);
+        for (String bad : new String[]{"", "plain", "@b.co", "a@b", "a@b.", "a@@b.co", "a b@c.de", "a@b.c" + "o".repeat(200), "!@!." + "!.".repeat(5000)})
+            org.junit.jupiter.api.Assertions.assertFalse(io.sharpen.service.InviteService.looksLikeAddress(bad), bad);
 
         // Sending from Sharpen: the email goes out (log mode), with HTML and text bodies that both carry the link and an unsubscribe
         int before = mailer.outbox().size();

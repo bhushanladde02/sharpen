@@ -6,6 +6,9 @@ import io.sharpen.service.PersonService;
 import io.sharpen.service.ReportModel;
 import io.sharpen.service.ReportService;
 import io.sharpen.service.SessionService;
+import io.sharpen.service.WindowLimiter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,10 @@ public class ReportController {
     private final ReportService reports;
     private final PdfService pdf;
     private final SessionService sessions;
+
+    /** PDFs are the one thing here that costs real CPU per request: a person gets 20 in ten minutes, then a 429 page. */
+    public static final int PDF_LIMIT = 20;
+    private final WindowLimiter pdfLimit = new WindowLimiter(PDF_LIMIT, 600, 10_000);
 
     public ReportController(PersonService people, ReportService reports, PdfService pdf, SessionService sessions) {
         this.people = people;
@@ -73,6 +80,8 @@ public class ReportController {
     @GetMapping(value = "/{ym}.pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> pdf(@PathVariable String ym) {
         Person me = people.requireCurrent();
+        if (!pdfLimit.allow(String.valueOf(me.getId())))
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "PDF limit reached");   // → the 429 page
         YearMonth month = YearMonth.parse(ym);
         ReportModel model = reports.stored(me, month).orElseGet(() -> reports.build(me, month));
         byte[] bytes = pdf.monthlyReport(model);

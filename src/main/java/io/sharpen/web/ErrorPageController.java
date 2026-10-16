@@ -24,6 +24,7 @@ public class ErrorPageController implements ErrorController {
             case 400 -> { title = "That address did not make sense"; hint = "Part of the address — a month, a number — was not in the form expected. Check the link and try again."; }
             case 405 -> { title = "Wrong kind of request"; hint = "This address does not accept that kind of request."; }
             case 413 -> { title = "File too large"; hint = "The upload is bigger than the site accepts. Try a smaller file."; }
+            case 429 -> { title = "Too many requests"; hint = "That was more downloads than the site allows in ten minutes. Wait a few minutes and try again."; }
             default -> { title = status >= 500 ? "Something went wrong" : "Request failed"; hint = status >= 500
                     ? "The error has been logged. Please try again in a moment; if it keeps happening, tell us via Feedback."
                     : "The request could not be completed."; }

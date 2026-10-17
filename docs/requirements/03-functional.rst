@@ -331,3 +331,13 @@ Community and feedback
        person to start a private log.
      - Done
      - ``HabitCheck``, ``CheckController``, ``check.html``, ``check-result.html``
+   * - FR-77
+     - A signed-in member can invite a friend from ``/invite``: a written invitation (greeting, what Sharpen is, the
+       member's optional line, their personal link ``/join/<handle>`` and the 60-second check) shown as a live preview
+       and offered as a ``mailto:`` link, a copy button and LinkedIn / WhatsApp / X share links — no email
+       infrastructure needed. An account created from the personal link records who invited it, and the page shows
+       how many friends joined. Where the deployment has mail switched on (``sharpen.mail``, Resend), a *Send from
+       Sharpen* form emails the same invitation as HTML + text in the member's name, under the rules in SE-20; the
+       friend's address is stored only as a hash. Every email has a one-click unsubscribe (``/invite/unsubscribe/<token>``).
+     - Done
+     - ``InviteService``, ``Mailer``, ``InviteController``, ``invite.html``, ``mail/invite.html``

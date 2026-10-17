@@ -592,3 +592,6 @@ ul.plain { margin: .5rem 0 0; padding-left: 1.1rem; display: grid; gap: .45rem; 
 .type-option small { display: block; color: var(--ink-2); line-height: 1.4; margin-top: .15rem; }
 .grid.names.two { grid-template-columns: 1fr; }
 @media (min-width: 640px) { .grid.names.two { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- invite a friend ---------- */
+.invite-preview { width: 100%; font: inherit; font-size: .92rem; line-height: 1.5; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .8rem .9rem; resize: vertical; }

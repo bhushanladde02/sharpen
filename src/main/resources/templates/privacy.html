@@ -44,6 +44,13 @@
           token counts if a provider export supplied them, and your four answers (how much of the work was yours, whether
           you checked the output, whether you learned something, how it turned out), plus an optional note. Monthly
           reports are built from these.</dd>
+        <dt>Invitations you send</dt>
+        <dd>If you ask Sharpen to email an invitation for you, it keeps who asked, when, a one-way hash (SHA-256) of the
+          friend's address and the secret in the unsubscribe link — enough to never write to that address twice and to
+          notice when they join, not enough to read the address back; the address itself is in no table and no log. If the
+          friend clicks <i>Stop any further invitations</i>, the hash goes on a list Sharpen checks before every send.
+          Accounts created from your personal link record that you invited them. Invitations you send from your own
+          mail app or the share buttons involve Sharpen not at all.</dd>
         <dt>Messages you send</dt>
         <dd>The contact form keeps your message, an optional rating, an optional email address for a reply, and the page
           you wrote from.</dd>
@@ -99,6 +106,16 @@
         <i>Settings → Sign-in methods → Connect</i>; <i>Disconnect</i> removes it, as long as another way in remains.</p>
     </section>
 
+    <section id="invites">
+      <h2>Invitations</h2>
+      <p>A member can invite a friend. By default the invitation goes from the member's own mail app or a share button and
+        Sharpen only supplies the words and the member's link. Where the site can send email, the member can instead ask
+        Sharpen to send it: one email, in the member's name, from Sharpen's address, with a one-click unsubscribe link and
+        no follow-up. Sharpen sends at most ten a day for one member, never twice to the same address, never to an address
+        that already has an account or that asked not to be written to, and never discloses the member's own address.
+        What is kept is described under <a href="#stored">What is stored</a>.</p>
+    </section>
+
     <section id="cookies">
       <h2>Cookies</h2>
       <p>One: a session cookie that keeps you signed in and carries the anti-forgery token for forms. It is set when you
@@ -125,7 +142,10 @@
         encrypted (HTTPS, with HSTS). The domain's DNS is hosted by Cloudflare, which answers "where is sharpenscore.com"
         but does not carry the site's traffic. Google, GitHub and LinkedIn are involved only if you sign in with them, as described
         above. Countries come from DB-IP's free country list (<a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a>),
-        which the server downloads once a month; DB-IP sees that download and nothing about visitors. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
+        which the server downloads once a month; DB-IP sees that download and nothing about visitors. Invitation emails,
+        where the site has them switched on, are delivered by <a href="https://resend.com" target="_blank" rel="noopener">Resend</a>,
+        which sees the friend's address, the subject and the inviter's name for as long as its delivery log keeps them;
+        nothing else ever goes to an email provider. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
         providers — Sharpen does not send your sessions to any AI model. The data would be disclosed only if the law
         required it.</p>
     </section>

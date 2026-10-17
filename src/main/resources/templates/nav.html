@@ -18,6 +18,7 @@
     <a th:href="@{/import}" th:classappend="${path == '/import'} ? 'active'">Import</a>
     <a th:href="@{/reports}" th:classappend="${#strings.startsWith(path, '/reports')} ? 'active'">Monthly reports</a>
     <a th:href="@{/p/{h}(h=${me.handle})}" th:classappend="${path == '/p/' + me.handle} ? 'active'">My AI profile</a>
+    <a th:href="@{/invite}" th:classappend="${path == '/invite'} ? 'active'">Invite a friend</a>
     <a th:href="@{/p}" th:classappend="${path == '/p'} ? 'active'">Public profiles</a>
     <a th:href="@{/insights}" th:if="${insightsPublished}" th:classappend="${path == '/insights'} ? 'active'">Insights</a>
     <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
@@ -26,6 +27,7 @@
   </th:block>
   <th:block th:if="${me != null and me.company}">
     <a th:href="@{/candidates}" th:classappend="${path == '/candidates'} ? 'active'">Candidates</a>
+    <a th:href="@{/invite}" th:classappend="${path == '/invite'} ? 'active'">Invite</a>
     <a th:href="@{/settings}" th:classappend="${path == '/settings'} ? 'active'">Settings</a>
   </th:block>
 </nav>

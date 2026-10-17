@@ -20,7 +20,8 @@ create table person (
     public_profile   boolean      not null default false,
     api_key          varchar(64)  not null,
     created_at       timestamp(6) with time zone not null default now(),
-    avatar_version   integer      not null default 0
+    avatar_version   integer      not null default 0,
+    invited_by       bigint       references person (id) on delete set null
 );
 
 -- Other ways to sign in: a Google or GitHub account linked to a person, by the provider's permanent user id.
@@ -43,6 +44,22 @@ create table person_avatar (
     bytes        bytea       not null,
     updated_at   timestamp(6) with time zone not null default now()
 );
+-- Invite a friend: one row per invitation email Sharpen sent (address kept only as a hash), and the opt-out list.
+create table invite (
+    id          bigserial    primary key,
+    inviter_id  bigint       not null references person (id) on delete cascade,
+    email_hash  varchar(64)  not null,
+    sent_at     timestamp(6) with time zone not null default now(),
+    accepted_at timestamp(6) with time zone,
+    token       varchar(40)  not null
+);
+create unique index ux_invite_email_hash on invite (email_hash);
+create unique index ux_invite_token      on invite (token);
+create table mail_opt_out (
+    email_hash  varchar(64)  primary key,
+    created_at  timestamp(6) with time zone not null default now()
+);
+
 create unique index ux_person_email   on person (email);
 create unique index ux_person_handle  on person (handle);
 create unique index ux_person_api_key on person (api_key);

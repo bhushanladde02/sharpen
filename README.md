@@ -82,6 +82,13 @@ here about the people who chose to be measured, with the panel's protections: no
 are in the numbers, a tool gets a row only once 3 people have used it, unrated imports do not count, and no line
 is ever about a person. Below the threshold the page says so and shows the count to go.
 
+And the direct way: **Invite a friend** (`/invite`). Every member has a written invitation — what Sharpen is, an
+optional line of their own, their personal link `/join/<handle>` — that opens in their own mail app, copies to
+the clipboard, or goes out through LinkedIn, WhatsApp or X; accounts created from the link are counted as theirs.
+A deployment that sets a Resend API key (`deploy/.env`) also gets *Send from Sharpen*: the same invitation as a
+proper HTML email in the member's name, with a one-click unsubscribe, ten a day per member, one per address, and
+only a hash of the friend's address kept.
+
 ## Signing in
 
 Email and password, or **Continue with Google / GitHub / LinkedIn** when the deployment configures them (two values per
@@ -217,7 +224,7 @@ the tool did the typing, the person did the thinking and checked the result.
 What is deliberately left out of the prototype and what to add before a public release:
 
 - **Migrations** — done without Flyway: dated scripts in `db/migrations/` applied once each by `deploy/remote-deploy.sh` through a `schema_migration` ledger. Revisit only if scripts ever need more than "apply once, in order".
-- **Email** — verification on sign-up, password reset, and the monthly report as an email (the PDF service already exists).
+- **Email** — the sending path exists (`Mailer`, Resend over HTTP, used for invitations); still to build on it: verification on sign-up, password reset, and the monthly report as an email.
 - **Rate limiting** — done in memory (sign-in lockout, sign-up/contact spam guard, 600/min per address on the API); per-key API limits still to add. TLS is at the edge (Caddy).
 - **Auth for companies** — invite-only company accounts or domain verification, and an audit log of profile views.
 - **Extension store listing** — icons, privacy policy, and a settings page; the capture logic is done.

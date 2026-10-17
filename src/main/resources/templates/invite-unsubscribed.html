@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head><title>Invitations stopped — Sharpen</title></head>
+<body>
+<main>
+  <div class="auth card lift">
+    <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
+    <th:block th:if="${ok}">
+      <h1>Done</h1>
+      <p class="muted">Sharpen will not send invitations to this address again. Nothing else to do — and nothing about you is kept beyond a one-way hash of the address, so this choice can be honoured.</p>
+    </th:block>
+    <th:block th:unless="${ok}">
+      <h1>That link did not work</h1>
+      <p class="muted">It may have been cut short when it was copied. Open the email again and click the <em>Stop any further invitations</em> link, or <a th:href="@{/feedback}">tell us</a> and a person will do it by hand.</p>
+    </th:block>
+    <p style="margin-top:1rem"><a th:href="@{/}">Back to Sharpen</a></p>
+  </div>
+</main>
+</body>
+</html>

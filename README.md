@@ -89,6 +89,10 @@ A deployment that sets a Resend API key (`deploy/.env`) also gets *Send from Sha
 proper HTML email in the member's name, with a one-click unsubscribe, ten a day per member, one per address, and
 only a hash of the friend's address kept.
 
+Members also have a small **Notifications** list (a count in the menu, a bell on phones): a welcome, a friend
+who joined from their link, a monthly report the scheduler froze; the owner's account also hears of new members
+and new feedback. In-app only — nothing is emailed or pushed.
+
 ## Signing in
 
 Email and password, or **Continue with Google / GitHub / LinkedIn** when the deployment configures them (two values per

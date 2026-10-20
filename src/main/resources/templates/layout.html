@@ -40,6 +40,10 @@
     <a class="brand" th:href="@{/}"><span class="brand-mark"></span> Sharpen</a>
     <span class="grow"></span>
     <nav class="nav" th:if="${me == null}"><a th:href="@{/check}" class="wide-only">60-second check</a><a th:href="@{/p}" class="wide-only">Public profiles</a><a th:href="@{/insights}" class="wide-only" th:if="${insightsPublished}">Insights</a><a th:href="@{/login}">Sign in</a><a class="btn primary small" th:href="@{/register}">Create account</a></nav>
+    <a class="bell" th:href="@{/notifications}" th:if="${me != null}" th:aria-label="${unreadNotifications > 0} ? ('Notifications, ' + ${unreadNotifications} + ' unread') : 'Notifications'">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      <span class="count" th:if="${unreadNotifications > 0}" th:text="${unreadNotifications > 9} ? '9+' : ${unreadNotifications}">2</span>
+    </a>
     <label class="menu-toggle" for="nav-open" aria-label="Menu" th:if="${me != null}"><span></span></label>
   </header>
   <input type="checkbox" id="nav-open" aria-label="Menu" th:if="${me != null}">

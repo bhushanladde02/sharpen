@@ -341,3 +341,12 @@ Community and feedback
        friend's address is stored only as a hash. Every email has a one-click unsubscribe (``/invite/unsubscribe/<token>``).
      - Done
      - ``InviteService``, ``Mailer``, ``InviteController``, ``invite.html``, ``mail/invite.html``
+   * - FR-78
+     - Basic in-app notifications, shown only on the site (no email, no push): a count beside *Notifications* in
+       the menu and on the phone's bell; a list at ``/notifications``; opening one marks it read and follows its
+       link; *Mark all as read*. Events: a welcome on sign-up (pointing at the first session, or at Candidates for a
+       company); a friend joining from the member's invitation link; a monthly report frozen by the scheduler (not
+       one the person generated themselves, and never twice for the same month); and, for the owner's account only,
+       a new member and a new feedback message (not the owner's own). Deleted with the account.
+     - Done
+     - ``NotificationService``, ``NotificationController``, ``notifications.html``, ``nav.html``, ``layout.html``

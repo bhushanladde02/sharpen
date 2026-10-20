@@ -904,6 +904,22 @@ Day 8 — Wednesday 16 September: which build is this?
    now a single pass over the characters with no pattern at all (``looksLikeAddress``, ``clean``), the note is cut
    to a bounded length before it is touched, and the test feeds them the kind of input CodeQL described.
 
+#. **Basic notifications.** (Day 35, Tuesday 20 October.) The owner asked for "basic notification in portal" and
+   chose the core set when offered three sizes: in-app only, no email, no push, no preferences page. A
+   ``notification`` table (person, kind, title, body, link, created, read); a count beside *Notifications* in the
+   menu and on a bell in the phone top bar (the desktop has no top bar, so the menu link carries the count there);
+   a list at ``/notifications``; opening one marks it read and follows its link; *Mark all as read*. Five events,
+   each written at its source: a welcome on sign-up (``PersonService``, both the form and the Google/GitHub/
+   LinkedIn path), a friend joining from the member's link (``InviteService``), a report frozen by the scheduler
+   (``ReportService.generate(…, tell)`` — the 1st-of-month run and the daily catch-up say so, the *Generate* button
+   does not), and for the owner's account a new member and a new feedback message (``notifyAdmin``, never about
+   the owner's own doing). The same event for the same link is never written twice, so the catch-up cannot repeat
+   itself. Requirement FR-78; the privacy page lists *Notifications* under what is stored (effective 20 October);
+   the Help guide answers "notifications". Migration ``2026-10-20-notifications.sql``, tried fresh and on top of
+   the old schema on PostgreSQL with Hibernate validating; the bell, the list and the owner's view checked in a
+   browser. 64 tests. Times on the list are UTC, as everywhere else on the site; a per-person time zone is a
+   separate, later change.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

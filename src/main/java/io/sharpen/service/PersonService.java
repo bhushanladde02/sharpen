@@ -24,8 +24,11 @@ public class PersonService {
     private final PersonRepository people;
     private final PasswordEncoder passwordEncoder;
     private final CommunityService community;
+    private final NotificationService notifications;
 
-    public PersonService(PersonRepository people, PasswordEncoder passwordEncoder, CommunityService community) {
+    public PersonService(PersonRepository people, PasswordEncoder passwordEncoder, CommunityService community,
+                         NotificationService notifications) {
+        this.notifications = notifications;
         this.people = people;
         this.passwordEncoder = passwordEncoder;
         this.community = community;
@@ -39,7 +42,21 @@ public class PersonService {
                 displayName.trim(), uniqueHandle(displayName), type, newApiKey());
         Person saved = people.save(p);
         community.invalidate();
+        welcome(saved);
         return saved;
+    }
+
+    /** The first notification: what to do next. The owner hears of every new member. */
+    private void welcome(Person saved) {
+        if (saved.isCompany()) {
+            notifications.notify(saved.getId(), NotificationService.WELCOME, "Welcome to Sharpen",
+                    "Browse the public profiles of people who chose to share them.", "/candidates");
+        } else {
+            notifications.notify(saved.getId(), NotificationService.WELCOME, "Welcome to Sharpen",
+                    "Log your first AI session — fifteen seconds. Your score appears after the first one.", "/sessions/new");
+        }
+        notifications.notifyAdmin(NotificationService.NEW_MEMBER, "New member: " + saved.getDisplayName(),
+                saved.isCompany() ? "A company account." : "An individual account.", "/admin/traffic", saved.getId());
     }
 
     /**
@@ -54,6 +71,7 @@ public class PersonService {
         String name = displayName == null || displayName.isBlank() ? mail.substring(0, mail.indexOf('@')) : displayName.trim();
         Person saved = people.save(new Person(mail, null, name, uniqueHandle(name), AccountType.INDIVIDUAL, newApiKey()));
         community.invalidate();
+        welcome(saved);
         return saved;
     }
 

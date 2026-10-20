@@ -81,6 +81,17 @@
       }
     },
     {
+      id: 'notifications',
+      keys: ['notification', 'notifications', 'bell', 'alert', 'alerts', 'unread', 'mark as read', 'mark all read', 'inbox'],
+      answer: function () {
+        return '<p><a href="/notifications">Notifications</a> is the list of things that happened on your account: a welcome when you join, ' +
+               'a friend who joined from your invitation link, and a monthly report the scheduler froze for you. The number beside the menu link ' +
+               '(and on the bell on phones) is how many you have not opened.</p>' +
+               '<p>Opening one marks it read and takes you to the thing it is about; <b>Mark all as read</b> clears the count. Nothing is emailed or pushed — ' +
+               'notifications wait here for you.</p>';
+      }
+    },
+    {
       id: 'human', chip: 'Can I talk to someone?',
       keys: ['human', 'person', 'agent', 'representative', 'rep', 'customer service', 'customer support', 'customer care', 'customer representative',
              'support team', 'help desk', 'helpdesk', 'call', 'phone', 'telephone', 'number', 'chat with', 'talk to', 'speak to', 'speak with',

@@ -595,3 +595,18 @@ ul.plain { margin: .5rem 0 0; padding-left: 1.1rem; display: grid; gap: .45rem; 
 
 /* ---------- invite a friend ---------- */
 .invite-preview { width: 100%; font: inherit; font-size: .92rem; line-height: 1.5; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: .8rem .9rem; resize: vertical; }
+
+/* ---------- notifications ---------- */
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.notes li a { display: flex; gap: .75rem; align-items: flex-start; padding: .85rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-s); color: var(--ink); text-decoration: none; }
+.notes li a:hover { background: var(--surface-2); text-decoration: none; }
+.notes .dot { flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%; background: var(--line); margin-top: .45rem; }
+.notes li.unread .dot { background: var(--accent); }
+.notes li.unread b { color: var(--ink); }
+.notes .text { display: grid; gap: .15rem; min-width: 0; }
+.notes .text b { font-weight: 800; }
+.notes .text span { color: var(--ink-2); font-size: .92rem; }
+.notes .text small { color: var(--ink-3); font-size: .76rem; }
+.bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-right: .5rem; }
+.bell svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.bell .count { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .68rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }

@@ -74,12 +74,13 @@ public class InviteService {
     private final PersonRepository people;
     private final Mailer mailer;
     private final TemplateEngine templates;
+    private final NotificationService notifications;
     private final String base;
     private final int siteDailyLimit;
     private final SecureRandom random = new SecureRandom();
 
     public InviteService(InviteRepository invites, MailOptOutRepository optOuts, PersonRepository people, Mailer mailer,
-                         TemplateEngine templates,
+                         TemplateEngine templates, NotificationService notifications,
                          @Value("${sharpen.site-host:localhost:8080}") String siteHost,
                          @Value("${sharpen.mail.daily-limit:80}") int siteDailyLimit) {
         this.invites = invites;
@@ -87,6 +88,7 @@ public class InviteService {
         this.people = people;
         this.mailer = mailer;
         this.templates = templates;
+        this.notifications = notifications;
         this.base = (siteHost.startsWith("localhost") || siteHost.startsWith("127.") ? "http://" : "https://") + siteHost;
         this.siteDailyLimit = siteDailyLimit;
     }
@@ -178,6 +180,8 @@ public class InviteService {
             people.findByHandle(refHandle.trim()).filter(p -> !p.getId().equals(created.getId())).ifPresent(inviter -> {
                 created.setInvitedBy(inviter.getId());
                 people.save(created);
+                notifications.notify(inviter.getId(), NotificationService.FRIEND_JOINED, created.getDisplayName() + " joined from your invitation",
+                        "They created an account from your link — that is one more person keeping an honest record.", "/invite");
             });
         }
         invites.findByEmailHash(hash(created.getEmail())).ifPresent(i -> { if (i.getAcceptedAt() == null) { i.setAcceptedAt(Instant.now()); invites.save(i); } });

@@ -935,7 +935,7 @@ class WebFlowTest {
         mvc.perform(get("/register").param("ref", host.getHandle())).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Hana Host invited you")))
                 .andExpect(content().string(containsString("name=\"ref\"")));
-        mvc.perform(post("/register").with(csrf()).param("firstName", "Fay").param("lastName", "Friend").param("email", "f1@example.org")
+        mvc.perform(post("/register").with(csrf()).with(from("10.7.0.1")).param("firstName", "Fay").param("lastName", "Friend").param("email", "f1@example.org")
                         .param("password", "password1").param("accountType", "INDIVIDUAL").param("t", guard.tokenIssuedAgo(10))
                         .param("ref", host.getHandle()))
                 .andExpect(redirectedUrl("/sessions/new?welcome"));
@@ -951,5 +951,81 @@ class WebFlowTest {
         inviteService.forget(host.getId());
         org.junit.jupiter.api.Assertions.assertEquals(0, inviteService.tally(host).emailed());
         org.junit.jupiter.api.Assertions.assertNull(people.byEmail("f1@example.org").orElseThrow().getInvitedBy());
+    }
+
+    /** A distinct client address, so a test's sign-ups and feedback are not refused by the per-address spam limit. */
+    private static org.springframework.test.web.servlet.request.RequestPostProcessor from(String address) {
+        return request -> { request.setRemoteAddr(address); return request; };
+    }
+
+    @Autowired io.sharpen.service.NotificationService notificationService;
+
+    /** Notifications: welcome, friend joined, report ready (scheduler only, never twice), admin's new member and feedback; the page, the count, open, mark all read. */
+    @Test
+    void notifications() throws Exception {
+        Person admin = me;   // sharpen.admin-email=flow@example.com
+        long adminBefore = notificationService.unread(admin);
+
+        // Sign-up: the new member gets a welcome pointing at the first session; the owner hears of the new member
+        Person nia = people.register("nia@example.com", "password1", "Nia Newcomer", AccountType.INDIVIDUAL);
+        var asNia = user(nia.getEmail()).roles("INDIVIDUAL");
+        org.junit.jupiter.api.Assertions.assertEquals(1, notificationService.unread(nia));
+        org.junit.jupiter.api.Assertions.assertEquals(adminBefore + 1, notificationService.unread(admin));
+        mvc.perform(get("/notifications").with(asNia)).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Welcome to Sharpen")))
+                .andExpect(content().string(containsString("Mark all as read")))
+                .andExpect(content().string(containsString("class=\"chip warn\"")));   // the count beside the menu link
+        mvc.perform(get("/dashboard").with(asNia)).andExpect(content().string(containsString("Notifications, 1 unread")));   // the bell
+
+        // A friend joins from Nia's link: Nia is told; the friend gets their own welcome
+        mvc.perform(post("/register").with(csrf()).with(from("10.7.0.2")).param("firstName", "Finn").param("lastName", "Friend").param("email", "finn@example.com")
+                        .param("password", "password1").param("accountType", "INDIVIDUAL").param("t", guard.tokenIssuedAgo(10)).param("ref", nia.getHandle()))
+                .andExpect(redirectedUrl("/sessions/new?welcome"));
+        org.junit.jupiter.api.Assertions.assertEquals(2, notificationService.unread(nia));
+        var items = notificationService.latest(nia);
+        org.junit.jupiter.api.Assertions.assertEquals("Finn Friend joined from your invitation", items.get(0).getTitle());
+        org.junit.jupiter.api.Assertions.assertEquals("/invite", items.get(0).getLink());
+
+        // Opening one marks it read and follows its link; the count drops; a stranger's id goes back to the list
+        mvc.perform(get("/notifications/" + items.get(0).getId()).with(asNia)).andExpect(redirectedUrl("/invite"));
+        org.junit.jupiter.api.Assertions.assertEquals(1, notificationService.unread(nia));
+        mvc.perform(get("/notifications/" + items.get(0).getId()).with(user("finn@example.com").roles("INDIVIDUAL"))).andExpect(redirectedUrl("/notifications"));
+        mvc.perform(post("/notifications/read-all").with(csrf()).with(asNia)).andExpect(redirectedUrl("/notifications"));
+        org.junit.jupiter.api.Assertions.assertEquals(0, notificationService.unread(nia));
+        mvc.perform(get("/dashboard").with(asNia)).andExpect(content().string(not(containsString("unread"))));
+
+        // A report frozen by the scheduler: one notification, and the daily catch-up never repeats it; a report the
+        // person generates themselves says nothing
+        YearMonth lastMonth = YearMonth.from(LocalDate.now()).minusMonths(1);
+        sessionService.logManual(nia, new io.sharpen.service.SessionService.SessionInput(lastMonth.atDay(10), UsageContext.PROFESSIONAL, "Claude",
+                TaskCategory.CODING, 60, 10, 70, true, true, 4, null, null, null, null));
+        reportService.generate(nia, lastMonth);
+        org.junit.jupiter.api.Assertions.assertEquals(0, notificationService.unread(nia));
+        reportService.generate(nia, lastMonth, true);
+        reportService.generate(nia, lastMonth, true);
+        reportService.catchUp(lastMonth);
+        org.junit.jupiter.api.Assertions.assertEquals(1, notificationService.unread(nia));
+        org.junit.jupiter.api.Assertions.assertEquals("/reports/" + lastMonth, notificationService.latest(nia).get(0).getLink());
+        org.junit.jupiter.api.Assertions.assertTrue(notificationService.latest(nia).get(0).getTitle().endsWith("report is ready"));
+
+        // Feedback from a visitor reaches the owner; the owner's own feedback does not come back to them
+        long before = notificationService.unread(admin);
+        mvc.perform(post("/feedback").with(csrf()).with(from("10.7.0.3")).param("message", "The habits check made me think.").param("rating", "5").param("t", guard.tokenIssuedAgo(10)))
+                .andExpect(status().is3xxRedirection());
+        org.junit.jupiter.api.Assertions.assertEquals(before + 1, notificationService.unread(admin));
+        org.junit.jupiter.api.Assertions.assertEquals("New feedback · 5/5", notificationService.latest(admin).get(0).getTitle());
+        mvc.perform(post("/feedback").with(csrf()).with(from("10.7.0.4")).with(user(admin.getEmail()).roles("INDIVIDUAL")).param("message", "Note to self, from the owner.").param("t", guard.tokenIssuedAgo(10)))
+                .andExpect(status().is3xxRedirection());
+        org.junit.jupiter.api.Assertions.assertEquals(before + 1, notificationService.unread(admin));
+
+        // A company account has the page too; a visitor has not
+        Person co = people.register("co-notify@example.com", "password1", "Notify Co", AccountType.COMPANY);
+        mvc.perform(get("/notifications").with(user(co.getEmail()).roles("COMPANY"))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Browse the public profiles")));
+        mvc.perform(get("/notifications")).andExpect(status().is3xxRedirection());
+
+        // Deleting the account takes its notifications with it
+        notificationService.forget(nia.getId());
+        org.junit.jupiter.api.Assertions.assertTrue(notificationService.latest(nia).isEmpty());
     }
 }

@@ -37,12 +37,15 @@ public class AccountDeletionService {
     private final CommunityService community;
     private final InsightsService insights;
     private final InviteService invites;
+    private final NotificationService notifications;
 
     public AccountDeletionService(PersonRepository people, UsageSessionRepository sessions, MonthlyReportRepository reports,
                                   PersonAvatarRepository avatars, FeedbackRepository feedback, PersonIdentityRepository identities,
                                   PasswordEncoder passwordEncoder,
-                                  CommunityService community, InsightsService insights, InviteService invites) {
+                                  CommunityService community, InsightsService insights, InviteService invites,
+                                  NotificationService notifications) {
         this.invites = invites;
+        this.notifications = notifications;
         this.people = people;
         this.sessions = sessions;
         this.reports = reports;
@@ -74,6 +77,7 @@ public class AccountDeletionService {
         avatars.deleteById(id);
         identities.deleteByPersonId(id);
         invites.forget(id);
+        notifications.forget(id);
         for (var f : feedback.findByPersonId(id)) f.detachPerson();   // keep the message, drop the link
         people.deleteById(id);
         community.invalidate();

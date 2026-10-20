@@ -60,6 +60,19 @@ create table mail_opt_out (
     created_at  timestamp(6) with time zone not null default now()
 );
 
+-- In-app notifications: one row per message for one person; read_at set when opened.
+create table notification (
+    id          bigserial     primary key,
+    person_id   bigint        not null references person (id) on delete cascade,
+    kind        varchar(30)   not null,
+    title       varchar(200)  not null,
+    body        varchar(500),
+    link        varchar(200),
+    created_at  timestamp(6) with time zone not null default now(),
+    read_at     timestamp(6) with time zone
+);
+create index ix_notification_person on notification (person_id, created_at);
+
 create unique index ux_person_email   on person (email);
 create unique index ux_person_handle  on person (handle);
 create unique index ux_person_api_key on person (api_key);

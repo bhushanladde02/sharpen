@@ -131,6 +131,15 @@ public class GlobalModelAttributes {
         return !admin.isEmpty() && people.current().map(p -> admin.equals(p.getEmail().toLowerCase(java.util.Locale.ROOT))).orElse(false);
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private io.sharpen.service.NotificationService notifications;
+
+    /** Unread notifications, for the count beside the menu link and on the phone's bell. */
+    @ModelAttribute("unreadNotifications")
+    public long unreadNotifications() {
+        return people.current().map(notifications::unread).orElse(0L);
+    }
+
     @ModelAttribute("unratedCount")
     public long unratedCount() {
         Optional<Person> me = people.current();

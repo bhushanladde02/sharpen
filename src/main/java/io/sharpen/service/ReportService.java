@@ -40,9 +40,11 @@ public class ReportService {
     private final StatsService stats;
     private final SessionService sessions;
     private final ObjectMapper json;
+    private final NotificationService notifications;
 
     public ReportService(MonthlyReportRepository reports, PersonRepository people, StatsService stats,
-                         SessionService sessions, ObjectMapper json) {
+                         SessionService sessions, ObjectMapper json, NotificationService notifications) {
+        this.notifications = notifications;
         this.reports = reports;
         this.people = people;
         this.stats = stats;
@@ -59,7 +61,7 @@ public class ReportService {
         YearMonth last = YearMonth.now(ZoneOffset.UTC).minusMonths(1);
         int n = 0;
         for (Person p : people.findByAccountType(AccountType.INDIVIDUAL)) {
-            if (!sessions.inMonth(p, last).isEmpty()) { generate(p, last); n++; }
+            if (!sessions.inMonth(p, last).isEmpty()) { generate(p, last, true); n++; }
         }
         log.info("Generated {} monthly reports for {}", n, last);
     }
@@ -84,12 +86,18 @@ public class ReportService {
         for (Person p : people.findByAccountType(AccountType.INDIVIDUAL)) {
             if (reports.findByPersonIdAndYearMonth(p.getId(), month.toString()).isPresent()) continue;
             if (sessions.inMonth(p, month).isEmpty()) continue;
-            generate(p, month); n++;
+            generate(p, month, true); n++;
         }
         return n;
     }
 
-    public MonthlyReport generate(Person person, YearMonth month) {
+    public MonthlyReport generate(Person person, YearMonth month) { return generate(person, month, false); }
+
+    /**
+     * Builds and stores the month. {@code tell} is true from the scheduler, so the person hears that a report
+     * they did not ask for is ready; a report they generated themselves needs no notification.
+     */
+    public MonthlyReport generate(Person person, YearMonth month, boolean tell) {
         ReportModel model = build(person, month);
         MonthlyReport report = reports.findByPersonIdAndYearMonth(person.getId(), month.toString())
                 .orElseGet(() -> new MonthlyReport(person, month.toString()));
@@ -108,7 +116,12 @@ public class ReportService {
         } catch (JacksonException e) {
             throw new IllegalStateException("Could not serialise report", e);
         }
-        return reports.save(report);
+        MonthlyReport saved = reports.save(report);
+        if (tell) notifications.notify(person.getId(), NotificationService.REPORT_READY,
+                "Your " + month.getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH) + " report is ready",
+                "AI score " + score.composite() + " of 100 over " + model.month().sessions() + " sessions. Open it, or download the PDF.",
+                "/reports/" + month);
+        return saved;
     }
 
     @Transactional(readOnly = true)

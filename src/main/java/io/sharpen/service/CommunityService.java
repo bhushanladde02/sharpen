@@ -28,6 +28,7 @@ public class CommunityService {
     private final MonthlyReportRepository reports;
     private final FeedbackRepository feedback;
     private final PageViewRepository views;
+    private final NotificationService notifications;
 
     private volatile CommunityStats cached = new CommunityStats(0, 0, 0, 0, 0, 0, 0);
     private volatile long cachedAt = 0;
@@ -35,7 +36,9 @@ public class CommunityService {
     private volatile long trafficAt = 0;
 
     public CommunityService(PersonRepository people, UsageSessionRepository sessions,
-                            MonthlyReportRepository reports, FeedbackRepository feedback, PageViewRepository views) {
+                            MonthlyReportRepository reports, FeedbackRepository feedback, PageViewRepository views,
+                            NotificationService notifications) {
+        this.notifications = notifications;
         this.people = people;
         this.sessions = sessions;
         this.reports = reports;
@@ -66,7 +69,11 @@ public class CommunityService {
 
     @Transactional
     public Feedback leave(Long personId, String email, Integer rating, String message, String page) {
-        return feedback.save(new Feedback(personId, blank(email), rating, message.trim(), blank(page)));
+        Feedback saved = feedback.save(new Feedback(personId, blank(email), rating, message.trim(), blank(page)));
+        String first = message.trim().length() > 120 ? message.trim().substring(0, 120) + "…" : message.trim();
+        notifications.notifyAdmin(NotificationService.NEW_FEEDBACK, "New feedback" + (rating != null ? " · " + rating + "/5" : ""),
+                first, "/admin/feedback", personId);
+        return saved;
     }
 
     @Transactional(readOnly = true)

@@ -152,6 +152,42 @@ Keeping the server healthy
   bill; if it ever does not, an Always Free resource was created as a paid one — the instance page says
   *Always Free* next to the shape.
 
+Keeping Sharpen up
+------------------
+
+Three layers, each catching what the one before cannot. The numbers that sized them are from day 41 (26
+October): load 0.14, Sharpen's JVM at ~400 MB, PostgreSQL ~55 MB, Caddy ~11 MB, BotSpotter's stack ~380 MB inside
+~2.4 GB of limits of its own, 4.4 GB of 5.9 GB available, no OOM kill in the kernel log, disk 43 % used.
+
+1. **Docker** — every container is ``restart: unless-stopped``, so a *crashed* process comes back by itself. The
+   app now also has a Docker health check (``/api/v1/health`` every 30 s), so ``docker ps`` says *healthy* or
+   *unhealthy* instead of just *Up*. Memory ceilings in ``docker-compose.prod.yml`` (app 1.5 GB, db 512 MB, Caddy
+   128 MB) keep Sharpen and BotSpotter from starving each other on the shared box; without one, the JVM's
+   ``MaxRAMPercentage=60`` meant 60 % of the whole VM.
+2. **The watchdog** — ``deploy/watchdog.sh`` from cron every five minutes covers a *hung* process, which Docker
+   does not restart. It asks the health endpoint through Caddy like a visitor; two failures twenty seconds apart
+   mean a restart of ``app`` and a wait of up to two minutes for it to answer again, at most once per fifteen
+   minutes so a broken build is not restarted in a loop. It also writes a warning when available memory or free
+   disk is under 10 %. Install it once (``crontab -e``, alongside the backup line)::
+
+       */5 * * * * bash ~/sharpen/deploy/watchdog.sh
+
+   It is silent when all is well; ``cat ~/watchdog.log`` is the record. A line that says *still down after
+   restart* is the moment to look at ``dc logs --tail 100 app`` yourself.
+3. **An outside monitor** — if the VM itself is down, nothing on it can tell you. UptimeRobot's free plan
+   (https://uptimerobot.com, 50 monitors, 5-minute checks, email alerts): *New monitor → HTTP(s)*, URL
+   ``https://sharpenscore.com/api/v1/health``, keyword ``"status":"ok"`` if the keyword type is offered, interval 5
+   minutes, your email as the alert contact. That is the whole setup; it emails when the site stops answering
+   and again when it is back. Keep its status page private unless you want a public one.
+
+Not done, on purpose: no swap on the A1 (``setup-vm.sh`` adds one only on the 1 GB Micro). With 4 GB headroom and
+limits on every container it is not needed; if BotSpotter grows, ``sudo fallocate -l 2G /swapfile && sudo chmod
+600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`` (plus a line in ``/etc/fstab``) is the cheap
+safety net, and it is harmless to add any time.
+
+The deploy that carries the limits and the health check recreates all three Sharpen containers once (the compose
+definition changed), so expect the usual 20–30 seconds of 502 that one time.
+
 Starting over
 -------------
 

@@ -55,3 +55,10 @@ Non-functional requirements
    * - NFR-12
      - **Documentation.** This RST set is the requirement of record; every FR/NFR id is stable once published.
      - Met
+   * - NFR-13
+     - **Stays up without a person watching.** A crashed container restarts itself (Docker); a hung app is
+       restarted by a five-minute watchdog on the VM after two failed health checks, at most once per fifteen
+       minutes, with a log of every action; every container has a memory ceiling so a co-hosted project cannot
+       starve it; an outside monitor alerts by email when the VM itself stops answering. Deploys roll back
+       automatically when the new version never becomes healthy.
+     - Met (monitor: owner's UptimeRobot account)

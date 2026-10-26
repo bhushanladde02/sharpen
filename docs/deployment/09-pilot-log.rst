@@ -946,11 +946,27 @@ Day 8 — Wednesday 16 September: which build is this?
    is reported and the old configuration stays in force. The Caddyfile is also ``caddy fmt``-ed (tabs), which
    clears the *input is not formatted* warning every reload printed. Checked again with Caddy 2.9.1 locally.
 
+#. **"Make sure Sharpen is never down."** (Day 41, continued.) The owner's ask after a day of poking at the
+   VM. First the facts, from the VM itself: site answering in 0.34 s, load 0.14, 4.4 GB of 5.9 GB available,
+   no OOM kill in the kernel log for a week, disk 43 %, Sharpen's JVM at ~400 MB — healthy, with one real exposure:
+   since BotSpotter moved in on the 25th the box is shared, and Sharpen's app container had no memory limit, so
+   ``MaxRAMPercentage=60`` meant 60 % of the whole VM. Three layers now: memory ceilings on all three containers
+   (app 1.5 GB, db 512 MB, Caddy 128 MB) and a Docker health check on the app; ``deploy/watchdog.sh`` from cron
+   every five minutes — health through Caddy as a visitor would, two failures twenty seconds apart → restart
+   ``app`` and wait for it, at most once per fifteen minutes, warnings when memory or disk is under 10 %, all of
+   it in ``~/watchdog.log``, silent when fine (rehearsed with stubbed ``docker`` and ``curl``: healthy, down →
+   restart → up, down again inside fifteen minutes → left alone, sixteen minutes later → restarted); and, for
+   the case where the VM itself is gone, a free UptimeRobot monitor on ``/api/v1/health`` with email alerts, which
+   only the owner can create. NFR-13; ``05-day-two.rst`` *Keeping Sharpen up*. The cron line and the monitor are
+   the owner's two steps after the merge.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Security, remaining from the day-27 audit: nonce-based CSP (SE-15), bind the admin account to an id rather than
   an email, narrow the extension's host permissions.
+* Keeping Sharpen up: add the watchdog cron line (``*/5 * * * * bash ~/sharpen/deploy/watchdog.sh``) and
+  create the UptimeRobot monitor on ``/api/v1/health`` (``05-day-two.rst`` → *Keeping Sharpen up*).
 * Invitations by email: create the Resend account, add its DNS records in Cloudflare, put ``RESEND_API_KEY`` in
   ``deploy/.env`` and ``dc up -d app`` (``05-day-two.rst`` → *Invitations by email*); send one to yourself first.
 

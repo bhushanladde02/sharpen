@@ -149,7 +149,10 @@
         which the server downloads once a month; DB-IP sees that download and nothing about visitors. Invitation emails,
         where the site has them switched on, are delivered by <a href="https://resend.com" target="_blank" rel="noopener">Resend</a>,
         which sees the friend's address, the subject and the inviter's name for as long as its delivery log keeps them;
-        nothing else ever goes to an email provider. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
+        nothing else ever goes to an email provider. The server also hosts <a href="https://botspotter.app" target="_blank" rel="noopener">BotSpotter</a>,
+        the author's counter of AI crawlers: the proxy in front of Sharpen hands it the requests made by crawlers and
+        bots (address, user agent, header names, path — no cookies, no header values); a request from a browser is
+        discarded before it leaves this server, so nothing about a human visitor goes to it. Nothing is shared with anyone else: no data brokers, no advertisers, no AI
         providers — Sharpen does not send your sessions to any AI model. The data would be disclosed only if the law
         required it.</p>
     </section>

@@ -11,6 +11,12 @@
 # The image that ends up running is also tagged sharpen-app:local — the name docker-compose.prod.yml falls back
 # to when APP_IMAGE is not given. So a plain `dc up -d app` on the server (say, after editing deploy/.env)
 # restarts the version that was last deployed, never an older image that happens to carry that name.
+#
+# Caddy's config is a single bind-mounted file, and a single-file bind mount follows the inode: when the
+# workflow's `git reset --hard` writes a new Caddyfile the running container still sees the old one, so neither
+# `caddy reload` nor `dc up -d` picks the change up. After the app is healthy this script compares the two and,
+# only if the new file validates, recreates the Caddy container (two or three seconds of refused connections;
+# certificates live in the caddy_data volume). An invalid file is reported and the old container stays up.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."                      # repository root on the VM (~/sharpen)
@@ -65,8 +71,27 @@ remember() {  # $1 = image now running; what a plain `dc up -d app` will use fro
   docker tag "$1" sharpen-app:local && echo "local tag     : sharpen-app:local -> $1"
 }
 
+caddy_refresh() {   # recreate Caddy when the file it mounted is no longer the file in the checkout
+  local cid; cid=$(dc ps -q caddy 2>/dev/null || true)
+  [ -n "$cid" ] || return 0
+  if docker exec "$cid" cat /etc/caddy/Caddyfile 2>/dev/null | cmp -s - deploy/Caddyfile; then return 0; fi
+  echo "caddyfile     : changed since the Caddy container was created"
+  local image; image=$(docker inspect --format '{{.Config.Image}}' "$cid")
+  if docker run --rm -e "DOMAIN=$DOMAIN" -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+       -v "$PWD/deploy/caddy-extra:/etc/caddy/extra:ro" "$image" caddy validate --config /etc/caddy/Caddyfile >/dev/null 2>&1; then
+    dc up -d --no-deps --force-recreate caddy >/dev/null   # --no-deps: never touches app or db
+    for i in $(seq 1 12); do health && { echo "caddy         : recreated with the new Caddyfile"; return 0; }; sleep 2; done
+    echo "!! Caddy was recreated but the site does not answer through it — check: dc logs caddy"
+    return 1
+  fi
+  echo "!! deploy/Caddyfile does not validate; the old Caddy configuration stays in force. Check it with:"
+  echo "   docker run --rm -e DOMAIN=$DOMAIN -v \$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro -v \$PWD/deploy/caddy-extra:/etc/caddy/extra:ro $image caddy validate --config /etc/caddy/Caddyfile"
+  return 0
+}
+
 if rollout "$APP_IMAGE"; then
   remember "$APP_IMAGE"
+  caddy_refresh
   echo "healthy       : https://$DOMAIN/api/v1/health"
   echo "running       : $(curl -fsS --max-time 5 -k --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/v1/health" 2>/dev/null)"
   docker image prune -f >/dev/null

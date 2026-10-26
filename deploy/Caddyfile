@@ -1,31 +1,31 @@
 # Caddy terminates TLS (Let's Encrypt, automatic) and proxies to the app.
 {$DOMAIN} {
-    encode gzip zstd
-    reverse_proxy app:8080
-    header {
-        Strict-Transport-Security "max-age=31536000; includeSubDomains"
-        X-Content-Type-Options nosniff
-        Referrer-Policy strict-origin-when-cross-origin
-        -Server
-    }
+	encode gzip zstd
+	reverse_proxy app:8080
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
 
-    # BotSpotter sensor (botspotter.app, the author's bot counter on this same VM): the JSON access log is
-    # streamed to its Vector sidecar on this Docker network (bs-vector = botspotter's sensor-vector container).
-    # Vector keeps only requests from crawlers and bots and only header NAMES; a browser visitor's line is
-    # discarded inside Vector and never leaves this server. soft_start: if Vector is unreachable Caddy still
-    # loads and serves, and those lines are simply dropped. Cookie and Authorization values never leave Caddy.
-    log botspotter {
-        output net tcp/bs-vector:9000 {
-            soft_start
-        }
-        format filter {
-            wrap json
-            fields {
-                request>headers>Cookie delete
-                request>headers>Authorization delete
-            }
-        }
-    }
+	# BotSpotter sensor (botspotter.app, the author's bot counter on this same VM): the JSON access log is
+	# streamed to its Vector sidecar on this Docker network (bs-vector = botspotter's sensor-vector container).
+	# Vector keeps only requests from crawlers and bots and only header NAMES; a browser visitor's line is
+	# discarded inside Vector and never leaves this server. soft_start: if Vector is unreachable Caddy still
+	# loads and serves, and those lines are simply dropped. Cookie and Authorization values never leave Caddy.
+	log botspotter {
+		output net tcp/bs-vector:9000 {
+			soft_start
+		}
+		format filter {
+			wrap json
+			fields {
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+			}
+		}
+	}
 }
 
 # Optional extra site blocks — e.g. redirects from an old name or www — live in deploy/caddy-extra/*.caddy

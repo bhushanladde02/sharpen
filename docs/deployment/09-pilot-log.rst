@@ -934,6 +934,18 @@ Day 8 — Wednesday 16 September: which build is this?
    sets ``BS_HOST=sharpen.com`` while the site is ``sharpenscore.com`` — Vector's host filter would drop every
    line, so that value must change on the BotSpotter side first.
 
+#. **The Caddyfile that would not change.** (Day 41, continued.) PR #69 merged, Deploy green, ``caddy validate``
+   and ``caddy reload`` both happy — and the running Caddy still had no ``bs-vector`` block. The repo on the VM
+   had it (``grep -c`` said 2); the container's ``/etc/caddy/Caddyfile`` said 0. Cause: the Caddyfile is mounted
+   as a single file, and a single-file bind mount follows the inode; the workflow's ``git reset --hard`` writes a
+   new file, the container keeps the old one, and ``caddy reload`` faithfully reloads what it can see. Recreating
+   the Caddy container fixed it at once — and, because the hand-typed command lacked ``--no-deps``, also
+   recreated the app (same image via the ``sharpen-app:local`` tag, 20 seconds of 502 while the JVM came up).
+   ``remote-deploy.sh`` now does this itself: after the app is healthy it compares the mounted file with the
+   checkout and, only if the new file validates in a throwaway container, recreates Caddy alone; an invalid file
+   is reported and the old configuration stays in force. The Caddyfile is also ``caddy fmt``-ed (tabs), which
+   clears the *input is not formatted* warning every reload printed. Checked again with Caddy 2.9.1 locally.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

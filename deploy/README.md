@@ -20,7 +20,7 @@ troubleshooting and day-two operations. This file is the short version for peopl
 | `oci-retry-a1.sh` | polls Oracle for a free `VM.Standard.A1.Flex` across all ADs and sizes until one is created |
 | `oci-create-micro.sh` | Plan B: creates the always-available free `VM.Standard.E2.1.Micro` (1 GB) |
 | `docker-compose.micro.yml` | overrides for a 1 GB machine (JVM 320 MB heap, small Postgres); on when `SMALL_VM=true` in `.env` |
-| `remote-deploy.sh` | runs on the VM: pull `APP_IMAGE`, restart, wait for `/api/v1/health`, roll back on failure |
+| `remote-deploy.sh` | runs on the VM: apply migrations, pull `APP_IMAGE`, restart, wait for `/api/v1/health`, roll back on failure; then, if `deploy/Caddyfile` changed, validate it and recreate only the Caddy container (a single-file bind mount keeps the old inode, so `caddy reload` alone cannot see a new file) |
 | `Dockerfile.ci` | pipeline image: JRE + prebuilt jar, built for arm64 and amd64 in seconds |
 
 ## Quick path

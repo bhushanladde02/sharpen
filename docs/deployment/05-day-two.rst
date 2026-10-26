@@ -405,12 +405,22 @@ Vector is there; lines written while it is away are dropped. ``/privacy`` says t
 
 Caddy had no ``log`` directive before, so ``docker logs deploy-caddy-1`` carried no access lines and still does not.
 
-Applying a Caddyfile change needs no app restart — the file is bind-mounted read-only, so after the merge::
+Applying a Caddyfile change is part of the normal deploy: ``remote-deploy.sh`` compares the file the Caddy
+container mounted with ``deploy/Caddyfile`` after the app is healthy and, if they differ and the new file
+validates, recreates only the Caddy container (``dc up -d --no-deps --force-recreate caddy``; two or three
+seconds of refused connections, certificates kept in the ``caddy_data`` volume). The reason it must be a recreate
+and not a ``caddy reload``: the Caddyfile is a *single-file* bind mount, and such a mount follows the file's
+inode — the workflow's ``git reset --hard`` writes a new file, and the running container keeps showing the old one,
+so ``caddy reload`` reloads the old text and says *Valid configuration* while doing it. (Found the hard way on
+day 41: repo file had the block, ``docker exec deploy-caddy-1 grep bs-vector /etc/caddy/Caddyfile`` said 0.) By
+hand, the same thing::
 
-    ssh sharpen 'cd ~/sharpen && git pull && cd deploy && docker exec deploy-caddy-1 caddy validate --config /etc/caddy/Caddyfile && docker exec deploy-caddy-1 caddy reload --config /etc/caddy/Caddyfile'
+    ssh sharpen 'cd ~/sharpen && docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --no-deps --force-recreate caddy && sleep 3 && curl -s -o /dev/null -w "%{http_code}\n" https://sharpenscore.com/'
 
-``validate`` first: anything but *Valid configuration* and nothing is applied, Sharpen keeps running on the old
-config. Checked locally with Caddy 2.9.1 before the change was committed. Order with BotSpotter: deploy BotSpotter's
+``--no-deps`` matters: without it compose also recreates ``app`` (its compose image falls back to the
+``sharpen-app:local`` tag, so the same version comes back, but with a 20-second 502 while the JVM starts).
+``docker exec deploy-caddy-1 caddy validate --config /etc/caddy/Caddyfile`` is still the right check *after*
+the recreate; before it, validate the host file the way the script does, from a throwaway container. Order with BotSpotter: deploy BotSpotter's
 ``sensor-vector`` first so ``bs-vector`` resolves; the other way round is harmless (``soft_start``) and the sensor
 starts working when the sidecar appears. One thing to check on the BotSpotter side: Vector only forwards lines
 whose ``Host`` contains ``BS_HOST``, and ``docker-compose.vm.yml`` sets it to ``sharpen.com`` — the site is

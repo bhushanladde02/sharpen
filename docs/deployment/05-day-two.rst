@@ -391,3 +391,30 @@ member and eighty for the site; one email per address, ever; never to an address
 that opted out; every email carries a one-click unsubscribe link and a ``List-Unsubscribe`` header; the sender's
 own address is never disclosed to the friend.
 
+The BotSpotter sensor
+---------------------
+
+BotSpotter (https://botspotter.app, the author's counter of AI crawlers) runs on the same VM behind the same
+Caddy. Sharpen is one of its sensors: the ``log botspotter`` block in ``deploy/Caddyfile`` streams Caddy's JSON
+access log over TCP to BotSpotter's Vector sidecar (``bs-vector:9000``; BotSpotter's compose joins Caddy's Docker
+network, ``CADDY_NETWORK=deploy_default``, with that alias). Vector forwards only requests from crawlers and bots —
+address, user agent, header *names*, method, status, and whether the path was ``/robots.txt`` — and discards a
+browser's line inside Vector, so nothing about a human visitor leaves this server; Cookie and Authorization are
+deleted in Caddy before the line is even written. ``soft_start`` means Caddy loads and serves whether or not
+Vector is there; lines written while it is away are dropped. ``/privacy`` says this (section *Where it lives*).
+
+Caddy had no ``log`` directive before, so ``docker logs deploy-caddy-1`` carried no access lines and still does not.
+
+Applying a Caddyfile change needs no app restart — the file is bind-mounted read-only, so after the merge::
+
+    ssh sharpen 'cd ~/sharpen && git pull && cd deploy && docker exec deploy-caddy-1 caddy validate --config /etc/caddy/Caddyfile && docker exec deploy-caddy-1 caddy reload --config /etc/caddy/Caddyfile'
+
+``validate`` first: anything but *Valid configuration* and nothing is applied, Sharpen keeps running on the old
+config. Checked locally with Caddy 2.9.1 before the change was committed. Order with BotSpotter: deploy BotSpotter's
+``sensor-vector`` first so ``bs-vector`` resolves; the other way round is harmless (``soft_start``) and the sensor
+starts working when the sidecar appears. One thing to check on the BotSpotter side: Vector only forwards lines
+whose ``Host`` contains ``BS_HOST``, and ``docker-compose.vm.yml`` sets it to ``sharpen.com`` — the site is
+``sharpenscore.com``, which does not contain that string, so it must say ``sharpenscore.com`` or every line is
+dropped silently. Verify from BotSpotter: ``docker compose -f docker-compose.yml -f docker-compose.vm.yml logs --tail 20
+sensor-vector`` shows no errors, and *Sensors with most catches* on the Live page grows a Sharpen row within minutes.
+

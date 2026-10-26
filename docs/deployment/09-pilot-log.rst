@@ -920,6 +920,20 @@ Day 8 — Wednesday 16 September: which build is this?
    browser. 64 tests. Times on the list are UTC, as everywhere else on the site; a per-person time zone is a
    separate, later change.
 
+#. **Sharpen becomes a BotSpotter sensor.** (Day 41, Monday 26 October.) BotSpotter — the owner's counter of AI
+   crawlers, live at botspotter.app since the 25th on this same VM behind this same Caddy — wants real sites
+   feeding it, and Sharpen is the obvious first one. One ``log botspotter`` block in ``deploy/Caddyfile``: Caddy's
+   JSON access log over TCP to BotSpotter's Vector sidecar (``bs-vector:9000`` on Caddy's Docker network), with
+   Cookie and Authorization deleted before the line is written and ``soft_start`` so Caddy serves whether Vector is
+   there or not. Read Vector's own config before agreeing to the privacy side of it: it keeps only crawler and bot
+   requests and only header names, and discards a browser's line in memory, so nothing about a human visitor leaves
+   this server. ``/privacy`` says so now (effective 26 October), as does ``05-day-two.rst`` with the no-downtime
+   reload (``caddy validate`` then ``caddy reload`` against the bind-mounted file). Validated the new Caddyfile with
+   Caddy 2.9.1 before handing it over. Two corrections to the brief that arrived with the change: Caddy had no
+   ``log`` directive before, so there were never access lines in ``docker logs`` to lose; and BotSpotter's overlay
+   sets ``BS_HOST=sharpen.com`` while the site is ``sharpenscore.com`` — Vector's host filter would drop every
+   line, so that value must change on the BotSpotter side first.
+
 Open items (as of day 27)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
